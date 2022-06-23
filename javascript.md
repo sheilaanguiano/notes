@@ -1,16 +1,17 @@
 # JavaScript
+-----
 
 Author: Sheila Anguiano
 These are my personal notes taken from Treehouse's JavaScript courses
 Status: Work in Progress
 -----
-# Table of Contents
-1. [Basics](##Basics)
-2. [Numbers](##Numbers)
-3. [Functions](##Functions)
-4. [Loops](##Loops)
+# Table of Contents 
+1. [Basics](##basics)
+2. [Numbers](##numbers)
+3. [Functions](##functions)
+4. [Loops](##loops)
 
-## Basics
+## Basics <a name="basics"></a>
 A programming language’s **syntax** is the different commands, special words and punctuation you use to put together a program.
 
 Every **browser** has a **JavaScript interpreter** built into it. This is the part of the browser that reads, understands and runs the instructions in a JavaScript program.
@@ -121,7 +122,7 @@ A good rule of thumb is: if you find yourself creating a lengthy and overly comp
 **Notes**: 
 - Strict Equalities compares type as well as value.
 
-## Numbers
+## Numbers <a name="numbers"></a>
 In JavaScript, data types like strings, booleans and numbers are formally called **Primitive Datat Types**, because they’re basic values built into the language. A String or number primitive, by itself, cannot be altered or manipulated. JavaScript automatically adds a _special wrapper_ around most primitive types so that you’re able to alter them, that wrapper is called an **object**,
 
 - You can perform most mathematical calculations
