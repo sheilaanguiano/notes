@@ -5,19 +5,21 @@ Author: Sheila Anguiano
 
 -----
 # Table of Contents 
-1. [Basics](#1)
-2. [Numbers](#2)
-3. [Functions](#3)
-4. [Loops](#4)
-5. [Arrays](#5)
-6. [Objects](#6)
-7. [The Landscape of JavaScript](#7)
-8. [JavaScript and the DOM](#8)
-9. [Interacting with the DOM](#9)
-10. [Debbuging JavaScript in the Browser](#10)
-11. [String Manipulation in javaScript](#11)
+1. [Basics](#basics)
+2. [Numbers](#numbers)
+3. [Functions](#functions)
+4. [Loops](#loops)
+5. [Arrays](#arrays)
+6. [Objects](#objects)
+7. [The Landscape of JavaScript](#landscape)
+8. [JavaScript and the DOM](#dom)
+9. [Interacting with the DOM](#interacting-dom)
+10. [Debbuging javaScript in the Browser](#debbuging-browser) 
+11. [String Manipulation in javaScript](#string-manipulation)
+12. [Callback Functions in JavaScript](#callback-functions)
+13. [AJAX](#ajax)
 
-## Basics <a name="1"></a>
+## Basics <a name="basics"></a>
 A programming language’s **syntax** is the different commands, special words and punctuation you use to put together a program.
 
 Every **browser** has a **JavaScript interpreter** built into it. This is the part of the browser that reads, understands and runs the instructions in a JavaScript program.
@@ -128,7 +130,7 @@ A good rule of thumb is: if you find yourself creating a lengthy and overly comp
 **Notes**: 
 - Strict Equalities compares type as well as value.
 
-## Numbers <a name="2"></a>
+## Numbers <a name="numbers"></a>
 In JavaScript, data types like strings, booleans and numbers are formally called **Primitive Datat Types**, because they’re basic values built into the language. A String or number primitive, by itself, cannot be altered or manipulated. JavaScript automatically adds a _special wrapper_ around most primitive types so that you’re able to alter them, that wrapper is called an **object**,
 
 - You can perform most mathematical calculations
@@ -153,7 +155,7 @@ In this case, you might think to use Math.ceil and avoid the `+1` but that will,
 */
 ```
 
-## Functions <a name="3"></a>
+## Functions <a name="functions"></a>
 JavaScript functions let you create reusable chunks of code. They make programming faster, easier, and less error-prone. At its simplest, a function is a set of instructions that you want to run over and over again.
 
 -   Function change the flow of the program.
@@ -355,7 +357,7 @@ function getRandomNumber(lower, upper){
   return Math.floor(Math.random() * (upper - lower + 1)) + lower;
 }
 ```
-## Loops <a name="4"></a>
+## Loops <a name="loops"></a>
 A **loop** repeat the same set of actions a certain number of times or until a specific condition is true
 
 ### While Loop
@@ -432,7 +434,7 @@ Programmers call the process of improving and simplifying code without changing 
 - Programmers first write a program that works perfectly well, and later rewrite it to be less repetitive, more efficient and maintainable.
 - Improving code also might mean making it run faster, easier to read or adding comments
 
-## Arrays <a name="5"></a>
+## Arrays <a name="arrays"></a>
 Arrays provide a way to store multiple pieces of information. An array is a list of values: numbers, strings, boolean values, or even other arrays
 
 **array literal**: Is a list of zero or more expressions, which represent and array element enclosed in square brackets (`[]`). When you create an array using an array literal, it is initialized with the specified values as its elements, and its `length` is set to the number of arguments specified.
@@ -660,7 +662,7 @@ document.querySelector('main').innerHTML=` <ol> ${ createListItems(playList)} </
 ```
 
 
-## Objects<a name="6"></a>
+## Objects<a name="objects"></a>
 Objects are an essential part of JavaScript; they provide a flexible way to keep track of data by associating a name with a particular value.
 
 In JavaScript, anything that is not a primitive type (`undefined`, `null`, `boolean`, `number`, or `string`) is an **object**.
@@ -938,7 +940,7 @@ The `insertAdjacentHTML()` is a more efficient method to insert data than `inner
 [insertAdjacentHTML( )](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML)
 
 
-## Landscape of JS <a name="7"></a>
+## Landscape of JS <a name="landscape"></a>
 JavaScript is a cross-platform language. It's used in web and native application development, virtual reality, even to build voice-controlled bots, games, and just about anything you can think up.
 
 In 1995 Marc Andressen, the founder of Netscape gave Brendan Eich an engineer the job to develop a new scripting language. In 10 days he designed and created a new programming language named, Mocha, which was subsequently changed to LiveScript during beta releases of Netscape 2.0 and finally changed to JavaScript as a marketing ploy to cash in on the popularity of Java at the time.
@@ -1059,7 +1061,7 @@ For larger more advanced applications with complex user interfaces and features,
 
 Many of the frameworks and libraries provide a tool called a CLI that makes it easier to create an application without configuring any tools. They come with the tools you need to get started working on your project
 
-## JavaScript and the DOM <a name="8"></a>
+## JavaScript and the DOM <a name="dom"></a>
 ### The Browser Environment
 #### Interactive Web Pages with JavaScript
 JavaScript was initially designed to run in the browser, to make webpages responsive to mouse clicks and other visitor input. It's one of the essential tools for creating fun, interactive, and useful web applications.
@@ -1375,7 +1377,7 @@ The `remove()` method is [not supported in Internet Explorer](https://developer.
 
 Might need to ADD https://teamtreehouse.com/library/interacting-with-the-dom
 
-## Interacting with the DOM <a name="9"></a>
+## Interacting with the DOM <a name="interacting-dom"></a>
 ### Responding to Events
 #### What's an Event
 Events can be anything from a click, scrolling the page, an error or even loading a page is an event.
@@ -1542,7 +1544,7 @@ const body = wrapper.parentNode;
 body.style.backgroundColor = '#f8fdf3';
 
 ```
-## Debugging JavaScript in the Browser <a name="10"></a>
+## Debugging JavaScript in the Browser <a name="debbuging-browser"></a>
  Debbuging effectively requires 
  1. Stop execution at a given line
  2. Explore values while the apps is paused
@@ -1563,7 +1565,7 @@ On the right panel you can activate Breakpoint (to pause the program and differe
 
 https://developer.chrome.com/docs/devtools/
 
-## String Manipulation with JavaScript <a name="11"></a>
+## String Manipulation with JavaScript <a name="string-manipulation"></a>
 The string type describes variables made up of letters and other sequences of characters wrapped in quotation marks, Strings in Javascript are treated as Immutable (unable to be altered or updated). javaScript treats the string  similar to an object, providing properties and built in methods that allow us to access and manipulate string values. These methods can't change the value of a string once it's defined, but instead, return a completely new strTomatoTimering object.
 
 ```javascript
@@ -1591,203 +1593,12 @@ JavaScript provides methods for altering values such by separating, combining, c
 - `.join()` if you need to convert the array back into a string, this is the method 
 - `.parseInt()` takes a string and converts it to a number and we can go back using the `.toString` method.
 
-## Regular Expressions in JavaScript
-### Regular Expressions
-A regular expression is a way to describe a patterns in a string. **Regex** is a common way to shorten the term Regular Expression.
-**Matches** matches the string you're typing in, these are case insensitive
-A `.` dot has a special meaning in regular expressions. It matches any single character.
 
-#### Matching Specific Characters
-Regex uses a parser which compares each character in a regular expression with a character in the string in the same position, in other words, the regex parser requires two things: an expression also called a pattern and a string to match
-```javascript
-toyboats? // The ? mark matches the character that appears directly before it zero times or one time. In this case the lowercase "s" is optional, so this Regrex will match toyboats and toyboat BUT NOT toyboatss
-```
-You can also account for spaces or to include matches with lower or uppercase Letters using a **character set**
-```javascript
-[Ttj]oy ?boats?
-/* This will match
-toyboat
-toyboats
-toy boats
-Toy boats
-joyboats
-*/
-```
-You can put as many letter as you want in the set but it will only match ONE position of the string, in the above position is the first position.
-#### Matching Character Ranges
-```javascript
-[A-Za-z]oy[ -]?[Bb]oats?
-/* This will match
-toyboat
-toyboats
-toy boats
-Toy boats
-joy boats
-toy-boats
-toy-Boats
-soy-Boats
-*/
-
-...[0-9] [A_Z]able
-/* To match
-8345 Gable
-7238 Gable
-2349 Table
-8475 Cable
-0994 Fable
-1047 Zable
-*/
-```
-#### Using Wildcard Characters
-A wild card matches more than one character in a string, while we've using characters sets to match more than one character, there are shorter ways to match some cases. For example instead of using `[0-9]` to match any numeral character use `\d`. The `\` is found often in regular expressions but it's meaning can differ according to where it's used. usually it's a way to say that the character that follows has a special meaning
-[0-9]								\d
-[A_Za-z0-9_]					\w
-[\t\r\n\f]						\s
-any character					.
-
-Often when you're composing regex, you'll want to control what character you include 
-
-#### Finding Repeating Characters
-Often when constructing a regular expression, you'll need a way to handle repeating characters.Two regex characters you'll use often are the `*` asterisk and the `+` plus symbol. These two symbols both can match more than one character
-
-toy\w*		will match toy & toycar but NOT toyboat
-toy\w+		will match only toyboat and toycar
-
-There is also a time when you want to specify an exact number of characters like 3 digits in a phone's area code or the last four digits of a serial number. 
-
-{3} 				three repetitions
-{3, }				three or more
-{3,5}			repetitions between 3 and 5
-```javascript
-//Matching social security pattern numbers
-\d{3}-\d{2}-\d{4}
-/* To match
-000-35-6548
-000-67-6587
-*/
-
-\w{5, 9} // This will match anycharacter that has between 5-9 characters
-\w{5, } // This will match any string with more than 5 characters
-```
-#### Excluding Characters
-`[^]`			negated character set
-`[^@ ]`		match any character except @
-`[^@.]`		match any character except @ and .
-
-Just remember that a `.` inside a set, is just a dot, but outside is a special character. You can avoid this behaviour by scaping it `\.`
-Regular expressions include characters which are the opposite of the digit, word or white space
- \d 		digit						\D		not  digit
- \w		word					\W 		not word
- \s		whitespace			\S		not whitespace
- 
-#### Alternation
-Alternation is like the OR operator from JavaScript. It tells the parser to either math cone pattern or another
-`toy | sail` This regex will match patters that only match toy or sail
-
-#### Groups
-```javascript
-(toy|sail|tug) boat
-
-/* This wil match
-toy boat
-sail boat
-tug boat
-*/
-```
-#### Beginning and Ending of Strings
-^		beginning of a string
-$ 		end of a string
-```javascript
-^(www\.)?google\.(com\net)$
-// will only match google.com, google.net & www.google.com
-//BUT NOT wwgoogle.com, www.google.commmmm
-
-```
-#### Project Notes
-`/^[a-z]+$/ `		This regex validates a username with only lowercase characters
-
-https://regex101.com/
-https://www.regular-expressions.info/lookaround.html
-
-
-
-### Validating a Form
-**Validaton** is the process of guarding agains receiving bad or inaccurate data. Regular expressions can help your program know whether to accept the value by matching the input with the pattern you expect. Validation can reduce user frustration, while ensuring you get valid data to use in your application. 
-To accomplish this form validation, we'll use two methods
-`test()` To test whether a string matches a regular expression
-`replace()` To eplace text in a string by matching a pattern
-```javascript
-//This is called LITERAL SYNTAX
-const regexObject = /^word$/
-```
-You can also create Regex by using the regular expression constructor
-```javascript
-const regexObject = new RegExp("/^word$/")
-```
-This ways is useful for dynamically creating regular expressions, for example is the user is typing in an expression to use for searching a block, you could take the input and pass it to the regex constructor. Then you could use the expression to search for the text and return the result.
-Use the literal syntax when you already know the regex you want to use
-
-[Documentation for JavaScript's RegExp object on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp)
-[Article on form validation on MDN](https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Form_validation)
-
-#### Using Regex in JavaScript
-```javascript
-regex.test(testString) // True or False
-string.replace(regex, replacementString ) // will give you a newString
-```
-#### Flags
-Flags in Regular expressions modify the way the expression behaves. There are a number of flags, but we'll focus on 3
-`i`		Case-insensitive. Using `i` will make the parser disregard case when searching for matches
-`g`		Stands for global and tells the parses to find ALL matches contained in the string
-`m`		Stands for multiline. Normally a caret will only match the beginning of a string
-
-To add any these flags to a regex in JavaScript put them after the last slash of a regex literal, you can put them in any order.  
-```javascript
-'LION'.replace(/lion/i, 'mouse'); // This changes the string to "mouse"
-'She ate watermelon at the waterpark'.replace(/water/, ''); // "She ate melon at the waterpark"
-'She ate watermelon at the waterpark'.replace(/water/g, ''); // "She ate melon at the park"
-const treat = `cheese
-cheese
-cheese`;
-treat.replace(/^cheese$/, 'fruit'); // returns the same string with cheese 3 times because of the multiline
-treat.replace(/^cheese$/m, 'fruit')// returns just the first word replaced
-treat.replace(/^cheese$/mg, 'fruit')// returns the 3 word replaced to fruit
-```
-
-[Here's a site that tries to find the best regular expression for email addresses.](https://emailregex.com/)
-[HTML5 email built-in support for email validation](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#validation)
-### Reformatting User Input
-Manipulate data you get from the user and display it in a different format
-#### Using Replace with Captured Groups
-Parentheses capture the parts of the string they match. You can use these captured groups with a $ sign, followed by a number which matches the index of the captured group
-```javascript
-//The two sets of parenthesis capture two values, the first the word
-//character, and the digit character.
-/(\w)\w+(\d)/
-```
-While JAvaScript indexing is generally 0 based, however captured values in regular expression always begin at an index of 1. We can use these captured values with JavaScript replaced method
-```javascript
-let string = 'abc';
-string.replace(/(\w)(\w)(\w)/, '$3 $2 $1')  // This returns "c b a" 
-
-//Now we want to put a decial point in the middle of 4 numbers and a dollar sign in the beginning
-let string = '5337';
-let regex = /(\d*)(\d{2})/
-let replacement = '$$$1.$2' // The first 2 '$' will print a literal $ dollar sign while the other is for the captured group
-string.replace(regex, replacement); // "$53.37"
-
-```
-#### Reformatting a Telephone Number
-The act the user tales when they're satisfied with the form input is to move focus away from the input. The `blur` event occurs on an input element when it loses focus, so we can use this to trigger our handler
-
-[MDN Guide for Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
-[MDN Reference for the RegExp object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp)
-[Fairly comprehensive reference on regular expressions](http://www.regular-expressions.info/)
-## Callback Functions in JavaScript
+## Callback Functions in JavaScript <a name="callback-functions"></a>
 Callback functions are a foundational concept in JavaScript. Callbacks are used in timers, user interaction events, loading data from a server and used in Node.js
 
 
-## AJAX Basics
+## AJAX Basics <a name="ajax"></a>
 AJAX is an important front-end web technology that lets JavaScript communicate with a web server. It lets you load new content without leaving the current page, creating a better, faster experience for your web site’s visitors
 
 AJAX lets you build web pages that ask some information from a web server. The web server returns data to the web browser, and JavaScript processes that data to selectively change parts of the webpage. The amount of data the server returns is usually much less than that sent when you ask for a full webpage.

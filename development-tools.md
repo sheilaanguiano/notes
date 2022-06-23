@@ -1,8 +1,205 @@
 # Development Tools
 
 # Table of Contents
-1. [Introduction to the Terminal](#terminal)
-2. [Introduction to Git](#git)
+1. [Regular Expressions in JavaScript](#regex)
+2. [Introduction to the Terminal](#terminal)
+3. [Introduction to Git](#git)
+4. [HTTP Basics](#http)
+
+
+## Regular Expressions in JavaScript <a name="regex"></a>
+### Regular Expressions
+A regular expression is a way to describe a patterns in a string. **Regex** is a common way to shorten the term Regular Expression.
+**Matches** matches the string you're typing in, these are case insensitive
+A `.` dot has a special meaning in regular expressions. It matches any single character.
+
+#### Matching Specific Characters
+Regex uses a parser which compares each character in a regular expression with a character in the string in the same position, in other words, the regex parser requires two things: an expression also called a pattern and a string to match
+```javascript
+toyboats? // The ? mark matches the character that appears directly before it zero times or one time. In this case the lowercase "s" is optional, so this Regrex will match toyboats and toyboat BUT NOT toyboatss
+```
+You can also account for spaces or to include matches with lower or uppercase Letters using a **character set**
+```javascript
+[Ttj]oy ?boats?
+/* This will match
+toyboat
+toyboats
+toy boats
+Toy boats
+joyboats
+*/
+```
+You can put as many letter as you want in the set but it will only match ONE position of the string, in the above position is the first position.
+#### Matching Character Ranges
+```javascript
+[A-Za-z]oy[ -]?[Bb]oats?
+/* This will match
+toyboat
+toyboats
+toy boats
+Toy boats
+joy boats
+toy-boats
+toy-Boats
+soy-Boats
+*/
+
+...[0-9] [A_Z]able
+/* To match
+8345 Gable
+7238 Gable
+2349 Table
+8475 Cable
+0994 Fable
+1047 Zable
+*/
+```
+#### Using Wildcard Characters
+A wild card matches more than one character in a string, while we've using characters sets to match more than one character, there are shorter ways to match some cases. For example instead of using `[0-9]` to match any numeral character use `\d`. The `\` is found often in regular expressions but it's meaning can differ according to where it's used. usually it's a way to say that the character that follows has a special meaning
+[0-9]								\d
+[A_Za-z0-9_]					\w
+[\t\r\n\f]						\s
+any character					.
+
+Often when you're composing regex, you'll want to control what character you include 
+
+#### Finding Repeating Characters
+Often when constructing a regular expression, you'll need a way to handle repeating characters.Two regex characters you'll use often are the `*` asterisk and the `+` plus symbol. These two symbols both can match more than one character
+
+toy\w*		will match toy & toycar but NOT toyboat
+toy\w+		will match only toyboat and toycar
+
+There is also a time when you want to specify an exact number of characters like 3 digits in a phone's area code or the last four digits of a serial number. 
+
+{3} 				three repetitions
+{3, }				three or more
+{3,5}			repetitions between 3 and 5
+```javascript
+//Matching social security pattern numbers
+\d{3}-\d{2}-\d{4}
+/* To match
+000-35-6548
+000-67-6587
+*/
+
+\w{5, 9} // This will match anycharacter that has between 5-9 characters
+\w{5, } // This will match any string with more than 5 characters
+```
+#### Excluding Characters
+`[^]`			negated character set
+`[^@ ]`		match any character except @
+`[^@.]`		match any character except @ and .
+
+Just remember that a `.` inside a set, is just a dot, but outside is a special character. You can avoid this behaviour by scaping it `\.`
+Regular expressions include characters which are the opposite of the digit, word or white space
+ \d 		digit						\D		not  digit
+ \w		word					\W 		not word
+ \s		whitespace			\S		not whitespace
+ 
+#### Alternation
+Alternation is like the OR operator from JavaScript. It tells the parser to either math cone pattern or another
+`toy | sail` This regex will match patters that only match toy or sail
+
+#### Groups
+```javascript
+(toy|sail|tug) boat
+
+/* This wil match
+toy boat
+sail boat
+tug boat
+*/
+```
+#### Beginning and Ending of Strings
+^		beginning of a string
+$ 		end of a string
+
+```javascript
+^(www\.)?google\.(com\net)$
+// will only match google.com, google.net & www.google.com
+//BUT NOT wwgoogle.com, www.google.commmmm
+
+```
+#### Project Notes
+`/^[a-z]+$/ `		This regex validates a username with only lowercase characters
+
+https://regex101.com/
+https://www.regular-expressions.info/lookaround.html
+
+
+
+#### Validating a Form
+** Validaton** is the process of guarding agains receiving bad or inaccurate data. Regular expressions can help your program know whether to accept the value by matching the input with the pattern you expect. Validation can reduce user frustration, while ensuring you get valid data to use in your application. 
+To accomplish this form validation, we'll use two methods
+`test()` To test whether a string matches a regular expression
+`replace()` To eplace text in a string by matching a pattern
+```javascript
+//This is called LITERAL SYNTAX
+const regexObject = /^word$/
+```
+You can also create Regex by using the regular expression constructor
+```javascript
+const regexObject = new RegExp("/^word$/")
+```
+This ways is useful for dynamically creating regular expressions, for example is the user is typing in an expression to use for searching a block, you could take the input and pass it to the regex constructor. Then you could use the expression to search for the text and return the result.
+Use the literal syntax when you already know the regex you want to use
+
+[Documentation for JavaScript's RegExp object on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp)
+[Article on form validation on MDN](https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Form_validation)
+
+#### Using Regex in JavaScript
+```javascript
+regex.test(testString) // True or False
+string.replace(regex, replacementString ) // will give you a newString
+```
+#### Flags
+Flags in Regular expressions modify the way the expression behaves. There are a number of flags, but we'll focus on 3
+`i`		Case-insensitive. Using `i` will make the parser disregard case when searching for matches
+`g`		Stands for global and tells the parses to find ALL matches contained in the string
+`m`		Stands for multiline. Normally a caret will only match the beginning of a string
+
+To add any these flags to a regex in JavaScript put them after the last slash of a regex literal, you can put them in any order.  
+```javascript
+'LION'.replace(/lion/i, 'mouse'); // This changes the string to "mouse"
+'She ate watermelon at the waterpark'.replace(/water/, ''); // "She ate melon at the waterpark"
+'She ate watermelon at the waterpark'.replace(/water/g, ''); // "She ate melon at the park"
+const treat = `cheese
+cheese
+cheese`;
+treat.replace(/^cheese$/, 'fruit'); // returns the same string with cheese 3 times because of the multiline
+treat.replace(/^cheese$/m, 'fruit')// returns just the first word replaced
+treat.replace(/^cheese$/mg, 'fruit')// returns the 3 word replaced to fruit
+```
+
+[Here's a site that tries to find the best regular expression for email addresses.](https://emailregex.com/)
+[HTML5 email built-in support for email validation](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#validation)
+### Reformatting User Input
+Manipulate data you get from the user and display it in a different format
+#### Using Replace with Captured Groups
+Parentheses capture the parts of the string they match. You can use these captured groups with a $ sign, followed by a number which matches the index of the captured group
+```javascript
+//The two sets of parenthesis capture two values, the first the word
+//character, and the digit character.
+/(\w)\w+(\d)/
+```
+While JAvaScript indexing is generally 0 based, however captured values in regular expression always begin at an index of 1. We can use these captured values with JavaScript replaced method
+```javascript
+let string = 'abc';
+string.replace(/(\w)(\w)(\w)/, '$3 $2 $1')  // This returns "c b a" 
+
+//Now we want to put a decial point in the middle of 4 numbers and a dollar sign in the beginning
+let string = '5337';
+let regex = /(\d*)(\d{2})/
+let replacement = '$$$1.$2' // The first 2 '$' will print a literal $ dollar sign while the other is for the captured group
+string.replace(regex, replacement); // "$53.37"
+
+```
+#### Reformatting a Telephone Number
+The act the user tales when they're satisfied with the form input is to move focus away from the input. The `blur` event occurs on an input element when it loses focus, so we can use this to trigger our handler
+
+[MDN Guide for Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
+[MDN Reference for the RegExp object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp)
+[Fairly comprehensive reference on regular expressions](http://www.regular-expressions.info/)
 
 
 ## Introduction to the Terminal <a name="terminal"></a>
@@ -215,8 +412,69 @@ git --help will print out some help on using the Git program.
 
 **Common Git subcommands**
 
-The ｀git clone｀ and ｀git init｀ commands are used to set up new repositories.
-The ｀git add｀, ｀git status｀, and ｀git commit｀ commands are the most frequently used subcommands in all of Git. They're used when committing new versions of files.
-The git log command is also important; it lets you view a list of your old commits.
-The git mv and git rm commands move and remove files that are being tracked by Git. We'll learn about those in Stage 2 of this course.
-The git push and git pull commands are used to synchronize commits with Git repositories on other computers
+- The `git clone` and `git init` commands are used to set up new repositories.
+- The `git add`, `git status`, and `git commit` commands are the most frequently used subcommands in all of Git. They're used when committing new versions of files.
+- The `git log` command is also important; it lets you view a list of your old commits.
+- The `git mv` and `git rm` commands move and remove files that are being tracked by Git.
+- The `git push` and `git pull` commands are used to synchronize commits with Git repositories on other computers
+
+#### Initializing a Repository
+ We need to change  into our project directory so we can turn it into a Git repo. Once inside your directory, you need to initialize the new repository with `git init` in your terminal, press enter to run it
+
+You won’t see the `.git` directory at first. But `ls` has a special command line option that will cause it to show all files, `ls -a` will show even the hidden ones.
+#### First Commits
+Let’s add files to your new Git repo.
+
+- Git commands won’t work outside a Git repo.
+- Whenever you exit a repo directory, be sure to change back into the directory with cd before issuing any Git commands.
+
+We’ve initialized a Git repository in our project’s directory. But our project files haven’t been added to the repository yet. In fact, Git has no idea they exis
+
+Our project directory is known in Git terminology as the working directory, because it’s the directory where we actually edit and do other work in our files. 
+
+There are three states every files goes through in a Git repository
+
+When you make changes to a files in the working directory, it’s “modified”
+You don’t necessarily want to include all of these modified files in your next commit, so you need to specify which ones you will include. You do this by adding files to the index, more commonly known as the “staging area”  or “cache”. The staging area is where you place the files you’re going to commit. Files you’ve added to the index are referred to as “staged” files.
+When you’ve staged all the files you want, you make a commit, and that’s when the files are actually added to your Git repository.
+Then, when you next make a change to any of those files, they’re treated as “modified”. You can stage and commit the files again to save a new version of them. And the cycle repeats.
+
+We can find out what state our project files are in, using the `git status` command. Its output includes a list of “untracked files”. This are files that Git isn’t “tracking” yet - it’s not keeping track of changes to them so we’re not saving a new version of them.
+It’s output also includes helpful messages suggesting commands to run next
+
+**Staging Files**
+- Many git commands produce output only when there's an error.Empty output means “everything is fine”
+- The `git add` command adds a file to the staging area, the place we compose our commit.
+
+**Commiting Files**
+We use the git commit command to commit our staged changes.
+You need to provide a message to go with every commit, a brief note explaining what the commit does.
+We do this with the -m option. -m should be followed by a string in quotation marks. 
+```bash
+git commit - m “Add main site page”
+```
+*As a rule of thumb, a commit message should complete the phrase “This commit will:..”*
+
+**Git Configuration**
+- In addition to a commit message, Git, needs to know your name and e-mail addres so it can attach them to the commit. This is another of Git’s collaboration features. It allows other people working on the project to contact you if they need to ask about the commit.
+- The name and e-mail address are permanently stored as part of Git’s configuration. The gut config command allows you to add and edit values in that configuration.
+
+Most shells keep a history of commands you’ve entered. You can hit the up arrow key to bring up previous commands, so you don’t have to type them again.
+
+**Using and editor to commit messages**
+If you leave off the `-m` command like options when running git commit. Git will launch a text editor so you can enter a commit message. On most systems Git uses an editor named vi by default, but you can change this
+
+http://heather.cs.ucdavis.edu/~matloff/UnixAndC/Editors/ViIntro.html
+
+**Viewing Git Logs**
+Once a commit is complete, it’s a permanent part of the repository’s history
+You can review that history with the git log subcommand. For each commit git logs shows:
+- Author name and email
+- Date and time of  the commit
+- The commit message
+- If you want, you can add the -p option to git log: git log -p that will show the actual lines that were added in each file.
+- Anytime a git command shows output that’s too long for the screen, it’ll show the output using a pager program.
+[What's the shell](http://linuxcommand.org/lc3_lts0010.php)
+
+## HTTP Basics <a name="http"></a>
+###
