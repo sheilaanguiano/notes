@@ -18,6 +18,10 @@ Author: Sheila Anguiano
 11. [String Manipulation in javaScript](#string-manipulation)
 12. [Callback Functions in JavaScript](#callback-functions)
 13. [AJAX](#ajax)
+14. [Asyncronous Programming with JavaScript](#asyncronous-js)
+15. [Working with the Fetch API](#fetch)
+16. [Object Oriented JavaScript](#ooj)
+17. [Node.js](#node)
 
 ## Basics <a name="basics"></a>
 A programming language’s **syntax** is the different commands, special words and punctuation you use to put together a program.
@@ -1603,7 +1607,7 @@ AJAX is an important front-end web technology that lets JavaScript communicate w
 
 AJAX lets you build web pages that ask some information from a web server. The web server returns data to the web browser, and JavaScript processes that data to selectively change parts of the webpage. The amount of data the server returns is usually much less than that sent when you ask for a full webpage.
 
-The process of asking a server for information is technically called making a **REQUEST** to a server. And when the server sends back its answer, that’s called ** RESPONSE**. The web is built upon browsers, also called **CLIENTS**, sending requests to the web servers, and servers sending responses back
+The process of asking a server for information is technically called making a **REQUEST** to a server. And when the server sends back its answer, that’s called **RESPONSE**. The web is built upon browsers, also called **CLIENTS**, sending requests to the web servers, and servers sending responses back
 
 AJAX has been around a long time, Microsoft first introduced it in 19999 with Internet Explorer 5. AJAX is the process of using JavaScript to send requests to a web server, and receive a response back, and then do something with that response. What you send to the web server with AJAX can be a simple request for a web page, a text file a search sent to a database, or a complete form full of information.
 
@@ -1626,7 +1630,7 @@ You can break the AJAX programming process into 4 steps:
     
 2.  Create a callback function. This is the most complicated part of the AJAX process. The callback function is the programming you want the browser to run when the server sends back its response. For example in the case of Twitter’s endless list of tweets, the callback function adds the newly retrieved tweets to the end of the webpage. Think of a callback like a note you leave the browser “give me a call when you’re ready”. When the web browser send off its ajax request it continues doing other things. This is the ASYNCHRONOUS part of AJAX. There is another strange thing about the asynchronous nature of AJAX. If you make multiple AJAX request, you’ll never know which request will be handled first.
 
-To trigger the callback , we use a special browser Glen event. For example, when a user submits a form, you can check to see if they filled it out correctly. The event here is submitting the form. Checking the form data is a program that runs in reaction to the event. We can add programming to respond to those events. The most important is the `onreadystatechange` event. This event is triggered whenever there’s a change in an AJAX request. We create our callback to respond to that request
+To trigger the callback , we use a special browser event. For example, when a user submits a form, you can check to see if they filled it out correctly. The event here is submitting the form. Checking the form data is a program that runs in reaction to the event. We can add programming to respond to those events. The most important is the `onreadystatechange` event. This event is triggered whenever there’s a change in an AJAX request. We create our callback to respond to that request
 ```javascript
 var xhr = new XHLHttpRequest();
 
@@ -1981,7 +1985,7 @@ Same example using JQuery:
 STILL MISSING SOME INFORMATION FROM THE SOURCE DOC
  
 
-## Asyncronous Programming with JavaScript
+## Asyncronous Programming with JavaScript <a name="asyncronous-js"></a>
 ### What is Asynchronous Programming?
 #### Introduction to Asynchronous JavaScript
 
@@ -2720,7 +2724,7 @@ getPeopleInSpace(astrosUrl)
 [`console.error()`  – MDN](https://developer.mozilla.org/en-US/docs/Web/API/Console/error)
 
 
-## Working with the Fetch API
+## Working with the Fetch API <a name="fetch"></a>
 ### What is the Fetch API
 Learn an easier way to make network requests and handle responses with the Fetch API(Application Programming Interface). Fetch provides a modern, friendly data-fetching interface that's native to the browser.
 
@@ -3007,7 +3011,7 @@ function  postData(e){
 [JSON Placeholder](https://jsonplaceholder.typicode.com/)
 [HTTP request methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)
 
-## Object Oriented JS
+## Object Oriented JS <a name="ooj"></a>
 ### Intro
 #### What is an Object, and why do we care?
 An object is a net and tidy package of information about something you want to use in your code. This package contains a group of properties and functions that work together to represent something in your program.
@@ -3414,13 +3418,10 @@ Regular Expressions, or Regex are powerful way to search and match string combin
 
 [Regular_Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
 
-##
-
 
 ## Object Oriented JavaScript: Challenge
 
-
-## Node.js
+## Node.js <a name="node"></a>
 ### Introduction to Node.js
 #### What is Node.js
 A **runtime environment** is where code is executed. Runtime environments like Node provide access to features of the JavaScript language like data types, objects and functions, plus they have a built in engine that compiles code, translating your code into something that computers can use and understand. We often run JS code in a web browser. Browsers like Chrome are common examples of a run time environment, also called **front-end runtimes**.
