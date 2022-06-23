@@ -6,8 +6,8 @@ These are my personal notes taken from Treehouse's JavaScript courses
 Status: Work in Progress
 -----
 # Table of Contents 
-1. [Basics](##basics)
-2. [Numbers](##numbers)
+1. [Basics](#basics)
+2. [Numbers](#numbers)
 3. [Functions](##functions)
 4. [Loops](##loops)
 
