@@ -2,16 +2,22 @@
 -----
 
 Author: Sheila Anguiano
-These are my personal notes taken from Treehouse's JavaScript courses
-Status: Work in Progress
+
 -----
 # Table of Contents 
-1. [Basics](#basics)
-2. [Numbers](#numbers)
-3. [Functions](##functions)
-4. [Loops](##loops)
+1. [Basics](#1)
+2. [Numbers](#2)
+3. [Functions](#3)
+4. [Loops](#4)
+5. [Arrays](#5)
+6. [Objects](#6)
+7. [The Landscape of JavaScript](#7)
+8. [JavaScript and the DOM](#8)
+9. [Interacting with the DOM](#9)
+10. [Debbuging JavaScript in the Browser](#10)
+11. [String Manipulation in javaScript](#11)
 
-## Basics <a name="basics"></a>
+## Basics <a name="1"></a>
 A programming language’s **syntax** is the different commands, special words and punctuation you use to put together a program.
 
 Every **browser** has a **JavaScript interpreter** built into it. This is the part of the browser that reads, understands and runs the instructions in a JavaScript program.
@@ -122,7 +128,7 @@ A good rule of thumb is: if you find yourself creating a lengthy and overly comp
 **Notes**: 
 - Strict Equalities compares type as well as value.
 
-## Numbers <a name="numbers"></a>
+## Numbers <a name="2"></a>
 In JavaScript, data types like strings, booleans and numbers are formally called **Primitive Datat Types**, because they’re basic values built into the language. A String or number primitive, by itself, cannot be altered or manipulated. JavaScript automatically adds a _special wrapper_ around most primitive types so that you’re able to alter them, that wrapper is called an **object**,
 
 - You can perform most mathematical calculations
@@ -147,7 +153,7 @@ In this case, you might think to use Math.ceil and avoid the `+1` but that will,
 */
 ```
 
-## Functions
+## Functions <a name="3"></a>
 JavaScript functions let you create reusable chunks of code. They make programming faster, easier, and less error-prone. At its simplest, a function is a set of instructions that you want to run over and over again.
 
 -   Function change the flow of the program.
@@ -349,7 +355,7 @@ function getRandomNumber(lower, upper){
   return Math.floor(Math.random() * (upper - lower + 1)) + lower;
 }
 ```
-## Loops
+## Loops <a name="4"></a>
 A **loop** repeat the same set of actions a certain number of times or until a specific condition is true
 
 ### While Loop
@@ -426,7 +432,7 @@ Programmers call the process of improving and simplifying code without changing 
 - Programmers first write a program that works perfectly well, and later rewrite it to be less repetitive, more efficient and maintainable.
 - Improving code also might mean making it run faster, easier to read or adding comments
 
-## Arrays
+## Arrays <a name="5"></a>
 Arrays provide a way to store multiple pieces of information. An array is a list of values: numbers, strings, boolean values, or even other arrays
 
 **array literal**: Is a list of zero or more expressions, which represent and array element enclosed in square brackets (`[]`). When you create an array using an array literal, it is initialized with the specified values as its elements, and its `length` is set to the number of arguments specified.
@@ -654,7 +660,7 @@ document.querySelector('main').innerHTML=` <ol> ${ createListItems(playList)} </
 ```
 
 
-## Objects
+## Objects<a name="6"></a>
 Objects are an essential part of JavaScript; they provide a flexible way to keep track of data by associating a name with a particular value.
 
 In JavaScript, anything that is not a primitive type (`undefined`, `null`, `boolean`, `number`, or `string`) is an **object**.
@@ -932,7 +938,7 @@ The `insertAdjacentHTML()` is a more efficient method to insert data than `inner
 [insertAdjacentHTML( )](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML)
 
 
-## Landscape of JS
+## Landscape of JS <a name="7"></a>
 JavaScript is a cross-platform language. It's used in web and native application development, virtual reality, even to build voice-controlled bots, games, and just about anything you can think up.
 
 In 1995 Marc Andressen, the founder of Netscape gave Brendan Eich an engineer the job to develop a new scripting language. In 10 days he designed and created a new programming language named, Mocha, which was subsequently changed to LiveScript during beta releases of Netscape 2.0 and finally changed to JavaScript as a marketing ploy to cash in on the popularity of Java at the time.
@@ -1053,7 +1059,7 @@ For larger more advanced applications with complex user interfaces and features,
 
 Many of the frameworks and libraries provide a tool called a CLI that makes it easier to create an application without configuring any tools. They come with the tools you need to get started working on your project
 
-## JavaScript and the DOM
+## JavaScript and the DOM <a name="8"></a>
 ### The Browser Environment
 #### Interactive Web Pages with JavaScript
 JavaScript was initially designed to run in the browser, to make webpages responsive to mouse clicks and other visitor input. It's one of the essential tools for creating fun, interactive, and useful web applications.
@@ -1369,7 +1375,7 @@ The `remove()` method is [not supported in Internet Explorer](https://developer.
 
 Might need to ADD https://teamtreehouse.com/library/interacting-with-the-dom
 
-## Interacting with the DOM
+## Interacting with the DOM <a name="9"></a>
 ### Responding to Events
 #### What's an Event
 Events can be anything from a click, scrolling the page, an error or even loading a page is an event.
@@ -1536,7 +1542,7 @@ const body = wrapper.parentNode;
 body.style.backgroundColor = '#f8fdf3';
 
 ```
-## Debugging JavaScript in the Browser
+## Debugging JavaScript in the Browser <a name="10"></a>
  Debbuging effectively requires 
  1. Stop execution at a given line
  2. Explore values while the apps is paused
@@ -1557,7 +1563,7 @@ On the right panel you can activate Breakpoint (to pause the program and differe
 
 https://developer.chrome.com/docs/devtools/
 
-## String Manipulation with JavaScript
+## String Manipulation with JavaScript <a name="11"></a>
 The string type describes variables made up of letters and other sequences of characters wrapped in quotation marks, Strings in Javascript are treated as Immutable (unable to be altered or updated). javaScript treats the string  similar to an object, providing properties and built in methods that allow us to access and manipulate string values. These methods can't change the value of a string once it's defined, but instead, return a completely new strTomatoTimering object.
 
 ```javascript
