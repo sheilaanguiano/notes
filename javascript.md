@@ -21,6 +21,7 @@ Author: Sheila Anguiano
 14. [Asyncronous Programming with JavaScript](#asyncronous-js)
 15. [Working with the Fetch API](#fetch)
 16. [Object Oriented JavaScript](#ooj)
+17. [The JavaScript Ecosystem](#js-ecosystem)
 17. [Node.js](#node)
 
 ## Basics <a name="basics"></a>
@@ -1632,12 +1633,12 @@ You can break the AJAX programming process into 4 steps:
 
 To trigger the callback , we use a special browser event. For example, when a user submits a form, you can check to see if they filled it out correctly. The event here is submitting the form. Checking the form data is a program that runs in reaction to the event. We can add programming to respond to those events. The most important is the `onreadystatechange` event. This event is triggered whenever there’s a change in an AJAX request. We create our callback to respond to that request
 ```javascript
-var xhr = new XHLHttpRequest();
+var xhr = new XMLHttpRequest();
 
 xhr.onreadystatechange = function(){
 };
 ```
-This programming sets up a function that runs each time there is a change in the state of the AJAX request. Each step in the AJAX process, like opening a new request or sending out that request triggers a change of state. For this call-back function we’re only interested in the final change of state. That’s when the server sends back its response. We want to get that response and then update our webpage. The XMLHttp request objects keeps track of the state using a special property named ready state. That property contains a number including the current state of the request and that property holds the number 4, then the request is done and the server has sent back a response. Let’s add a conditional statement to test for that state. So here we’re checking if the `readyState` is equal to 4, that means we’ve got the response back. We take the full AJAX response and place it into the web page. The date we get back is going to be a chunk of HTML and we’ll place it inside a div tag that has the ID of AJAX. Every XMLHttp request object has a property called responseText. This is the information that the web server sends back.
+This programming sets up a function that runs each time there is a change in the state of the AJAX request. Each step in the AJAX process, like opening a new request or sending out that request triggers a change of state. For this call-back function we’re only interested in the final change of state. That’s when the server sends back its response. We want to get that response and then update our webpage. The XMLHttp request objects keeps track of the state using a special property named `readyState`. That property contains a number including the current state of the request and that property holds the number `4`, then the request is done and the server has sent back a response. Let’s add a conditional statement to test for that state. So here we’re checking if the `readyState` is equal to 4, that means we’ve got the response back. We take the full AJAX response and place it into the web page. The date we get back is going to be a chunk of HTML and we’ll place it inside a div tag that has the ID of AJAX. Every XMLHttp request object has a property called `responseText`. This is the information that the web server sends back.
 ```javascript
 <script>
 
@@ -1650,7 +1651,7 @@ xhr.onreadystatechange = function(){
 };
 </script>
 ```
-3. Open a request. An HXR object has a method or function called open. This function prepares the browser for sending the request. You give the function two pieces of information. The first is the HTTP method that you’re going to use, the most common are GET and POST, but there are others, such as PUT and DELETE. You’ll use GET if you want to send a request for data and POST if you’re sending the data. Like information from a form, for the server to save in the database, the URL is where the request is going. This could point to a file or a server-side program on your web server. In our example, this is pointing to a file in the project folder. We’ll load to file into the page. The open function just gets the browser ready to make a request and send that request.
+3. Open a request. An HXR object has a method or function called `open`. This function prepares the browser for sending the request. You give the function two pieces of information. The first is the HTTP method that you’re going to use, the most common are `GET` and `POST`, but there are others, such as `PUT` and `DELETE`.You’ll use GET if you want to send a request for data and POST if you’re sending the data. Like information from a form, for the server to save in the database, the URL is where the request is going. This could point to a file or a server-side program on your web server. In our example, this is pointing to a file in the project folder. We’ll load to file into the page. The open function just gets the browser ready to make a request and send that request.
 
 4. Send the request. The previous three steps gave the web browser all the information it needs, so we can finally send off the request to the web server. In our case, since we’re request a chunk of HTML, we don’t provide the send method with any information, but when you need to submit information to the server like the users input from a web form. You can pass the send method that data
 ```javascript
@@ -3420,6 +3421,81 @@ Regular Expressions, or Regex are powerful way to search and match string combin
 
 
 ## Object Oriented JavaScript: Challenge
+
+## The JavaScript Ecosystem <a name="js-ecosystem"></a>
+### JavaScript Outside the Browser
+#### Client-Side vs. Server-Side JavaScript
+JavaScript was originally designed to run in the browser, but it can be found in other places. JavaScript is the only web-based programming language that can run on both the front end and the back end.
+
+Writing JavaScript that runs on the front end or client side means you're writing JavaScript run in the browser which allows interactivity in web pages. JavaScript is interpreted and executed by the browser's JavaScript engine againts browser specific APIs like the DOM.
+
+Writing back end or server-side JavaScript means that instead of writing code that executes in the browser, you're writing code that executes on the server. Server side javaScript is used for building APIs, databases, web servers, and more. Instead of dealing with the rendered page only, server-side javaScript can be used to provide customized experiences for each's user's request to a website.
+
+Writing JavaScript for both the front end and back en portions of an application is known as Full-Stack Development.
+
+How was JavaScript able to run in different enviroments? Well, **host objects** are supplied by the environment, that way JavaScript code can execute in that specific enviroment.
+
+JavaScript's **native objects** are buitl-in objects that are part of the JavaScript programming language. They're available in both the browser and server-side environments.
+
+[Standard built-in objects - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects)
+[JS Interview Question: What’s the difference between host objects and native objects?](https://rlynjb.medium.com/js-interview-question-what-s-the-difference-between-host-objects-and-native-objects-b395f7c5fbf1)
+[The Landscape of JavaScript - course](https://teamtreehouse.com/library/the-landscape-of-javascript)
+
+#### What is Node.js?
+Node is a cross platform runtime environment for developing server-side applications with JavaScript.
+Since Node provides a way to run JavaScript outside of the browser, you can use it to build anything from command line tools to frameworks, web servers and more.
+
+Node.js is based on Google Chrome's V8 open source JavaScript engine. but eventhough Chrome's browser and Node use the same JavaScript engine, they're two different run time enviroments.
+Node shine's for it's ability in building real-time multi-user applications that handle many events or user actions at the same time. Like tap apps for instance, also multi-player games, collaboration tools, vide-conferencing apps and more.
+
+One of the best parts about Node is its driving ecosystem of free-open source tools. **npm** the node package manager, allows for the sharing and reuse of code and softwarenwritten by other developers in the JavaScript community.
+
+Now, since Node is a runtime enviroment, it does little out of the box, so to make it easier to get setup and working with Node, developers often user a **Node framework** and one of the most popular is Express. Node and Express go hand in hand.
+**Express** allows developers to build scalable feature rich applications, wbesites and more on top of Node. Express provides built in tools and functionality to take care of common tasks like routing or handling request at different URL paths. Also serving static files and dynamic templating to render HTML pages.
+
+Developers can also built REST APIs with Express and simple servers that talk to browsers
+
+#### Build Native Applications with JavaScript
+Node is really useful to building interactive Command-Line applications or Command-Line interfaces, like *Create React App* the *vue-cli* or *Angular CLI* were built with Node.
+You use these command line tols to quickly spin up a project with basic conffiguration and run, build, test and deploy the project to production. Even command line interfaces for module bundlers like **Webpack** and task runners like **Gulp** wre created with Node.
+
+Node makes it possible to build native apps that run on your iOS and android devides. With the framework **React Native** you don't have to worry about learning a language like objective C, Swift or Java.
+
+There's also an amazing framework called **Elecron** that's used for building cross-platform desktop applications using HTML, CSS and JavaScript, which was used to build:
+- Visual Studio Code
+- Slack
+- Skype
+- GitHub desktop
+- The terminal Hyper
+- React 360
+
+### JavaScrip Frameworks, Libraries and Developer Roles
+#### JavaScript Frameworks and Libraries
+You can do some really complex things with JavaScript, and there are many ways to do the exact same thing.
+
+To help you make some of the low level decision, increase efficiency, and build projects faster, developers often use a frontend JavaScript encrypted framework or library. Many frameworks and libraies help you write clean modern JavaScript, and they allow you to use reliable and effective software design patters frm the start. 
+
+A common use case for a JavaScript framework is to build single page web applications (SPA) that run in the browser.
+
+**React** developed by Facebook is one of the most popular JavaScript libraries. It makes building and mantaining the user intergace of your application faster and easier by breaking it up into smaller reusable componets.
+
+React started out as a UI library form the web browser, but the patters and tools it provides are so useful that's it's been extended to mobile developemnt with the React Native framework
+
+**Vue** shares many similarities with react, except that if offers more tools out of the box, it's smaller in file size and a little easier to pick up. It also makes it easier to create your entire UI or just build and enhance only small parts of your project's UI.
+
+**Angular** is a full-fedged JavaScript framework with more functionality than most JavaScript frameworks and libraries out there. It' maintained by Google and referred a a complete solution because it comes with all the tools necessary to build complex, single page web apps without dependency on any other frameworks or plug-ins.
+
+React, Vue and Angular are traditionally client side frameworks and libraries, they run in the browser and by default produce DOM as output and manipulate the DOM of the rendered page, but also have their server side counterparts built by the open source JavaScript coomunity
+
+**Next.js** is a popular framework for server rendered React apps, it includes a lot of complex configuration right out of the box. Like routing, preventing unecessary code from loading, easy deployment to production, and lots more.
+
+**Nux** is a higher lever framwork for creating server side rendered apps with Vue.It makes it easier to share code between the client and the server, so you can focus on your application logic.
+
+To implement server side rendering in an Angular application, developers use the **Angular Universa**l library
+
+#### Testing JavaScript
+
+
 
 ## Node.js <a name="node"></a>
 ### Introduction to Node.js
