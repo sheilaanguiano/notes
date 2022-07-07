@@ -3973,6 +3973,15 @@ To create an Express application we can just call express `express();` the expre
 `const app = express();`
  The first thing we'r going to do is setup the development server using the *listen method*, which can receive one parameter, which is the port number.
  running this and going to *[http://localhost:3000/](http://localhost:3000/)* will show an error message from express
+```javascript
+const express = require('express');
+
+const app = express();
+
+app.listenerCount(3000);
+```
+
+
 
 [Deploy a Node Application to Heroku](https://teamtreehouse.com/library/deploy-a-node-application-to-heroku)
 
