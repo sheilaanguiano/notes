@@ -16,11 +16,85 @@ One of the main venefits of working with React, is that it lets you build your a
 
 The other big benefit is that React leeps your application's data or state and UI in-sync and can efficiently update your UI when data changes.
 
+#### Add React to a Project
+There is two common ways to install and get set up with React:
+* Create React App
+* CDN
+
+Create React App was built by developers at Facebook to help save you from the time consuming setup amd configuration that building a react application normally requires.There acan be a lot of moving parts, from third party libraries, to loats of configurations and built tools
+
+When building web applicatios in React, you use two libraries:
+* React
+* React-dom
+
+#### Create a React Element
+At it's core, React is on;ly a library for creating and updating HTML elements in your UI, 
+
+At its simplest, React is a library for creating and updating HTML elements. So to better understand how React creates UI, we're going to begin using the React API to create React elements, which are the smallest building blocks
+
+`.createElement()` accepts three arguments that define the element you want to create:
+1. The type of element you want to create (string)
+2. An object containing any attribute and value you want to give the element
+3. Contents or children of the element you're creating
+```javascript
+const title = React.createElement(
+	'h1',
+	//If you're not passing anything, you can write an empty object {} or write 'null'
+	{ id: 'main-title', title: 'This is a title'},
+	'My first react element'
+)
+```
+Now, one of the first important details of React is that React DOES NOT create actual DOM nodes, is actually and OBJECT that describes a DOM node. It's an object representation of a DOM node
+
+#### Render an Element
+The React DOM library provides DOM specific methods, such as `ReactDOM.render()` to render React elements to the DOM. This is the function that actially does the creating and updating of the DOM, is what connect React to the DOM. It accepts two arguments:
+1. The react element or JavaScript object that describes the element you'd like to render and the actual HTML element you want to update or render to
+2. The container element where our code will be rendered by React
+
+```javascript
+const title = React.createElement(
+	'h1',
+	{ id: 'main-title', title: 'This is a title'},
+	'My first react element'
+);
+
+ReactDOM.render(
+	title,
+	document.getElementById('root')
+);
+
+```
+This `root` element (which can be named anuthing) is where we'll be mounting our react application.
+Any existing DOM elements inside the root will be replaced when render is called. Now we can **compose**
+
+```javascript
+const title = React.createElement(
+	'h1',
+	{ id: 'main-title', title: 'This is a title'},
+	'My first react element'
+);
+
+const desc = React.createElement(
+	'p',
+	null,
+	'I just learned to create a React node and render it'
+);
+
+const header = React.createElement(
+	'header',
+	null,
+	title,
+	desc
+);
+
+
+ReactDOM.render(
+	header,
+	document.getElementById('root')
+);
 
 
 
-
-At its simplest, React is a library for creating and updating HTML elements.
 ### Introducing Props
 #### Setting and Using Props
 **Props** A list of properties used to pass data to a component. Components are customized and made reusable with props.
