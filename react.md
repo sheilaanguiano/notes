@@ -957,7 +957,7 @@ With Create React App you run one command to set up the tools and files you need
 
 Since we're using provided started files, we'll only run `npm install` followed by `npm start`
 
-### Using Create React App
+#### Using Create React App
 Developers use compiling as part of a build process to avoid the overhead of downloading Babel and multiple JavaScript files to the client.  [Create React App](https://teamtreehouse.com/library/what-is-create-react-app)  sets up a modern build system for your React apps in little time, no need to install or configure tools like  [Webpack](https://webpack.js.org/)  or  [Babel](https://babeljs.io/). The tools are already pre-configured in each new project, that way you can focus on building your app.
 
 To get started, install Create React App and create a new app, at all once, with  [npx](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b). For example:
@@ -974,24 +974,28 @@ When you create a project with Create React App, it installs the latest version 
 **Progressive Web App Features**  
 Create React App sets up a fully functional, offline-first  [Progressive Web App](https://developers.google.com/web/progressive-web-apps/)  by default. However, we removed the  [PWA related files](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#making-a-progressive-web-app)  just for this project to focus on the React components only.
 
-### Separating Function Components into Modules
+#### Separating Function Components into Modules
 ES modules is a feature in JavaScript that lets you break up your code into individual JavaScript files. Modules provide a better way to organize and maintain your code, as well as provide scope for your variables, functions and classes.
 
 The module system allows you to import and export entire modules or just parts of a module. Over time you'll find that putting all of your components and logic into one monolithic file can become difficult to manage.
 
 In React, it's common to think of each component as an independent module. The first thing you'll usually do when creating a React component as a module is import React, since each module has its own scope
 
-### Separating Class Components Into Modules
+#### Separating Class Components Into Modules
 When working with class components you'll often see the React import statement written like this: 
 `import React, { Component } from 'react';`
 
-This is called a named import, and with this **named import** statement, you can create a class without extending from React.Component, so you can rewrite your classes from:
-From: 	`class App extends React.Component` 
-to:  		`class App extends Component`
+This is called a **named import**, and with this named import statement, you can create a class without extending from `React.Component`, so you can re-write your classes:
 
-[Import multiple exports from module – MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#Import_a_single_export_from_a_module)
-[ES modules: A cartoon deep-dive](https://hacks.mozilla.org/2018/03/es-modules-a-cartoon-deep-dive/)
-[ES6 Modules in Depth](https://ponyfoo.com/articles/es6-modules-in-depth)
+* From: 	`class App extends React.Component` 
+
+* To:  	`class App extends Component`
+
+* [Import multiple exports from module – MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#Import_a_single_export_from_a_module)
+
+* [ES modules: A cartoon deep-dive](https://hacks.mozilla.org/2018/03/es-modules-a-cartoon-deep-dive/)
+
+* [ES6 Modules in Depth](https://ponyfoo.com/articles/es6-modules-in-depth)
 
 **Another way to export a class**
 ```
@@ -1038,9 +1042,9 @@ In order to design how data flows upward through our component tree, we need to 
 >delta is the variation of a function in this case, the number the score should be changed by
 
 ```JavaScript
-/*Score handlers refactoring inside the App component*/
+{/*Score handlers refactoring inside the App component*/}
 handleScorechange =(delta)=> {
-}
+	}
 /*And we'll give the player component a new prop. This callback is going to run at a later time through some interaction with a child component */
 <Player 
 ..
@@ -1062,7 +1066,7 @@ const Player = (props) => {
   );
 }
 ```
-Finally we add the `onClick` event inside the player component
+Finally we add the `onClick` event inside the Counter component
 ```JSX
 const Counter =(props) => {
   return (
@@ -1253,7 +1257,7 @@ React uses a cross-browser wrapper around browser's native event called `synthet
 #### Adding Items to State
 Now, to let the user add players to the scoreboard using the form that we created. 
 
-Currently, the AddPlayerForm component has no access to the player state maintained in the app component, and the AddPlayerForm component state is local state, meaning it's just state that's needed for the component to do its jobm abd bo other component has access to it.
+Currently, the AddPlayerForm component has no access to the player state maintained in the app component, and the AddPlayerForm component state is local state, meaning it's just state that's needed for the component to do its job and no other component has access to it.
 
 First, we're going to create an event handler to allow users to submit the form, and then a function that will add the new player to state and display it on the board.
 
@@ -1366,14 +1370,23 @@ this.setState(prevState => {
 Another way is the `concat()` method, which is used to merge two or more arrays. This method does not change the existing arrays, but instead returns a new array.
 ```jsx
 handleAddPlayer = (name) => {
- let newPlayer = { name, score: 0, id: this.prevPlayerId += 1 }; this.setState( prevState => ({ players: prevState.players.concat(newPlayer) })); }
+ let newPlayer = { 
+	name, 
+	score: 0, 
+	id: this.prevPlayerId += 1 
+	}; 
+	
+	this.setState( prevState => ({ 
+		players: prevState.players.concat(newPlayer) 
+		})
+	); 
+}
 ```
 
-
-[`setState()`](https://reactjs.org/docs/react-component.html#setstate)
-[State Updates May Be Asynchronous](https://reactjs.org/docs/state-and-lifecycle.html#state-updates-may-be-asynchronous)
-[State Updates are Merged](https://reactjs.org/docs/state-and-lifecycle.html#state-updates-are-merged)
-[Why doesn’t React update this.state synchronously?](https://reactjs.org/docs/faq-state.html#why-doesnt-react-update-thisstate-synchronously)
+* [`setState()`](https://reactjs.org/docs/react-component.html#setstate)
+* [State Updates May Be Asynchronous](https://reactjs.org/docs/state-and-lifecycle.html#state-updates-may-be-asynchronous)
+* [State Updates are Merged](https://reactjs.org/docs/state-and-lifecycle.html#state-updates-are-merged)
+* [Why doesn’t React update this.state synchronously?](https://reactjs.org/docs/faq-state.html#why-doesnt-react-update-thisstate-synchronously)
 
 ### Stateful Components and Lifecycle Methods
 #### Designing the Stopwatch
