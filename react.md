@@ -92,7 +92,253 @@ ReactDOM.render(
 	header,
 	document.getElementById('root')
 );
+```
 
+#### Understanding JSX
+**JSX** is a syntax extension to JavaScript that uses mark-up like syntax to describe elements in the UI
+```javascript
+const title = <h1>My First React Element!</h1>	
+const desc = <p>I just learned to create a React node and render it</p>
+
+const header = React.createElement(
+	'header',
+	null,
+	title,
+	desc
+);
+
+ReactDOM.render(
+	header,
+	document.getElementById('root')
+);
+```
+Now if you want to see this in the browser, you'll get an error, because this needs to be transpiled into `React.createElement` calls. This is were we
+re going to use the babel compiler by adding an html tag. This is going to allow us to use JSX without a built step.
+We also need to add the `type` attribute to the `app.js` script tag for it to work. This signal to the babel script that the JavaScript at app.js should be compiled before being executed. 
+
+Just remember that in production your code would probably be already be precompiled using babel using a tool like webpack before serving it to the browser.
+ 
+```html
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script type="text/babel" src="./app.js"></script>
+```
+
+#### Embed JavaScript expressions in JSX
+JSX tags can contain children, or nested elements. *While isn't required is a good code style practice to surround with parentheses JSX that is more two lines of code.
+```javascript
+const header = (
+	<header>
+		<h1>My first react Element!</h1>
+		 <p>I just learned to create a React node and render it</p>
+	</header>
+);
+
+ReactDOM.render(
+	header,
+	document.getElementById('root')
+);
+
+```
+Now since JSX is an extension of the JavaScript language, you can use curly brances to write JavaScript expression, making JSX more dynamic. When you use curly braces in JSX, it's called a **JSX expression** and it can be placed between JSX tags or as value of an attribute in the JSX tag
+```javascript
+const title = 'My First React Element!';	
+const desc = 'I just learned to create a React node and render it';
+const myTitleID = 'main-title';
+
+const header = (
+	<header>
+		<h1 id={ myTitleID }>{ title }</h1>
+		 <p>{ desc }</p>
+	</header>
+);
+
+ReactDOM.render(
+	header,
+	document.getElementById('root')
+);
+
+```
+Now there are some rules or conventions to remember about JSX and React:
+* Attribute names: React uses a camel case property naming convention
+*Comments in JSX are different from comments in JavaScript, you need to put them inside curly brances `{/*This is a JSX comment */}`
+
+
+### Thinking in Components
+#### What's a Component
+A component is a piece of UI that you can reuse. Being able to split your UI code into independent reusable pieces and think about each puece in isolation is one of the most embraced features of React.
+#### Create a Component
+Create a React component is a 2 step process
+1. Define the component as a function or a class
+2. Display the component with a JSX tag
+
+The easies way to define a component is to write a Javascript function
+React components are required to beging with an upper case letter as it helps to know a functions is defining a component
+
+```javaScript
+{/* The react component Header is going to @return react elments describing what should appear on the screen using JSX
+
+*/}
+function Header(){
+	return(
+		<header>
+			<h1>Scoreboard</h1>
+			<span className="stats">Players : 1</span>
+		</header>
+	);
+}
+```
+[Functional and Class Components](https://reactjs.org/docs/components-and-props.html#functional-and-class-components)
+[Why use parenthesis on JavaScript return statements?](https://jamesknelson.com/javascript-return-parenthesis/)
+
+
+#### Use a component with JSX
+JSX let's you definr your own tags. A JSX tag cannot only represent an HTML element like an `h1` or `div`, it can also represent a user defined component. For example we can use the `Header` component as a `header` tag whenever we need it, that why upper case letter are important, to differentiate from normal html tags from react components.
+
+You can use self closing tags if you don't have any more children tags to nest inside the component, like the example below.
+
+A component JSX tah is also a function call to `React.createElement` under the hood.
+
+```javaScript
+function Header(){
+	return(
+		<header>
+			<h1>Scoreboard</h1>
+			<span className="stats">Players : 1</span>
+		</header>
+	);
+}
+
+ReactDOM.render(
+	<Header />
+	document.getElementById('root')
+);
+
+```
+#### Components as Arrow Functions
+You'll often see component defined as arrow functions. We'll convert our Header function declaration to an arrow function
+
+```javaScript
+{/*   Function Declaration  */}
+function Header(){
+	return(
+		<header>
+			<h1>Scoreboard</h1>
+			<span className="stats">Players : 1</span>
+		</header>
+	);
+}
+
+```
+```javaScript
+{/*   Arrow Function Expression */}
+const Header = () => {
+	return(
+		<header>
+			<h1>Scoreboard</h1>
+			<span className="stats">Players : 1</span>
+		</header>
+	);
+}
+```
+If you're writing a simple function that just returns JSX, you can use an implicit return, and delete the curly braces
+```javaScript
+{/*   Arrow Function Expression with implicit return */}
+const Header = () => (
+		<header>
+			<h1>Scoreboard</h1>
+			<span className="stats">Players : 1</span>
+		</header>
+	);
+```
+Or you can even find them without even the parentheses, but that is up to you
+
+```JavaScript
+{/*   Arrow Function Expression with implicit return without parentheses */}
+const Header = () => 
+		<header>
+			<h1>Scoreboard</h1>
+			<span className="stats">Players : 1</span>
+		</header>;
+```
+[Arrow Functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)
+
+#### Create the Player Component
+```javascript
+const Player = () => {
+	return(
+		<div className="player">
+			<span className="player-name">
+				Sheila
+			</span>
+
+			<div className="counter">
+				<button className="conter-action decrement"> - </button>
+				<span className="counter-score">35</span>
+				<button className="conter-action increment"> + </button>
+			</div>
+		</div>
+	);
+}
+
+ReactDOM.render(
+	<Player />
+	document.getElementById('root')
+);
+
+```
+#### Composing Components
+Extract the counter component from the player one, to have 2 separate components. Now when a component has another component inside this is called **composition**
+```javascript
+const Player = () => {
+	return(
+		<div className="player">
+			<span className="player-name">
+				Sheila
+			</span>
+
+			<Counter />
+		</div>
+	);
+}
+
+const Counter = () => {
+	return (
+		<div className="counter">
+			<button className="conter-action decrement"> - </button>
+			<span className="counter-score">35</span>
+			<button className="conter-action increment"> + </button>
+		</div>
+
+	);
+}
+
+const App = () => {
+	return (
+		<div className="scoreboard">
+			<Header />
+			{/* Player List */}
+				<Player />
+
+		</div>
+
+
+	);
+}
+
+ReactDOM.render(
+	<App />
+	document.getElementById('root')
+);
+
+```
+Typically, react applications have a single top level component that wraps the entire application and composes all the main components together. 
+
+[Composing Components](https://reactjs.org/docs/components-and-props.html#composing-components)
+[Extracting Components](https://reactjs.org/docs/components-and-props.html#extracting-components)
+[How do you know what should be its own component?](https://reactjs.org/docs/thinking-in-react.html#step-1-break-the-ui-into-a-component-hierarchy)
+
+#### React Developer Tools
+[React Dev Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en)
 
 
 ### Introducing Props
