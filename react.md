@@ -941,3 +941,968 @@ const  Player  =  ( props )  => {
 
 
 [Constructor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/constructor)
+
+## React Components  <a name="components"></a>
+
+### Build Modular Interfaces with Components
+Developers normally use Create React App for developing react applications because it lets you quickly create and run React Apps with no configuration. It sets your development environment with tools like Babel to compile JSX to JavaScript and Webpack to process and bundle your JavaScript files and project assets. 
+
+Create React App is well-suited for projects of any size and often used for developing production ready apps. 
+
+With Create React App you run one command to set up the tools and files you need to start your React Project
+
+`npx create-react-app nameOfProjectFolder`
+
+`npx` is a tool that's included with **npm** as a version 5.2, that makes it easy to install and run packages, especially command-line tools like create-react-app. If you need to use a global package that's not installed on your computer, running `npx` will download and execute the package you specify all in one command.
+
+Since we're using provided started files, we'll only run `npm install` followed by `npm start`
+
+### Using Create React App
+Developers use compiling as part of a build process to avoid the overhead of downloading Babel and multiple JavaScript files to the client.  [Create React App](https://teamtreehouse.com/library/what-is-create-react-app)  sets up a modern build system for your React apps in little time, no need to install or configure tools like  [Webpack](https://webpack.js.org/)  or  [Babel](https://babeljs.io/). The tools are already pre-configured in each new project, that way you can focus on building your app.
+
+To get started, install Create React App and create a new app, at all once, with  [npx](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b). For example:
+
+```
+npx create-react-app scoreboard 
+cd scoreboard 
+npm start
+```
+
+**What's in package.json?**  
+When you create a project with Create React App, it installs the latest version of React and React-DOM, as well as the latest version of react-scripts, a development dependency that manages all other dev dependencies that run, test and build your app.
+
+**Progressive Web App Features**  
+Create React App sets up a fully functional, offline-first  [Progressive Web App](https://developers.google.com/web/progressive-web-apps/)  by default. However, we removed the  [PWA related files](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#making-a-progressive-web-app)  just for this project to focus on the React components only.
+
+### Separating Function Components into Modules
+ES modules is a feature in JavaScript that lets you break up your code into individual JavaScript files. Modules provide a better way to organize and maintain your code, as well as provide scope for your variables, functions and classes.
+
+The module system allows you to import and export entire modules or just parts of a module. Over time you'll find that putting all of your components and logic into one monolithic file can become difficult to manage.
+
+In React, it's common to think of each component as an independent module. The first thing you'll usually do when creating a React component as a module is import React, since each module has its own scope
+
+### Separating Class Components Into Modules
+When working with class components you'll often see the React import statement written like this: 
+`import React, { Component } from 'react';`
+
+This is called a named import, and with this **named import** statement, you can create a class without extending from React.Component, so you can rewrite your classes from:
+From: 	`class App extends React.Component` 
+to:  		`class App extends Component`
+
+[Import multiple exports from module – MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#Import_a_single_export_from_a_module)
+[ES modules: A cartoon deep-dive](https://hacks.mozilla.org/2018/03/es-modules-a-cartoon-deep-dive/)
+[ES6 Modules in Depth](https://ponyfoo.com/articles/es6-modules-in-depth)
+
+**Another way to export a class**
+```
+export default class Counter extends Component {
+ render() { ... } } 
+```
+**Another way to export a function**
+```
+export const Counter = () => {
+ return ( ... ); } 
+```
+Then import the function:
+```
+import { Counter } from './Counter';
+```
+
+### Managing State and Data Flow
+It’s important to think carefully about where state resides in your application. In this stage, you will restructure state and data flow to be more unidirectional.
+#### Unidirectional Data Flow
+In React, data naturally flows down the component tree, from the app's top-level component down to the child components, via props. This is called "unidirectional data flow".
+
+It's important to think carefully about where state resides in your application. For instance, if you have dozens of component, each maintaining their own state, building and maintaining your application can become really cumbersome. 
+
+[The Data Flows Down – React docs](https://reactjs.org/docs/state-and-lifecycle.html#the-data-flows-down)
+
+#### Lifting State Up
+When two or more components need access to the same state, we move the state into their common parent. This is called "lifting state up".
+
+In our scoreboard exercise the score state is gonna be managed as high up in the application as possible. 
+
+Exercise explanation: 
+1. We'll remove state from the `counter` module as well as the click events, reverting it to a stateless component that takes data from props
+2. In the player component we'll pass the score to the counter with the prop `prop.score`
+3. And in the App component we'll pass the score to player and initialize the score state in the players array and set it to 0 by default.
+
+
+[Lifting State Up – React docs](https://reactjs.org/docs/lifting-state-up.html)
+
+#### Communicating Between Components
+Instead of  passing state to a child component, the parent can pass down a callback function. The callback will allow you to communicate events and changes in your data upwards, while data continues to flow downwards.
+
+In order to design how data flows upward through our component tree, we need to think about each component and its responsibilities
+
+>delta is the variation of a function in this case, the number the score should be changed by
+
+```JavaScript
+/*Score handlers refactoring inside the App component*/
+handleScorechange =(delta)=> {
+}
+/*And we'll give the player component a new prop. This callback is going to run at a later time through some interaction with a child component */
+<Player 
+..
+changeScore = {this.handleScoreChange}
+/>  
+```
+We'll pass the `handleScoreChange` function to the counter component with props, by first passing it to the player component, then supply to the counter component. A function will then be called inside the counter using an `onClick` event
+```JSX
+/*Player.js*/
+const Player = (props) => {
+  return (
+    <div className="player">
+    ...
+    <Counter 
+	    score={props.score
+	    /*Adding the below props to the component,the function is ready to be invoked inside the counter component*/
+	    changeScore={props.changeScore}	
+	 />
+  );
+}
+```
+Finally we add the `onClick` event inside the player component
+```JSX
+const Counter =(props) => {
+  return (
+	<div clasName="counter">
+		<button ClassName="counter-action decrement" onClick={() => props.changeScore(-1)}> - </button>
+		<span className="counter-score">{props.score)}</span>
+		<button ClassName="counter-action increment" onClick={() => props.changeScore(1)}> + </button>	
+	</div>	
+  );
+}
+```
+[Callback functions in React](https://medium.com/@thejasonfile/callback-functions-in-react-e822ebede766)
+
+
+#### Update State Based on a Player's Index
+**Note** : While updating the `score` state of a player, you may have noticed that `prevState` references the same object as `this.state`
+
+In the video, we used  `prevState`  in  `this.setState()`  to update a player's score based on the previous score. It turns out that  `prevState`  is in fact still a reference to the previous state object, and it should not be directly mutated.
+
+A better way to update a specific player's score might be as follows:
+```JSX
+ handleScoreChange = (index, delta) => { 
+	 this.setState( prevState => { 
+		 // New 'players' array – a copy of the previous `players` state 		
+		 const updatedPlayers = [ ...prevState.players ]; 
+		 // A copy of the player object we're targeting 
+		 const updatedPlayer = { ...updatedPlayers[index] };   
+
+		// Update the target player's score 
+		updatedPlayer.score += delta; 
+		// Update the 'players' array with the target player's latest score 		
+		updatedPlayers[index] = updatedPlayer;   
+		// Update the `players` state without mutating the original state 
+		return { players: updatedPlayers 
+		}; 
+	}); 
+} 
+```
+This will build a new object based on the data from  `prevState`, which update a player's  `score`  state without mutating  `this.state`
+
+This seems like the safest approach, especially when managing state across larger applications.
+
+#### Building the Statistics Component
+Now that our state has been lifted all the way up in our App, we can use it in any other component such as the following stateless functional component
+
+```JSX
+import React from ''react;
+
+const Stats = (props) => {
+  return (
+    <table className="stats">
+      <tbody> 
+        <tr> 
+          <td>Players:</td> <td>0</td> 
+        </tr> 
+        <tr> 
+          <td>Total Points:</td> 
+          <td>0</td> 
+        </tr> 
+      </tbody> 
+    </table>
+  );
+}
+```
+Now we'll add the **Stats** into its parent component **Header** and delete the `span` element that was displaying that information, so in the **App** component we'll need to pass the player's state, so it can be use in Header
+
+```JSX
+class App extends Component {
+...
+....
+  render() {
+    return(
+    <Header 
+	  title="Scoreboard"
+	  players={this.state.players}
+	/>
+    ):
+  
+  }
+}
+
+```
+Now we need to pass the players to the stats component  
+```JSX
+const Header = (props) => {
+  return (
+	<header>
+	  <Stats players={props.players} />
+	</header>
+  );
+}
+```
+So now in the **Stats** component we can calculate the stats using plain JavaScript
+```JSX
+import React from ''react;
+
+const Stats = (props) => {
+  
+  const totalPlayers = props.players.length;
+  const totalPoints =props.players.reduce((total, player) => {
+    return total + player.score;
+    }, 0);
+  
+  return (
+    <table className="stats">
+      <tbody> 
+        <tr> 
+          <td>Players:</td> 
+          <td>{ totalPlayers }</td> 
+        </tr> 
+        <tr> 
+          <td>Total Points:</td> 
+          <td>{ totalPoints }</td> 
+        </tr> 
+      </tbody> 
+    </table>
+  );
+}
+```
+
+
+#### Controlled Components
+In React, form elements work differently from other elements because form elements naturally keep some internal state. Input fields in html for example are typically considered stateful. When you type into a text field, you're changing it's state. The values update based on user input. In react, we need to handle a form element state explicitly.
+```JSX
+import React, { Component } from 'react';
+
+class AddPlayerForm extends Component {
+  render() {
+    return(
+      <form>
+        <input
+          type="text"
+          placeholder="Enter a player's name"
+        />
+        <input
+          type="submit"
+          value="Add Player"
+        />
+
+      </form>
+    
+    );
+  }
+}
+
+export default AddPlayerForm;
+```
+To manage our input field state, we'll need to build what's called a controlled component. A controlled component renders a form that controls what happens in that form on subsequence user input. In other words it's a form element whose value is controlled by react with state.
+
+**Creating a Controlled Component for Input Element**
+* Initialized state for the value of the input
+* Listen for changes on the input to detect when value is updated
+* Create an event handler that updates the value state
+
+Setting the inputs value property to the state, ensures that the content in the text field is always in sync with the state, so 
+1. We'll create the component state
+2. We'll provide our input with React's built in `onChange` event. This event gets triggered immediately after each change, here we'll pass our event handler
+
+
+```JSX
+import React, { Component } from 'react';
+
+class AddPlayerForm extends Component {
+  
+  state={
+  value: ''
+  };
+  
+  handleValueChange = (e) => {
+    this.setState({ value: e.target.value });
+ }
+
+  render() {
+    return(
+    ...
+  }
+}
+
+export default AddPlayerForm;
+```
+
+React uses a cross-browser wrapper around browser's native event called `syntheticEvent` so that the cross-browser differences of DOM events won't get in our way.
+
+[Controlled Components](https://reactjs.org/docs/forms.html#controlled-components)
+[Controlled vs. Uncontrolled Components](https://reactjs.org/docs/glossary.html#controlled-vs-uncontrolled-components)
+[SyntheticEvent](https://reactjs.org/docs/events.html) 
+
+#### Adding Items to State
+Now, to let the user add players to the scoreboard using the form that we created. 
+
+Currently, the AddPlayerForm component has no access to the player state maintained in the app component, and the AddPlayerForm component state is local state, meaning it's just state that's needed for the component to do its jobm abd bo other component has access to it.
+
+First, we're going to create an event handler to allow users to submit the form, and then a function that will add the new player to state and display it on the board.
+
+For this part, we'll create the `handleSubmit` arrow function which is going to be bind to an  `onSubmit` event inside the `<form>` tag. This event will execute the `handleSubmit` function as soon as the form is submitted by either clicking the submit button or pressing the enter or return key.
+
+```JSX
+import React, { Component } from 'react';
+
+class AddPlayerForm extends Component {
+  
+  state={
+  value: ''
+  };
+  
+  handleValueChange = (e) => {
+    this.setState({ value: e.target.value });
+ }
+ 
+ handleSubmit = (e) => {
+   e.preventDefault(); // To prevent the browser deletes the submited info
+   this.props.addPlayer(this.state.value);
+ 
+}
+
+  render() {
+    return(
+      <form onSubmit={this.handleSubmit}>
+        <input
+          type="text"
+          placeholder="Enter a player's name"
+        />
+        <input
+          type="submit"
+          value="Add Player"
+        />
+
+      </form>
+    
+    );
+  }
+}
+
+export default AddPlayerForm;
+```
+So in App.js we'll give the prop `addPlayer` to the AddPlayerForm component and pass it a function named `handleAddPlayer`
+
+For the Id counter we'll initialize the `prevPlayerId` property and set to the id following the last one in our array. There are other ways we could create the id, for example creating a function that generates a unique id or declaring a `counter` variable outside of the class instead of a property on the class
+```jsx
+//player id counter property
+prevPlayerId = 4;
+
+handleAddPlayer = (name) => {
+this.setState({
+  players: [
+    {
+      name, // We can use this, instead of name: name using ES2015 shorthand
+      score: 0,
+      id:this.prevPlayerId +=1
+    }
+  ]
+})
+}
+ 
+render() {
+   return (
+ ...
+     <AddPlayerForm addPlayer={this.handleAddPlayer} 
+```
+Now, we need to bring in all the existing player objects in state and combine them with the new player object being added to state.We'll use the spread operator to bring in a copy of all the existing player objects.
+```jsx
+handleAddPlayer = (name) => {
+this.setState({
+  players: [
+     ...this.state.players,
+    {
+      name, // We can use this, instead of name: name using ES2015 shorthand
+      score: 0,
+      id:this.prevPlayerId +=1
+    }
+```
+Finally, we need the text field to clear once a user submits a name, so we'll return to the `handleSubmit` function
+```jsx
+handleSubmit  =  (e)  =>  { 
+  e.preventDefault();
+  this.propr.addPlayer(this.state.value);
+  this.setState({value: ''});
+ }
+```
+
+[Form Events](https://reactjs.org/docs/events.html#form-events)
+[Spread syntax – MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
+[Rest Parameters and Spread Operator](https://teamtreehouse.com/library/rest-parameters-and-spread-operator)
+
+#### Update the Players State based on previous state
+To reiterate, is usually a good idea to update to a new state based on the previous state, that way we can be sure that this.state always holds the correct updated state
+
+```jsx
+handleAddPlayer = (name) => {
+this.setState(prevState => {
+  return {
+    players: [
+     ...prevState.players,
+      {
+        name, // We can use this, instead of name: name using ES2015 shorthand
+        score: 0,
+        id:this.prevPlayerId +=1
+	  }
+    }
+```
+Another way is the `concat()` method, which is used to merge two or more arrays. This method does not change the existing arrays, but instead returns a new array.
+```jsx
+handleAddPlayer = (name) => {
+ let newPlayer = { name, score: 0, id: this.prevPlayerId += 1 }; this.setState( prevState => ({ players: prevState.players.concat(newPlayer) })); }
+```
+
+
+[`setState()`](https://reactjs.org/docs/react-component.html#setstate)
+[State Updates May Be Asynchronous](https://reactjs.org/docs/state-and-lifecycle.html#state-updates-may-be-asynchronous)
+[State Updates are Merged](https://reactjs.org/docs/state-and-lifecycle.html#state-updates-are-merged)
+[Why doesn’t React update this.state synchronously?](https://reactjs.org/docs/faq-state.html#why-doesnt-react-update-thisstate-synchronously)
+
+### Stateful Components and Lifecycle Methods
+#### Designing the Stopwatch
+This stopwatch will be a stateful component that counts seconds, and allows user to start, stop and reset the time. We'll crate:
+1. A button to stop and start the timer. If the time is stopped and started again, it'll continue from where it left off.
+2. A reset button that will return the timer to 0
+
+We'll start by building the stop watch component and its elements, then we'll use State to make the stopwatch timer run. and write function to let users start, stop and reset the stopwatch
+
+Our stopwatch will require three pieces of state. A running state, an elapsed time state, and a previous time state to let us calculate how much time has passed. So we have to determine if this should be application state or components state. A case could be made for either, but in our app we have no need to the stopwatch state outside the stopwatch component, so this will be a component state., which mean thsi will be a stateful component 
+
+```jsx
+import React, from {Component}  from 'react";
+
+class Stopwatch extends Component {
+  render(){
+    return (
+      <div className="stopwatch">
+        <h2>Stopwatch</h2> 
+        <span className="stopwatch-time">0</span> 
+        <button>Start</button> 
+        <button>Reset</button> 
+      </div>
+    );
+  }
+}
+export default Stopwatch;
+```
+
+#### Stopwatch State
+The stopwatch will have two main states visible to the user. It will be either in a running state, or a stopped state. The buttons on the interface should change based on the running state. We'll start by initializing state in the `Stopwatch` component.
+
+```jsx
+import React, from {Component}  from 'react";
+
+class Stopwatch extends Component {
+  state= {
+    isRunning: false 
+  };
+  handleStopwatch = () => {
+    this.setState({
+     isRunning: !this.state.isRunning
+    });
+  }
+  
+  render(){
+    return (
+      <div className="stopwatch">
+        <h2>Stopwatch</h2> 
+        <span className="stopwatch-time">0</span> 
+        <button onClick={this.handleStopwatch}>
+          { this.state.isRunning ? 'Stop' : 'Start' }
+        </button> 
+        <button>Reset</button> 
+      </div>
+    );
+  }
+}
+export default Stopwatch;
+```
+
+
+[Conditional (ternary) Operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator)
+[Conditional Rendering – React docs](https://reactjs.org/docs/conditional-rendering.html)
+[Inline If-Else with Conditional Operator](https://reactjs.org/docs/conditional-rendering.html#inline-if-else-with-conditional-operator)
+[Ternary Operator – Treehouse workshop](https://teamtreehouse.com/library/ternary-operator)
+
+**Conditional rendering with  `if...else`:**
+```JSX
+render() {
+	let button; 
+	if (this.state.isRunning) { 
+		 button = <button>Stop</button>; 
+	} else { 
+		button = <button>Start</button>; 
+	}   
+
+	return ( 
+		<div className="stopwatch"> 
+			<h2>Stopwatch</h2> 
+			<span className="stopwatch-time">...</span> 
+			{ button } 
+			<button onClick={this.handleReset}>Reset</button> 
+		</div> 
+	); 
+}
+```
+
+#### Update the Stopwatch State with componentDidMount()
+Now, we'll create the tick function which is going to be the most essential piece of our stopwatch, wince the code that involves making the timer tick second after second.
+
+
+
+##### Component Lifecycle
+In React, every component instance follows a cycle: its mounted onto the DOM, it's updated with changes in data, and it's unmounted from the DOM. This is referred as the components lifecycle. 
+##### React Lifecycle Methods
+* Built-in lifecycle methods that get called at each point in the life cycle. 
+* The lifecycle methods act as hooks you can run code at key times in your component's lifecycle
+*  Gives you the ability to control what happens when a component mounts, updates and unmounts. 
+
+The lifecycle method you'll likely use the most is called `componentDidMount()`. Usually, any custom method or function you write need to be called somewhere, like with an event or from inside another function for example. The `componentDidMount()` method gets called by React as soon as the component is inserted or mounted into the DOM, and because of this, is a convenient hook for setting up timers, fetching data, or anything else you might need to do when your component is mounted into the page. Lifecycle methods like this one are also referred as lifecycle hooks, because they let you hook into, or provide hooks to certain parts of a components lifecycle. 
+
+Because `componentDidMount()` is immediately called after a component mounts it'a a convenient hook for setting up timers, fetching data, or anything else you might need to do when your component is mounted into the page.
+
+We'll set up the timer with JS `setInterval()` method. This method repeatedly calls a function or executes some code with a fixed time delay between each call, it returns an internal ID which uniquely identifies the interval. A stopwatch usually consist of a counter that's always counting up, we're going to store that data in state with a property  called `elapsedTime`, this will represent the amount of time thats; passed by we'll initialize to 0.
+
+In order to increase the count each time `tick` is called , we'll need to calculate the amount of time since the last tick and add it to the `elapsedTime`. Ideally, the interval should always be 100 milliseconds from tick to tick, but it's not always guaranteed, so instead, we should get the exact time at wihch the previous tick happened, and subtract the current time from that, which will give us a more accurate interval, and then we take that value and add it to elapsed time.
+
+So first we'll initialize `previousTime` to 0. The `handleStopwatch` functions starts the timer which not only will update `isRunning` to true, but also update the `previousTime` state using JS date.now method
+
+```jsx
+class Stopwatch extends Component {
+  state= {
+    isRunning: false,
+    elapsedTime: 0,
+    previousTime: 0   
+  };
+  componentDidMount(){
+    this.intervalID = setInterval(() => this.tick(), 100 );
+  }
+  tick =() => {
+  if(this.state.isRunning){
+    const now = Date.now();
+    this.setState( prevState => ({
+      previousTime: now,
+      elapsedTime: prevState.elapseTime + (now - this.state.previousTime)
+    }));
+  }
+    
+  }
+  
+  handleStopwatch = () => {
+    this.setState( prevState=> ({
+     isRunning: !this.state.isRunning
+    }));
+    if(!this.state.isRunning){
+     this.setState({previousTime: Date.now() });
+    }
+  }
+  
+  render(){
+  ..
+  } 
+}
+
+```
+
+
+[Adding Lifecycle Methods to a Class](https://reactjs.org/docs/state-and-lifecycle.html#adding-lifecycle-methods-to-a-class)
+[`componentDidMount()`  – React docs](https://reactjs.org/docs/react-component.html#componentdidmount)
+[`setInterval()`  – MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval)
+[`Date.now()`  – MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now)
+[Reasons for delays longer than specified](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout#Reasons_for_delays_longer_than_specified)
+
+#### Resetting the Stopwatch
+In order to display the stopwatch in Seconds, we need to convert `elapsedTime` from milliseconds to seconds.
+
+```jsx
+class Stopwatch extends Component {
+...
+  render(){
+    return ( 
+		<div className="stopwatch"> 
+			<h2>Stopwatch</h2> 
+			<span className="stopwatch-time">
+            { Math.floor(this.state.elapsedTime /1000)}
+            </span> 
+			<button  onClick={  this.handleStopwatch }>
+				{  this.state.isRunning ?  'Stop'  :  'Start'  }
+
+</button>
+			<button onClick={this.handleReset}>Reset</button> 
+		</div> 
+	);
+  } 
+}
+```
+But to make the code more organized by storing the function and calculation in a variable. In the render method, any intermediary variables should be written outside the return statement.
+
+```jsx
+  render(){
+  const seconds = Math.floor(this.state.elapsedTime /1000)
+    return ( 
+		<div className="stopwatch"> 
+		...
+			<span className="stopwatch-time">
+            { seconds }
+            </span> 
+		...
+		</div> 
+	);
+  } 
+}
+```
+Finally, we'll create a function to handle the reset and connect it to our Reset button via a OnClick event.
+
+```jsx
+handleReset  =  ()  => {
+	this.setState({ elapsedTime:  0 });
+}
+```
+
+
+
+#### Prevent Memory Leaks with componentWillUnmount()
+Since components do not always stay in the DOM, React also provides the `componentWillUnmount` lifecycle method to help you handle unmounting of components. This can help prevent memory leaks in your application.
+
+ So any time, you use the `componentDidMount()` method, you should also be thinking about what might happen when the component unmounts. Since `componentWillUnmount()` is an unmounting method, it's where you should perform any clean-ups thats should be done like
+ - clearing timers
+ - cancelling active network request
+ - tearing down any DOM elements or event listeners created in `componentDidMount`
+
+```jsx
+componentWillUnmount(){
+  clearInterval(this.intervalID);
+}
+```
+
+[Adding Lifecycle Methods to a Class](https://reactjs.org/docs/state-and-lifecycle.html#adding-lifecycle-methods-to-a-class)
+[`componentWillUnmount()`  – React docs](https://reactjs.org/docs/react-component.html#componentwillunmount)
+[`clearInterval()`  – MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval)
+[Beyond Memory Leaks in JavaScript](https://medium.com/outsystems-experts/beyond-memory-leaks-in-javascript-d27fd48ae67e)
+[Fetching Data with the Fetch API](https://teamtreehouse.com/library/fetching-data-with-the-fetch-api)
+
+### React Component Patterns
+#### Optimize Performance with PureComponent
+Usually when a component detects a change in its props, React will update the parts of UI that need to change as a result of the change in props, this is called **Wasted Render**. When a component re-renders every data in the component, when only a small part changed. This can be solve using `PureComponent`. This is more performant version of a component, and is another way you might see classes written in React.
+
+```JSX
+import React, { PureComponent } from  'react';
+import Counter from  './Counter';
+
+class  Player  extends  PureComponent  {
+	render() {
+		console.log(this.props.name +  ' rendered');
+		return (
+			<div  className="player">
+				<span  className="player-name">
+				<button  className="remove-player"  onClick={()  =>  this.props.removePlayer(this.props.id)}>✖</button>
+{  this.props.name }
+				</span>
+				<Counter
+					score={  this.props.score }
+					index={  this.props.index }
+					changeScore={  this.props.changeScore}			
+				/>
+			</div>
+		);
+	}
+}
+export  default Player;
+```
+
+`PureComponent` implements a lifecycle methods behind the scenes called `shouldComponentUpdate` that runs a shallow comparison of props and state. The lifecycle method automatically checks whether a render is required for the component and calls render only if it detects changes in state or props.
+
+Use PureComponent when you have performance issues and have determined that a specific component is re-rendering too often.
+
+[React.PureComponent](https://reactjs.org/docs/react-api.html#reactpurecomponent)
+[Using  `<PureComponent/>`  in React](https://medium.com/front-end-hacking/using-a-purecomponent-in-reacts-262972f9f1e0)
+[`shouldComponentUpdate()`](https://reactjs.org/docs/react-component.html#shouldcomponentupdate)
+
+A PureComponent should only contain child components that are also PureComponents.
+
+Converting Player to a class and a PureComponent in Player.js
+
+
+#### Destructuring Props
+ES2015 introduced **destructuring assignment**, which is a special kind of syntax you can use to "unpack" (or extract) values from arrays, or properties from objects, into distinct variables. Developers often use destructuring in React to make their components cleaner and easier to understand. It provides a more concise way to write your props.
+
+In our example, wherever we're using props we need to repeat `props.propname` or `this.props.propsname` over and over again. Since props is an object, we can destructure a component's props into individual variables
+
+There are two ways you can destructure props in a stateless functional component:
+- variable assignment
+- function parameters
+
+**Header. js**
+```JSX
+import React from  'react';
+import Stats from  './Stats';
+import Stopwatch from  './Stopwatch';
+
+const  Header  =  (props)  => {
+	return (
+		<header>
+			<Stats  players={ props.players }  />
+			<h1>{ props.title }</h1>
+			<Stopwatch  />
+		</header>
+	);
+}
+
+export  default Header;
+```
+**Header. js** after using variable assignment
+```JSX
+import React from  'react';
+import Stats from  './Stats';
+import Stopwatch from  './Stopwatch';
+
+const  Header  =  (props)  => {
+	const {players, title} = props;
+	return (
+		<header>
+			<Stats  players={ players }  />
+			<h1>{ title }</h1>
+			<Stopwatch  />
+		</header>
+	);
+}
+
+export  default Header;
+```
+**Header. js** using function parameters
+```JSX
+import React from  'react';
+import Stats from  './Stats';
+import Stopwatch from  './Stopwatch';
+
+const  Header  =  ({ players, title })  => {
+	return (
+		<header>
+			<Stats  players={ players }  />
+			<h1>{ title }</h1>
+			<Stopwatch  />
+		</header>
+	);
+}
+
+export  default Header;
+```
+In classes props are not accessed through a props parameter, like they're in functions. To destructure from `this.props` you use a variable assignment
+
+[Destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)
+[Learn the basics of destructuring props in React](https://medium.freecodecamp.org/the-basics-of-destructuring-props-in-react-a196696f5477)
+
+#### Refs and the DOM
+In React you typically do not target elements directly, and modify them like you would when working with JavaScript and the DOM. To modify what a React component or element display on the screen, you use state and props. You trigger a state change and a re-render the component with new props, and if it's a component with local state or a controlled component, you'll re-render it with each update in state. There may be times when you need to target and modify an element outside of that typical data flow so React provides an espace hatch with **refs**. Refs let you access and interact with the DOM nodes or React elements created in the render method. They make it possible to let you do the more traditional DOM manipulation, and they're commonly used to access form elements and get their values.
+
+Earlier, we learned how to update the value of an input field using state, by creating a controlled component. We created a value's state, wrote a function to update the value of state and wired the input field to the function using an onChange event. For only one input field , writing this code is not a big deal and this is still the recommended React way to control form elements, especially if you need to validate user input in real time, or filter results with every keystroke. However, if you're building a form that does not require internal state, you can use ref attribute instead of writing an even handler for every state update. So we'll a ref that will access the player text field.
+
+You create a ref using the `React.createRef()` method, and the you attach the ref to a react element via the ref attribute.
+
+Addplayer.js
+```JSX
+import React, { Component } from  'react';
+
+class  AddPlayerForm  extends  Component  {
+	state = {
+		value:  ''
+	};
+	
+	handleValueChange  =  (e)  => {
+		this.setState({ value: e.target.value });
+	}
+	
+	handleSubmit  =  (e)  => {
+		e.preventDefault();
+		this.props.addPlayer(this.state.value);
+		this.setState({ value:  ''});
+	}
+	
+	render(){
+		return (
+			<form  onSubmit={ this.handleSubmit }>
+				<input
+					type="text"
+					value={  this.state.value }
+					onChange={ this.handleValueChange }
+					placeholder="Enter a player's name"
+				/>
+				<input
+					type="submit"
+					value="Add Player"
+				/>
+			</form>
+		);
+	}
+}
+export  default AddPlayerForm;
+```
+
+Refs can provide an easier and quicker way to get the value of an input field. Now, when building forms, when should you use a controlled component instead of creating refs, and vide versa?. Controlled components have internal state and require functions to update state. They make it easier to modify or validate user input or filter results based on user input in real time. Controlled components with state render on every stroke, whereas in refs, render is only called once.
+
+```JSX
+import React, { Component } from  'react';
+
+class  AddPlayerForm  extends  Component  {
+	
+	playerInput = React. createRef();
+
+	handleSubmit  =  (e)  => {
+		e.preventDefault();
+		this.props.addPlayer(this.playerInput.current.value);
+		//Reset the Submit field after adding a Player
+		e.currentTarget.reset();
+	}
+	
+	render(){
+		return (
+			<form  onSubmit={ this.handleSubmit }>
+				<input
+					type="text"
+					ref={ this.handleSubmit }
+					placeholder="Enter a player's name"
+				/>
+				<input
+					type="submit"
+					value="Add Player"
+				/>
+			</form>
+		);
+	}
+}
+export  default AddPlayerForm;
+```
+Finally, refs are not limited to class components. You can create and use refs inside a functional component. 
+```JSX
+const AddPlayerForm = ({ addPlayer }) => {   
+	let playerInput = React.createRef(); 
+	let handleSubmit = (e) => { 
+		e.preventDefault(); 
+		addPlayer(playerInput.current.value); 		
+		e.currentTarget.reset(); 
+	}   
+	return ( 
+		<form onSubmit={handleSubmit}> 
+		<input 
+			type="text" 
+			ref={playerInput} 
+			placeholder="Enter a player's name" 
+		/>   
+		<input 
+			type="submit" 
+			value="Add Player" 
+		/>
+	</form> 
+	); 
+}
+```
+[Refs](https://reactjs.org/docs/glossary.html#refs)
+[Refs and the DOM](https://reactjs.org/docs/refs-and-the-dom.html)
+[Refs and Functional Components](https://reactjs.org/docs/refs-and-the-dom.html#refs-and-functional-components)
+[`currentTarget`](https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget)
+
+#### Validate Props with PropTypes
+Props play a huge role in React, since in the dypical dataflow, props are the only way that components can interact with other components
+As your app grows, it's a good practice to "type check" or validate the data a component receives from props. There are three popular ways to handle type checking in React:
+- Prop Types
+- TypeScript
+- Flow
+
+We'll learn how to validate props with the PropTypes library. PropTypes used to be built into React, it was moved into a separate package, because type checking is optional, and to give developers the option ob using other tools and approaches, therefore they need to be installed and imported
+```console
+npm install --save prop-types
+```
+To run type checking on the props for a component, you assign it the PropTypes property. The propTypes object contains the props being passed to the component as its keys.
+
+PropTypes comes with a range of validators you can use to make sure that the data coming in from props is valid. It provides helpful warnings at runtime.
+```jsx
+import PropTypes from 'prop-types';
+
+....
+Stats.propTypes ={
+//We can be very specific by even checking the properties of the object
+ players: PropTypes.arrayOf(PropTypes.shape({
+    score:PropTypes.number
+  }))
+}:
+```
+PropTypes not only help you catch and avoid bugs, they also serve as a documentation for components. Other developers working on the same project will know exactly which props your components take, and what types they should be.
+
+This is not required, but this makes for much easier debugging, and for _perfomance reasons, PropTypes is only checked in development mode_.
+
+[Static Type Checking](https://reactjs.org/docs/static-type-checking.html)
+[TypeScript](https://www.typescriptlang.org/)
+[Flow: A static type checker for JavaScript](https://flow.org/)
+[Typechecking With PropTypes](https://reactjs.org/docs/typechecking-with-proptypes.html)
+[PropType validators](https://reactjs.org/docs/typechecking-with-proptypes.html#proptypes)
+[prop-types](https://www.npmjs.com/package/prop-types)
+
+#### Static PropTypes and Default Props
+In class components, it's common to define `propTypes` inside the class, usually at the top and outside of the render method with the `static` keyword. Static just provides another way to define prop types on the class. The main difference between the other method and `static`, is that with `static` you don't need to instantiate the class to access PropTypes, you call prop types straight from the class.
+
+One advantage of defining propTypes with `static`, is that it makes your prop validation immediately visible to everyone right at the top of the class.
+
+```jsx
+...
+class  Player  extends  PureComponent  {
+	static propTypes = {
+		changeScore:  PropTypes.func,
+		removePlayer:  PropTypes.func,
+		name:  PropTypes.string.isRequired,
+		score:  PropTypes.number,
+		id:  PropTypes.number,
+		index:  this.propTypes.number
+	};
+	render() { ...
+```
+You can even make a prop required. This can be extremely helpful; if you omit a prop  altogether, just chain `isRequired`
+
+```jsx
+...
+class  Player  extends  PureComponent  {
+	static propTypes = {
+		changeScore:  PropTypes.func,
+		removePlayer:  PropTypes.func,
+		name:  PropTypes.string.isRequired,
+		score:  PropTypes.number.isRequired,
+		....
+	};
+```
+Finally, you can also set a default value for your props, with a `defaultProps` object.
+
+Header.js
+```jsx
+Header.defaultProps = {
+	title:  'Scoreboard'
+
+}
+```
+[Default Prop Values](https://reactjs.org/docs/typechecking-with-proptypes.html#default-prop-values)
+[`static`  – MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/static)
+
+TO DO
+- Add propTypes for the other components
+HIghest Score Feature
+- Add a crown icon next to the player name inside the player component
+- When a player on the scoreboard has the highest score the icon changes from light grey to gold and displays a short scaling animation
+- There is no highest score when the page reloads, so all icons should be light grey
+- When the player with the highest score is removed, the next one should get the crown
+- There is css for the SVG as well as a class `is-high-score`
+- Player state
