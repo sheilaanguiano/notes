@@ -3,6 +3,7 @@
 # Table of Contents
 1. [React Basics](#react)
 2. [React Components](#components)
+3. [Using Create React App](#create-react)
 3. [React Router 4](#react-router)
 
 
@@ -1398,8 +1399,8 @@ We'll start by building the stop watch component and its elements, then we'll us
 
 Our stopwatch will require three pieces of state. A running state, an elapsed time state, and a previous time state to let us calculate how much time has passed. So we have to determine if this should be application state or components state. A case could be made for either, but in our app we have no need to the stopwatch state outside the stopwatch component, so this will be a component state., which mean thsi will be a stateful component 
 
-```jsx
-import React, from {Component}  from 'react";
+```javascript
+import React, from { Component }  from 'react";
 
 class Stopwatch extends Component {
   render(){
@@ -1419,7 +1420,7 @@ export default Stopwatch;
 #### Stopwatch State
 The stopwatch will have two main states visible to the user. It will be either in a running state, or a stopped state. The buttons on the interface should change based on the running state. We'll start by initializing state in the `Stopwatch` component.
 
-```jsx
+```javascript
 import React, from {Component}  from 'react";
 
 class Stopwatch extends Component {
@@ -1449,10 +1450,10 @@ export default Stopwatch;
 ```
 
 
-[Conditional (ternary) Operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator)
-[Conditional Rendering – React docs](https://reactjs.org/docs/conditional-rendering.html)
-[Inline If-Else with Conditional Operator](https://reactjs.org/docs/conditional-rendering.html#inline-if-else-with-conditional-operator)
-[Ternary Operator – Treehouse workshop](https://teamtreehouse.com/library/ternary-operator)
+* [Conditional (ternary) Operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator)
+* [Conditional Rendering – React docs](https://reactjs.org/docs/conditional-rendering.html)
+* [Inline If-Else with Conditional Operator](https://reactjs.org/docs/conditional-rendering.html#inline-if-else-with-conditional-operator)
+* [Ternary Operator – Treehouse workshop](https://teamtreehouse.com/library/ternary-operator)
 
 **Conditional rendering with  `if...else`:**
 ```JSX
@@ -1477,7 +1478,6 @@ render() {
 
 #### Update the Stopwatch State with componentDidMount()
 Now, we'll create the tick function which is going to be the most essential piece of our stopwatch, wince the code that involves making the timer tick second after second.
-
 
 
 ##### Component Lifecycle
@@ -1533,13 +1533,11 @@ class Stopwatch extends Component {
 }
 
 ```
-
-
-[Adding Lifecycle Methods to a Class](https://reactjs.org/docs/state-and-lifecycle.html#adding-lifecycle-methods-to-a-class)
-[`componentDidMount()`  – React docs](https://reactjs.org/docs/react-component.html#componentdidmount)
-[`setInterval()`  – MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval)
-[`Date.now()`  – MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now)
-[Reasons for delays longer than specified](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout#Reasons_for_delays_longer_than_specified)
+* [Adding Lifecycle Methods to a Class](https://reactjs.org/docs/state-and-lifecycle.html#adding-lifecycle-methods-to-a-class)
+* [`componentDidMount()`  – React docs](https://reactjs.org/docs/react-component.html#componentdidmount)
+* [`setInterval()`  – MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval)
+* [`Date.now()`  – MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now)
+* [Reasons for delays longer than specified](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout#Reasons_for_delays_longer_than_specified)
 
 #### Resetting the Stopwatch
 In order to display the stopwatch in Seconds, we need to convert `elapsedTime` from milliseconds to seconds.
@@ -1552,12 +1550,13 @@ class Stopwatch extends Component {
 		<div className="stopwatch"> 
 			<h2>Stopwatch</h2> 
 			<span className="stopwatch-time">
-            { Math.floor(this.state.elapsedTime /1000)}
+            	{ Math.floor(this.state.elapsedTime /1000)}
             </span> 
+			
 			<button  onClick={  this.handleStopwatch }>
 				{  this.state.isRunning ?  'Stop'  :  'Start'  }
-
-</button>
+			</button>
+			
 			<button onClick={this.handleReset}>Reset</button> 
 		</div> 
 	);
@@ -1568,12 +1567,13 @@ But to make the code more organized by storing the function and calculation in a
 
 ```jsx
   render(){
-  const seconds = Math.floor(this.state.elapsedTime /1000)
-    return ( 
+  	const seconds = Math.floor(this.state.elapsedTime /1000)
+    
+	return ( 
 		<div className="stopwatch"> 
 		...
 			<span className="stopwatch-time">
-            { seconds }
+            	{ seconds }
             </span> 
 		...
 		</div> 
@@ -1589,8 +1589,6 @@ handleReset  =  ()  => {
 }
 ```
 
-
-
 #### Prevent Memory Leaks with componentWillUnmount()
 Since components do not always stay in the DOM, React also provides the `componentWillUnmount` lifecycle method to help you handle unmounting of components. This can help prevent memory leaks in your application.
 
@@ -1605,11 +1603,11 @@ componentWillUnmount(){
 }
 ```
 
-[Adding Lifecycle Methods to a Class](https://reactjs.org/docs/state-and-lifecycle.html#adding-lifecycle-methods-to-a-class)
-[`componentWillUnmount()`  – React docs](https://reactjs.org/docs/react-component.html#componentwillunmount)
-[`clearInterval()`  – MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval)
-[Beyond Memory Leaks in JavaScript](https://medium.com/outsystems-experts/beyond-memory-leaks-in-javascript-d27fd48ae67e)
-[Fetching Data with the Fetch API](https://teamtreehouse.com/library/fetching-data-with-the-fetch-api)
+* [Adding Lifecycle Methods to a Class](https://reactjs.org/docs/state-and-lifecycle.html#adding-lifecycle-methods-to-a-class)
+* [`componentWillUnmount()`  – React docs](https://reactjs.org/docs/react-component.html#componentwillunmount)
+* [`clearInterval()`  – MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval)
+* [Beyond Memory Leaks in JavaScript](https://medium.com/outsystems-experts/beyond-memory-leaks-in-javascript-d27fd48ae67e)
+* [Fetching Data with the Fetch API](https://teamtreehouse.com/library/fetching-data-with-the-fetch-api)
 
 ### React Component Patterns
 #### Optimize Performance with PureComponent
@@ -1919,3 +1917,91 @@ HIghest Score Feature
 - When the player with the highest score is removed, the next one should get the crown
 - There is css for the SVG as well as a class `is-high-score`
 - Player state
+
+## Using Create React App <a name="create-react"></a>
+### What is Create React App?
+Setting the front ends tools to develop a React Application can be intimidating and time consuming. 
+- Setting up babel to transpile JSX into browser ready code
+- Configuring webpack to bundle your project Assets
+- Creating your project structure and production build.
+
+Create-React-App is a tool built by developers at Facebook to help you build React applications. This tool provides amazing features like scripts to develop your project locally and deploy to production.
+
+Projects are built as progressive web apps by default, so this mean that in production your apps will be faster and more reliable than traditional web apps and provide engaging mobile experiences.
+
+Creat React App also ships with **jest**, a JavaScript testing framework for testing React components, and it provides helpful run time errors right in the browser and more.
+
+The following command will install create-react-app globally
+`npm install -g create-react-app`
+
+
+* [Create Apps with No Configuration](https://facebook.github.io/react/blog/2016/07/22/create-apps-with-no-configuration.html)
+* [What's New in Create React App](https://facebook.github.io/react/blog/2017/05/18/whats-new-in-create-react-app.html)
+
+### Installing and Using Create React App
+You create a new project using your console
+`create-react-app project-name`
+Running the command installs the dependencies needed to build your project. It also generates the initial project structure. After a couple of minutes, you'll get a message saying 'Success!, saying that inside the directory you can run several commands:
+- npm start: Starts the development server, and auto reloads the page anytime you make an edit
+- npm run build: Bundles the app into static files for production.
+- npm test:
+- num run eject: Takes your app out of the create-react-app setup, which lets you customize your project configuration.
+
+Starting the server automatically launches your app in the browser on localhost port 3000. In addition, the console output displays a LAN address so that you can access the app from a mobile device on the same network.
+
+In the browser you can see the template create-react-app provides to help you get started. Most of the files we're going to be working with are located in the `src` folder.
+
+Index.js is the entry file for the app, it imports `index.css` the app's base stylesheet, and imports and renders the App component into the DOM via the root div located in the `index.html` file inside the public folder
+
+Create React App sets a fully functional offline first progressive web app by default. Progressive web apps or **PWAs** are web applications that use a collection of modern web technologies to provide native app-like experiences on all types of devices. This web apps rely on special scrips called **service workers** to give users that app-like experience.
+ 
+- `manifest.json` is a file containing metadata associated with your app.  By default sets the app to display in standalone mode when launched from the home screen, this will make the application look and feel like a standalone native app. The main purpose of the manifest is to install the app to the home screen of a device, providing your user with quicker access and a richer experience
+- The Jest testing framework is already configured
+
+Use the  `npx`  command to install Create React App and create a new app, all at once. For example:
+
+```
+npx create-react-app my-app
+```
+
+npx is a tool that's included with npm, as a version 5.2, that makes it easy to install and run packages, especially command-line tools like Create React App.
+
+Learn more about  `npx`  [here](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b), or see  `npx`  in action in  [this Treehouse video](https://teamtreehouse.com/library/setting-up-with-create-react-app-2).
+
+* [Create React App – repo](https://github.com/facebookincubator/create-react-app)
+* [Jest testing framework](https://facebook.github.io/jest/)
+* [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/)
+* [Making a Progressive Web App](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#making-a-progressive-web-app)
+* [Service Workers: an Introduction](https://developers.google.com/web/fundamentals/getting-started/primers/service-workers)
+* [Web App Manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest)
+
+#### Related Videos
+[Introducing Progressive Web Apps – workshop](https://teamtreehouse.com/library/introducing-progressive-web-apps)
+
+
+### Customizing your Project
+You usually delete most of the code inside the App.js starter file and add your own code. 
+
+Mini Project: Search-app
+
+[react-bootstrap](https://react-bootstrap.github.io/)
+[Updating to New Releases](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#updating-to-new-releases)
+
+### Next Steps with Create React App
+Jest is used for writing unit tests
+- If you name your files `.spec.js` or `.test.hs`, or place your test files inside a special test folder, Jest will find those files and run tests
+
+`npm run build`
+Create React App will generate a build folder inside your project containing all the static files that can be used on a production web server. Build transpiles your react code into code the browser understands using Babel, and it optimizes your files for best performance. It bundles all your JavaScript files into one minified file, and minifies resources like HTML template and CSS to help reduce download times
+
+`npm run eject`
+Lets you modify the configuration files, but be careful because once ejected you cannot go back. After the script runs, you'll see a config directory added to your project containing files like `webpack.config`
+
+>The only case in which you need to eject is when the dependency demands that you also chance the build toolchain. For example, if a dependency enforces use of CSS Modules or can't work without a Babel plugin. In that case you would need to Eject
+>> Dan Abramov
+>Create React App co-autor
+
+* [New Features in React 16](http://blog.teamtreehouse.com/new-features-react-16?_ga=2.260031946.1722474909.1608526474-1889591538.1550124630)
+* [Testing React Apps](https://facebook.github.io/jest/docs/tutorial-react.html)
+* [`npm run build`](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#npm-run-build)
+* [`npm run eject`](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#npm-run-eject)[What's New in Create React App](https://facebook.github.io/react/blog/2017/05/18/whats-new-in-create-react-app.html)
