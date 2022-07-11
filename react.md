@@ -4,7 +4,8 @@
 1. [React Basics](#react)
 2. [React Components](#components)
 3. [Using Create React App](#create-react)
-3. [React Router 4](#react-router)
+4. [Data Fetching in React](#fetch-react)
+5. [React Router 4](#react-router)
 
 
 
@@ -1984,8 +1985,8 @@ You usually delete most of the code inside the App.js starter file and add your 
 
 Mini Project: Search-app
 
-[react-bootstrap](https://react-bootstrap.github.io/)
-[Updating to New Releases](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#updating-to-new-releases)
+* [react-bootstrap](https://react-bootstrap.github.io/)
+* [Updating to New Releases](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#updating-to-new-releases)
 
 ### Next Steps with Create React App
 Jest is used for writing unit tests
@@ -2005,3 +2006,452 @@ Lets you modify the configuration files, but be careful because once ejected you
 * [Testing React Apps](https://facebook.github.io/jest/docs/tutorial-react.html)
 * [`npm run build`](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#npm-run-build)
 * [`npm run eject`](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#npm-run-eject)[What's New in Create React App](https://facebook.github.io/react/blog/2017/05/18/whats-new-in-create-react-app.html)
+
+## Data Fetching in React <a name="fetch-react"></a>
+Ways to fetch external data with React by creating a GIF searching app by using the Giphy API
+
+1. Once we download the project files we'll install the project dependencies running `npm install` followed by `npm start` to run the project
+2. So we'll define an initial state inside the App class that will represent the collection of objects that will change and be updated by components
+3. Next, we're going to set up all our data fetching inside React's `componentDidMount()` lifecycle method. This method is called immediately after a component is added to the DOM, which makes it a good place to create the request
+
+```javascript
+export  default  class  App  extends  Component  {
+	constructor() {
+		super();
+		this.state = {
+			gifs: []
+		};
+	}
+  
+	componentDidMount(){
+		fetch(`https://api.giphy.com/v1/gifs/trending?api_key=${key}&limit=25&rating=G`)
+			.then(response => response.json())
+			.then(responseData => {
+				this.setState({ gifs: responseData.data });
+			})
+			.catch(error => {
+				console.log('Error fectching and parsing data', error);
+		});
+	}
+	render() {
+		console.log(this.state.gifs);
+		return (
+			<div>
+				<div  className="main-header">
+					<div  className="inner">
+						<h1  className="main-title">GifSearch</h1>
+						<SearchForm  />
+					</div>
+				</div>
+				<div  className="main-content">
+					<GifList  />
+				</div>
+			</div>
+		);
+	}
+}
+```
+Note: I create an external file to include the API key
+```javascript
+const key =  'this!sMyKEYZZZzz';
+export  default key
+```
+
+The fetch method and JavaScript promises are available in the latest generation of most browsers, but to make sure that the data fetching also works in older browsers we can install the fetch polyfill developed by GitHub
+https://github.com/github/fetch
+
+### Fetching Data with Axios
+Like the Fetch API, Axios isn't specific to React so you can use it to fetch data in other JS frameworks, libraries or any Node.js app. In addition to having stronger browser support than Fetch, Axios has  useful built in features:
+- supports the Promise API
+- Intercept request and responses and alter them before they're handle by `.then()` or `.cathc()` 
+- automatically converts data to JSON
+- you can also use axios to post data to a server 
+- protect your app againts XSRF or CSRF attacks and vulnerabilities, so it could prevent malicious request and actions from being executed on your app
+
+So, we'll start by installing it as a project dependency `npm install --save axios`  and them importing it in our file, then we'll copy an example of a GET request from the axios docs and tailor it to our example
+```javascript
+import axios from  'axios';
+
+componentDidMount(){
+	axios.get(`https://api.giphy.com/v1/gifs/trending?api_key=${key}&limit=25&rating=G`)
+		.then(response => {
+			this.setState({
+				gifs: response.data.data
+			});
+		})
+		.catch(error => {
+			console.log('Error fetching and parsing data', error);
+		});
+}
+```
+
+-   [Axios documentation](https://github.com/mzabriskie/axios)
+-   [Giphy API documentation](https://developers.giphy.com/docs/sdk)
+-   [Trending GIFs Endpoint](https://developers.giphy.com/docs/api/endpoint#trending)
+-   [What advantage does axios give us over fetch?](https://github.com/mzabriskie/axios/issues/314)
+
+### Displaying the Data
+Now we'll display the gifs in our App. 
+In our App, the app component is the container responsible for rendering the markup of the app as well as child components. In react is a best practice to include your data fetching logic within a container component like app, you see presentational components should not handle their own data fetching because it tightly couples the data to the view, the two should stay separate. 
+1. In the App.js file we'll pass props to the `<GifList />` component
+```javascript
+render() {
+	console.log(this.state.gifs);
+	return (
+		<div>
+			<div  className="main-header">
+				<div  className="inner">
+					<h1  className="main-title">GifSearch</h1>
+					<SearchForm  />
+				</div>
+			</div>
+			<div  className="main-content">
+				<GifList  data={this.state.gifs}  />
+			</div>
+		</div>
+	);
+}
+```
+2. Inside the `<GiftList/>` we'll map the data that will go into each `<Gif component />` using a variable
+```javascript
+const  GifList  = props => {  
+	const results = props.data;
+	let gifs = results.map(gif =>
+		<Gif  url={gif.images.fixed_height.url}  key={gif.id}  />
+	);
+return(
+	<ul  className="gif-list">
+		{gifs}
+	</ul>
+	);
+}
+```
+3. Inside the `<Gif />` component we'll pass the url using props
+```javaScript
+import React from  'react';
+	const  Gif  = props => (
+		<li  className="gif-wrap">
+			<img  src={props.url}  alt=""/>
+		</li>
+);
+
+export  default Gif;
+```
+4. Finally we'll get back to `<GifList />` to render each gif using the variable and a JSX expression
+
+### Building a Search Feature
+1. We'll create a function `performSearch` that fetches the data and updates the GIF state when called
+2. We'll update the URL to an endpoint that return a search query and change several parameters along with one that will change according to the user input
+```javascript
+performSearch  =  (query)  => {
+	axios.get(`http://api.giphy.com/v1/gifs/search?q=${query}&limit=24&api_key=dc6zaTOxFJmzC`)
+		.then(response => {
+			this.setState({
+				gifs: response.data.data
+			});
+		})
+		.catch(error => {
+			console.log('Error fetching and parsing data', error);
+		});
+}
+```
+3. We'll wire up this function the component via props
+```javascript
+render() {
+	console.log(this.state.gifs);
+	return (
+		<div>
+			<div  className="main-header">
+				<div  className="inner">
+					<h1  className="main-title">GifSearch</h1>
+					<SearchForm  onSearch={this.performSearch}  />
+				</div>
+			</div>
+			<div  className="main-content">
+				<GifList  data={this.state.gifs}  />
+			</div>
+		</div>
+	);
+}
+```
+Now, inside the SearchForm component there's a  `Search Text` state that's specific to the component and gets updated with the `onSearchChange` function with the text users type into the input field, followed by a `handleSubmit` function when the form is submitted, which is where we're going to invoke the `perform Search` function that fetches our data
+```javascript
+import React, { Component } from  'react';
+
+export  default  class  SearchForm  extends  Component  {
+	state = {
+		searchText:  ''
+	}
+	onSearchChange  = e => {
+		this.setState({ searchText: e.target.value });
+}
+	handleSubmit  = e => {
+		e.preventDefault();
+		this.props.onSearch(this.state.searchText);
+		e.currentTarget.reset();
+}
+	render() {
+		return (
+			<form  className="search-form"  onSubmit={this.handleSubmit}  >
+				<label  className="is-hidden"  htmlFor="search">Search</label>
+				<input  type="search"
+					onChange={this.onSearchChange}
+					name="search"
+					placeholder="Search..."  />
+				<button  type="submit"  id="submit"  className="search-button"><i  className="material-icons icn-search">search</i></button>
+			</form>
+		);
+	}
+}
+```
+### Displaying the Results
+In this app, the `searchText` state is local to the search-form component. The type of value of the input isn't really part of the application state, it's just state that's needed for the component to work. So it's acceptable to use the `searchText` state to update the gif state here on Submit. Now if you're building a large app where `searchText` may be used in other parts of the app or you simple don't want a state that's dependent on another state, you can also use a `ref` to access the value of the input field.
+
+In React, `ref`s allow you to reference or get direct access to a DOM element. When used on an HTML element, the `ref` attribute takes a callback function that receives the underlaying DOM element as its argument, so in this case is a un input
+```javascript
+ref={(input)  =>  this.query = input}
+```
+What this does is it puts a reference to the input on the search form class. So now this callback is executed immediately after the component is mounted to the DOM, when the input is rendered onto the page it returns a reference to this input which you can access with `this.query`. Now we can reference the input inside our `handleSubmit` function
+```javascript
+handleSubmit  = e => {
+	e.preventDefault();
+	this.props.onSearch(this.query.value);
+	e.currentTarget.reset();
+ }
+```
+Now, to make the app more appealing, we need to load some gifs by default, so in our App component, we'll set a default value
+```javascript
+performSearch  =  (query = 'funny')  => {
+	axios.get(`http://api.giphy.com/v1/gifs/search?q=${query}&limit=24&api_key=dc6zaTOxFJmzC`)
+		.then(response => {
+			this.setState({
+				gifs: response.data.data
+			});
+		})
+		.catch(error => {
+			console.log('Error fetching and parsing data', error);
+		});
+}
+```
+And then updating the `componentDidMount()` method to load the component with the default query
+```javascript
+componentDidMount(){
+	this.performSearch();
+}
+```
+Finally, we have to include a NO GIF component in case someone search for something that's not available, we'll do this with conditional rendering inside the GifList component
+```javascript
+const  GifList  = props => {  
+	const results = props.data;
+	let gifs;
+	
+	if(results.length >0){
+		gifs = results.map(gif => <Gif  url={gif.images.fixed_height.url}  key={gif.id} />);
+	} else {
+		gifs =  <NoGifs />
+	} 
+return(
+	<ul  className="gif-list">
+		{gifs}
+	</ul>
+	);
+}
+```
+Finally, these is a slight second we're you can see the `<NoGifs />` when the component mounts and fetch the data, to make it even more professional, we can add a Loading state in the App component
+```javascript
+// 1. We add the loading in the state object, initializing it as TRUE
+constructor() {
+	super();
+	this.state = {
+		gifs: [],
+		loading:  true
+};
+
+//2. We change it to false after fetching the data
+performSearch  =  (query =  'funny')  => {
+	axios.get(`http://api.giphy.com/v1/gifs/search?q=${query}&limit=24&api_key=dc6zaTOxFJmzC`)
+	.then(response => {
+		this.setState({
+			gifs: response.data.data,
+			loading:  false
+		});
+	})
+
+//3. Finally we use conditional rendering with a ternary operator to switching between states
+
+<div  className="main-content">
+	{
+		(this.state.loading)
+			?  <p>Loading...</p>
+			:  <GifList  data={this.state.gifs}  />
+	}
+</div>
+```
+## React Router 4 Basics <a name="react-router"></a>
+### Getting Started with React Router
+React Router is a popular React library that manage navigation and rendering of components in Apps.
+
+In web development, **routing** is the process of matching a URL to a view, or the set of components being rendered. In single page apps, routing dynamically loads components and changes what's displayed in the browser as users navigate the app, all without reloading the page. React itself doesn't have built in routing features, thus many developers rely on React Router
+
+[React](https://facebook.github.io/react/)
+[React Router](https://reacttraining.com/react-router/web/guides/quick-start)
+
+#### What is Routing?
+In this course, we're going to create a **single-page app** or **SPAs** using React and the React Router library. 
+
+SPAs are web applications that display on a single web page, the app's HTML, JavaScript and CSS are loaded only once by the browser, and the content changes dynamically as the user interacts with the app. The app itself never reloads unless the user manually refreshes it. This provides a smoother browsing experience for users. In SPAs routing is responsible for loading and unloading content, while matching the URL with the set of components being rendered.
+
+* A good dependable routing solution should also keep track of the browser's history, to keep the UI in sync with the URL, that way the users can navigate the app using the browser's back and forward buttons.
+* Routing should seamlessly link users to specific sections of your app
+
+In other words, routing in SPAs sound work in a way that's consistent with the navigation experience of regular multi-page sites an apps.
+
+JavaScript frameworks like Angular and Ember, come with built-in routing features, but React is not a framework, is a library concerned with rendering your UI 
+
+#### Installing React Router and Declaring Routes
+React router is an external library that you install with npm or yarn, since we're working on a react WEB app that uses the DOM and runs in a browser we'll need to install react router DOM, so we'll install it as a dependency of our project
+
+`npm install --save react-router-dom`
+
+React router extends what you already know about react, and the library itself is just a small set of react components, so you write your routes using JSX. React Router DOM provides two components to get you started:
+- BrowserRouter: the root routing component that keeps you UI in sync with URL and
+- Route: which is responsible for rendering a component in your app, when the URL matches its path.
+
+You begin declaring routes with react router by rendering a router that wraps all your app components, so we'll wrap the BrowserRouter component around our app
+```jsx
+import React from  'react';
+import {
+	BrowserRouter,
+	Route
+} from  'react-router-dom';
+
+const  App  =  ()  => (
+	<BrowserRouter>
+		<div  className="container">
+		</div>
+	</BrowserRouter>
+);
+export  default App;
+```
+This renders the root router that listens to URL changes, and provides other react router components about the current URL. Normally in react, you render nested or child components with its tag, and is similar with the route component, and the quickest way to create a route us by specifying a path, and the component you want to render for that path by using the path and component properties.
+```jsx
+<BrowserRouter>
+	<div  className="container">
+		<Header  />
+		<Route  exact  path="/">
+			<Home  />
+		</Route>
+```
+#### Inline Rendering with Route
+There are other ways you can render a component with **Route** besides the component, for example the **render** prop lets you do inline component rendering, so instead of passing a name of the component to render
+```jsx
+<Route path="/about" component={About}>
+```
+you pass it a function that returns the component, so now whenever the URL matches the _path_ the functions gets called and renders that component. 
+```jsx
+<Route path="/about" render={()=>} <About /> />
+```
+Now one of the main reasons you'd want to use the render prop over the component one is when you need to pass props to the component you're rendering. Remember that in React, we pass data to components via attributes called props.
+
+### Navigating, Nesting and Redirecting Routes
+#### Navigating Between Routes
+No SPA is complete without navigation that links users to the different sections of your app. Users need to move though the app by clicking the links in the main menu.
+
+Usually you'll use anchor elements to link different portion of the website with
+
+```html
+<ul>
+  <li><a href="#">Home</a></li>
+   <li><a href="#">About</a></li>
+</ul>
+```
+With React router you use the `link` component, so we imported it into our component and start using it
+
+```jsx
+import { Link } from  'react-router-dom';
+
+<header>
+	<span  className="icn-logo"><i  className="material-icons">code</i></span>
+	<ul  className="main-nav">
+		<li><Link  to="/">Home</Link></li>
+		<li><Link  to="/about">About</Link></li>
+...
+```
+[`<Link>`  - React Router docs](https://reacttraining.com/react-router/web/api/Link)
+
+#### Styling Active Links
+A good intuitive navigation gives users visual feedback about which page they're visiting. React Router provides a simple way to change the appearance of a link when it's active or when the path matches the URL. The `NavLink` component is a special version of the `Link` component that can recognize when it matches the current URL
+
+The NavLink component also lets you assign customs class name to an active link and you can also write active styles directly
+```jsx
+<ul  className="main-nav">
+	<li><NavLink  exact  to="/" activeStyle={{ background: 'tomato'}}>Home</NavLink></li>
+	<li><NavLink  to="/about" activeClassName=""actyMcActiveFace">About</NavLink></li>
+	<li><NavLink  to="/teachers">Teachers</NavLink></li>
+```
+
+
+* [`<NavLink>`](https://reacttraining.com/react-router/web/api/NavLink)
+* [`activeClassName`](https://reacttraining.com/react-router/web/api/NavLink/activeClassName-string)
+* [`activeStyle`](https://reacttraining.com/react-router/web/api/NavLink/activeStyle-object)
+* [`exact`](https://reacttraining.com/react-router/web/api/NavLink/exact-bool)
+
+#### Redirecting a Route
+Instead of hardcoding a path to a submenu, you can use Redirect. It requires a `to` prop and the value should be the URL to redirect to.
+
+```jsx
+import { NavLink, Route, Redirect } from  'react-router-dom';
+...
+
+<Redirect  to="/courses/html"  />
+```
+The only problem with this solution is that you refresh in another page, you get automatically redirected, so a better solution is to override the existing courses route and render a redirect component that will navigate to the new location.
+
+```jsx
+import { NavLink, Route, Redirect } from  'react-router-dom';
+...
+<Route  exact  path='/courses'  render={  ()  =>
+	<Redirect  to="/courses/html"  />
+}>
+</Route>
+<Route  path='/courses/html'>
+	<HTML  />
+</Route>
+<Route  path='/courses/CSS'>
+	<CSS  />
+</Route>
+...
+```
+
+
+* [`<Redirect>`](https://reacttraining.com/react-router/web/api/Redirect)
+* [`<Route>`](https://reacttraining.com/react-router/web/api/Route)
+
+#### Using the Match Object
+When you render a component with a `<Route>` react router passes the component additional information about the current path name and the path and URL the route is matching
+
+If we inspect the component in State we can find the `match` object that contains information about how a route is matching the URL. We can access this data from inside components being rendered by `<Route>`. We'll use `match` to dynamically match `<Route>` and `<NavLink>` to the current URL and path.
+
+The path and url properties are useful when building nested routes and links
+
+### Going Further with Routing
+#### Displaying 404 Error Routes using Switch
+
+```jsx
+import {
+BrowserRouter,
+Route,
+Switch
+} from  'react-router-dom';
+
+//After importing component, envelope all Routes in Switch and Add component
+<Switch>
+....
+	<Route  path="/courses">
+		<Courses  />
+	</Route>
+	<Route>
+		<NotFound  />
+	</Route>
+</Switch>
+```
