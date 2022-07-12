@@ -6,8 +6,7 @@
 3. [Using Create React App](#create-react)
 4. [Data Fetching in React](#fetch-react)
 5. [React Router 4](#react-router)
-
-
+6. [Deploy React App](#deploy-react-app)
 
 ## React Basics <a name="react"></a>
 ### First Steps in React
@@ -943,7 +942,6 @@ const  Player  =  ( props )  => {
 
 
 [Constructor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/constructor)
-
 ## React Components  <a name="components"></a>
 
 ### Build Modular Interfaces with Components
@@ -1918,7 +1916,6 @@ HIghest Score Feature
 - When the player with the highest score is removed, the next one should get the crown
 - There is css for the SVG as well as a class `is-high-score`
 - Player state
-
 ## Using Create React App <a name="create-react"></a>
 ### What is Create React App?
 Setting the front ends tools to develop a React Application can be intimidating and time consuming. 
@@ -2006,7 +2003,6 @@ Lets you modify the configuration files, but be careful because once ejected you
 * [Testing React Apps](https://facebook.github.io/jest/docs/tutorial-react.html)
 * [`npm run build`](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#npm-run-build)
 * [`npm run eject`](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#npm-run-eject)[What's New in Create React App](https://facebook.github.io/react/blog/2017/05/18/whats-new-in-create-react-app.html)
-
 ## Data Fetching in React <a name="fetch-react"></a>
 Ways to fetch external data with React by creating a GIF searching app by using the Giphy API
 
@@ -2063,7 +2059,7 @@ https://github.com/github/fetch
 ### Fetching Data with Axios
 Like the Fetch API, Axios isn't specific to React so you can use it to fetch data in other JS frameworks, libraries or any Node.js app. In addition to having stronger browser support than Fetch, Axios has  useful built in features:
 - supports the Promise API
-- Intercept request and responses and alter them before they're handle by `.then()` or `.cathc()` 
+- Intercept request and responses and alter them before they're handle by `.then()` or `.catch()` 
 - automatically converts data to JSON
 - you can also use axios to post data to a server 
 - protect your app againts XSRF or CSRF attacks and vulnerabilities, so it could prevent malicious request and actions from being executed on your app
@@ -2288,6 +2284,7 @@ performSearch  =  (query =  'funny')  => {
 </div>
 ```
 ## React Router 4 Basics <a name="react-router"></a>
+
 ### Getting Started with React Router
 React Router is a popular React library that manage navigation and rendering of components in Apps.
 
@@ -2455,3 +2452,33 @@ Switch
 	</Route>
 </Switch>
 ```
+## Deploying a React App <a name="deploy-react-app"></a>
+### Create a Production Build
+Before you can deploy your React application, you'll first need to create a **production-ready built** of your app. This means that you'll create a separate configuration of your app that optimizes your code to run in browsers and make it download as fast as possible.
+
+Using **create-react-app**: 
+1. Run `npm run build` This will generate a build folder inside your project containing all the static files that can be used on a production web server. The build command transpiles, optimizes all JavaScript into one minified file and minifies resources like the HTML template and CSS to help reduce download times. It's also going to provide a service worker file to help run the app offline and this will be the folder that you deploy to the server. Now, to view the production build, you'll still need to run it on a server, a quick way to do that  as suggested in the Create React App docs is to use a tool called **serve**, which serves static sites and single page applications 
+
+- In the console run `npm install -g serve` 
+- Then `serve -s build` This will serve and let you view the production view of your app on localhosto port 5000
+- now, any time you make a change to your app and want to preview it at this URL, you'll need to rebuild the app
+
+### Deploy to Github Pages
+1. Have your react app in a repo on GitHub
+2. Add the homepage field to the package.json file
+3. Installe the Github pages package via npm and add a couple of deploy scripts to package.json, so in the console write `npm install --save gh-pages` This is going to let you publicsh to a btranch on GitHub called gh-pages, anything you push to that branch, like your build is going to appeat on the github.io domain
+4. Next in the same package.json file go to the scripts object add two properties
+```json
+"scripts": {
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d build",
+```
+Deploy will publish everything from your build folder to your gh-pages branch. Make sure to write predeploy first, that way predeploy will run begore deploy runs, which means that it will automatically create the production-ready build of your app. It will even generate the build folder for you, if you haven'd donde that yet.
+
+Now, you can publish your build to a gh-page branch on the github repo by running `npm run deploy`. This begins creating an optimized production build
+
+
+**Set a Base URL**
+When using React Router, if your app is served from a sub-directory, pass the 'basename' prop to the router to set the base URL for all locations. For example:
+
+<BrowserRouter basename="/course-directory">
