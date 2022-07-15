@@ -1,4 +1,9 @@
 # Development Tools
+----------------
+
+Author: Sheila Anguiano
+
+-----------------
 
 # Table of Contents
 1. [Regular Expressions in JavaScript](#regex)

@@ -1,4 +1,9 @@
 # React
+-----
+
+Author: Sheila Anguiano
+
+-----
 
 # Table of Contents
 1. [React Basics](#react)
