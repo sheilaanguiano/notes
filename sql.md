@@ -211,5 +211,60 @@ SELECT title FROM movies WHERE release_year >= 2000;
 Filtering on 
 
 ## Modifiying Data with SQL <a name="modifying-sql"></a>
+At the heart of a dynamic application is a database. Whether the application is an eCommerce, sports team, social network or a productivity app on your phone the data needs to change over time.
 
-## 
+In this course we'll take a look at the underpinning SQL statements that are needed for every dynamic application.
+### Adding Data to a Database
+#### Introduction to CRUD
+##### Adding a Row to a Table
+[Cheatsheet](https://github.com/treehouse/cheatsheets/blob/master/modifying_data_with_sql/cheatsheet.md)
+#### Adding Multiple Rows in a Single Statement
+You tend to see multiple statements like this in files that set up the initial state of a database called **database seed files**. You're seeding files into the database.
+
+### Updating Data in a Database
+With dynamic applications, things change all the time. For example, the stock counts of products or the scores in a live soccer match. We need a way to update the data. In this stage we'll discover how to do just that.
+#### Updating All Rows in a Table
+The equal sign in this case is not doing the same thing as what it would do in a condition in a WHERE clause. In the WHERE clause, it's the equal to and equality operator. In the UPDATE statement, it's known as an assignment operator.
+
+### Deleting Data From a Database
+There will come a time where you don't need certain data anymore. In this stage we'll look at removing all of the data from a table and how to remove specific rows too.
+#### Removing Data from al Rows in a Table
+It's important to note, that once you delete a table, you **CAN'T undo this** without a backup of your data, you can't restore it.
+#### Removing Specific Rows
+The change is permanent, so be sure  you're deleting exactly what you want to be removed.
+
+### Handling Errors when Manipulating Data
+Sometimes you need to do multiple CRUD operations in a single go. This is where errors can occur. We'll tackle this with something called transactions.
+#### Introduction to Transactions
+When you write a statement that performs one of the CRUD operations, you need to be certain that the SQL statement you write and run is exactly what you want to get executed. 
+In a production environment, it can be difficult to revert to an earlier state, this is because in most circumstances your statements are run in autocommit mode, meaning what you execute gets committed or saved to disk. Most databases have autommit switched on by default. You may not want this to happen all of the time, specially when you want something like batch operations, meaning you want to do multiple statements that get executed together.
+
+Imagine youre populating a database for the first time or **seeding**. Running multiple statements are normally prepared in a SQL file, also known as a **script**, and the computer freezes, if we run the script again, we can get duplicates or an error. So the way to disable autocommit and commit at the end of the batch, using transactions
+
+Switch autocommit off and begin a transaction:
+```sql
+BEGIN TRANSACTION;
+```
+
+Or simply:
+```sql
+BEGIN;
+```
+
+To save all results of the statements after the start of the transaction to disk:
+```sql
+COMMIT;
+```
+ 
+#### Rolling Back from Transactions
+ Sometimes errors happen in the middle of a transaction. How do you recover from that? This video shows you how!
+
+#### Databases with Frameworks
+Many developers, while using databases, aren't required to write a single line of SQL code. They use special software libraries called ORMs. It's a way for developers to yse another programming language other than SQL to interface with a database and perform CRUD operations.
+
+In this course, you've learned all CRUD operations , or what's called DML or data manipulation language. There's a lot more to SQL, such as database design and maintenance, but this si where you'll spend most of your time.
+
+
+[Hibernate for Java](http://hibernate.org/)
+[CoreData for Swift](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CoreData/index.html)
+[ActiveRecord for Ruby](https://api.rubyonrails.org/classes/ActiveRecord/Base.html)
