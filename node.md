@@ -1498,7 +1498,7 @@ You’ve installed the Sequelize ORM, implemented a database with the SQLite dat
 Sequelize is all about models. As you learned earlier, when using an ORM library like Sequelize, developers interact with a set of models to do database operations. Instead of interacting directly with the database, Sequelize acts as a mediator that oversees the movement of data from the database to the models and back.
 
 A model in Sequelize represents a  _table_  in the database. A model also predefines how data should be stored, and determines whether or not a database entry is valid (for example, if the entry should be a number, string, etc.).
-#### Define a Model
+##### Define a Model
 Models are often defined as JavaScript classes. Each model (or class) represents a thing that your application will be working with – all of the _nouns_. A model contains a collection of attributes (or class properties) that are used to describe each model instance. For example, a "Person" model might include "name" and "age" attributes to represent the name and age of a specific person.
 
 1. **Define a  `Movie`  model.** In `app.js`, create a class named `Movie` that `extends` the `Sequelize.Model` base class:
@@ -1533,7 +1533,7 @@ Now that we have a 'Movies' table, let's create a column for movie titles.
 
 1.  **Set the model attributes.**  Define a column named 'title' by passing  `init()`  an object with a  `title`  property. Each column must have a data type. The  `title`  should be a string data type, so set the value of  `title`  to  `Sequelize.STRING`:
 
-```    
+```JavaScript  
 const Sequelize = require('sequelize');   
 const sequelize = new Sequelize({...});   
 // Movie model 
