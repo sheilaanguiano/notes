@@ -22,6 +22,7 @@ Author: Sheila Anguiano
 15. [Working with the Fetch API](#fetch)
 16. [Object Oriented JavaScript](#ooj)
 17. [The JavaScript Ecosystem](#js-ecosystem)
+18. [Closures](#closures)
 
 ## Basics <a name="basics"></a>
 A programming language’s **syntax** is the different commands, special words and punctuation you use to put together a program.
@@ -3533,4 +3534,176 @@ They'll often lead the team form a project's conception all the way thorugh to i
 
 As a developer, you'l be counted on to solve problems and might do a little bit of everything from prototyping and testing to fixing bugs and implementing the business logic of a program.
 
+
+
+## Understanding Closures in JavaScript <a name='closures'></a>
+### The Problem with Globals
+Global variables can cause JavaScript developers a lot of trouble. This video will introduce you to a common issue that can result when a variable is declared and used on the global scope.
+
+```JavaScript
+var count =  0;
+function  countBirds()  {
+	count  +=  1;
+	return  count  +  ' birds';
+}
+//In the console
+// countBirds();
+//"1 birds"
+// countBirds();
+//"2 birds"
+```
+Adding a new function to count other things we'll notice the problem with the global variable `count`. 
+
+```JavaScript
+var count =  0;
+function  countBirds()  {
+	count  +=  1;
+	return  count  +  ' birds';
+}
+
+function  countDogs()  {
+	count  +=  1;
+	return  count  +  ' dogs';
+}
+
+//In the console
+// countDogs();
+//"1 dogs"
+// countBirds();
+//"2 birds"
+```
+When two functions depend on a global variables of the same name but they don't intent to, a bug in the JS program is introduced. So, how can we maintain separate states for our two counters without having to write separated ones for each one of them (sometimes this wont be viable)
+
+### What are Closures?
+A closure is a function with its own private store of variables that no other function knows about or can access. You can create any number of closures even with the same variable name contained within each one of them. That's because the variables are hidden form all other functions.
+
+Using the local scope that function provide is what we can use to create *closures*.
+```JavaScript
+var birds =  3;
+//Outer function dogHouse
+function  dogHouse(){
+	var  dogs  =  8;
+	//Inner function showDogs
+	function  showDogs(){
+		console.log(dogs);
+	}
+}
+```
+All variables within the outer functions are visible to the inner functions, even though they are hidden from the global scope. Just like the outer function has access to the global variables, the inner function has access to the outer function scope. In other words, we can call the returned inner function and get access or even modify any private variables, a closure looks like this: An outer function, some private variables within the outer function scope, an inner function that could modify or log out, any of the private variables, and finally the inner function is returned.
+```
+function outherFunction(){
+	var someCount = 0;
+	function innerFunction(){
+		someCount++;
+		console.log("Called " + someCount + " times");
+	}
+	return innerFunction;
+}
+counter1 = outerFunction();
+counter2 = outerFunction();
+counter1(); // Called 1 times
+counter2(); // Called 1 times
+
+```
+Every time the outer function is called a new private scope is created and the inner function returned can read and modify any private variables for this private scope. This new scope is separate from any closures the outer function has created previously.
+
+### Fixing our Problem
+Now that we know how to use a function, let's solve our problem. So first, we'll make our count birds private. 
+Notice that because the count variable is declared outside the inner function, the count won't reset every time the counter runs; now we can return the counter function. Even though the `countBirds` has exited the inner function, it returns, saves and uses this private scope, forming our closure.
+```
+var count =  0;
+
+function  countBirds()  {
+	var  count  =  0;
+	function  counter(){
+		count  +=  1;	
+		return  count  +  ' birds';
+	}
+	return  counter;
+}
+```
+Often you'll see the function returned directly, so after a minor adjustment:
+```
+var count =  0;
+
+function  countBirds()  {
+	var  count  =  0;
+	return function(){
+		count  +=  1;	
+		return  count  +  ' birds';
+	}
+}
+```
+```terminal
+//Now in the console we assign the function to a variable to start counting.
+var birdCounter = makeBirdCounter();
+//undefined
+birdCounter();
+//"1 birds"
+birdCounter();
+//"2 birds"
+```
+Now, because `countBirds()`  doesn't countBirds anymore, it returns a Bird Counting Function, we'll rename it `makeBirdCounter` to keep our variable names meaningful.
+After that we can copy the same function for Dogs and get rid of the global variable (now that we know that using them is a bad idea).
+
+Now if we create another variable in the terminal, like `birdCounter2` on the console, this will also have its own separate private scope.
+```terminal
+
+var birdCounter = makeBirdCounter();
+//undefined
+birdCounter();
+//"1 birds"
+birdCounter();
+//"2 birds"
+var birdCounter2 = makeBirdCounter();
+birdCounter2();
+//"1 birds"
+```
+Every time our counter maker function runs a new scope is created, and all those count variables are private values, because every scope is separate, so we don't actually need two functions for our dog and bird counters, since they're almost identical.
+If we could give the string to the closure instead of the counter function, the inner function would be able to access that as well.
+```
+function  makeCounter(noun)  {
+	var  count  =  0;
+	return function(){
+		count  +=  1;	
+		return  count  + ' ' + noun;
+	}
+}
+```
+Now on the terminal
+```
+var birdCounter = makeCounter("birds");
+//undefined
+var dogCounter = makeCounter("dogs");
+```
+### Uses for Closures
+Closures can be found in all sorts of places in the wild. In this video we'll explore a few of those places, and show an example of a common problem that can be solved with closures.
+
+**Real World Usages for Closures**
+- Distributing JavaScript Modules. Closures can be use to distribute software packages.
+	- JQuery
+	- Moment.js
+	- Underscore.js 
+	- Express Middleware.
+Each of these libraries use closures to prevent variable conflicts. If they didn't a lot of bugs would emerge. There's a pattern called the *module pattern* which is employed for distributing JavaScript code. 
+
+In the Express.js framework for node, some middleware offer configuration using closures, like Morgan.
+
+Let's see a common gotcha, In an HTML file we'll create three buttons that when clicked will log the name of the button: 1, 2, 3 using the following script:
+
+```JavaScript
+var buttons = document.getElementsByTagName('button');
+
+for(var i = 0; i < buttons.length; i += 1) {
+	var button = buttons[i];
+	var buttonName = button.innerHTML;
+	button.addEventListener('click', function() {
+		console.log(buttonName);
+	});
+}
+```
+But when we look at the console, we only see "Third" log out three times, so what when wrong.
+
+[Closures || MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
+[Let](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let)
 
