@@ -10,6 +10,7 @@ Author: Sheila Anguiano
 2. [Introduction to the Terminal](#terminal)
 3. [Introduction to Git](#git)
 4. [HTTP Basics](#http)
+5. [Introduction to REST API's](#intro-rest-api)
 
 
 ## Regular Expressions in JavaScript <a name="regex"></a>
@@ -482,4 +483,77 @@ You can review that history with the git log subcommand. For each commit git log
 [What's the shell](http://linuxcommand.org/lc3_lts0010.php)
 
 ## HTTP Basics <a name="http"></a>
-###
+
+## Introduction to Rest API's <a name="#intro-rest-api"></a>
+### Getting the REST You Need
+The RESTful API design pattern is a common, useful, and real world design pattern for turning your web app into a useful tool for building mobile apps, bots, desktop and server scripts, and more. Let's talk about what REST is, the building blocks and terminology of REST, and how you'll be using REST here at Treehouse.
+### Introduction
+APIs are one of the most commonly used interfaces for sharing information across both internal products and third party data sources, such as Twitter and Google.
+
+REST stands for Representational State Transfer. REST sits on top of HTTP and defines how your API works. Mostly, it's a set of rules for how to use the HTTP framework to access bits and pieces of your application or data in reliable and predictable ways.
+
+REST is really just another layer on top off HTTP. When you build a website or app, you’re building a user interface for your app’s logic and data model. The point of the API though, is not to create a traditional user interface (UI), but to provide a programmatic interface. A code UO, if you will for that same logic and data model. The major difference is that the burden of creating the interface is on the users of the API and not the creator.
+
+API stands for Application Programming Interface, which is a  pretty jargony way of talking about code that makes easier for things outside of the application to interact with the application. Why do we want to provide gateways like this? Building a REST API that works with any external client, anywhere on the internet, saves us a lot of headaches 
+
+The web by design is stateless. This means that every request that you make to a website is like meeting that site for the first time. REST doesn’t write this. It puts all of the work of remembering state on the client, which is your computer program. After each request, the server forgets your client entirely. In fact, you might not even be talking to the same server each time. Your client though, can, and will hold on, to whatever state information it needs, like authentications keys or previous endpoints.
+
+TN:
+https://teamtreehouse.com/library/http-basics
+
+### Endpoints
+When we talk about language, we have many different types of words, nouns, verbs, adjectives, adverbs, etc. When we talk about REST APIs , we really only care about two of those word types:  nouns and verbs.
+A noun names something. IN a REST API, we have these things called resources.  What’s a resource? Usually, it’s a model in our application, like player’s scores on your game, the match. These resources are things we want to be able to retrieve, create or modify through our API.
+
+We do that retrieving, creating and modifying, and even deleting, at specific URLs which are called endpoints. Endpoints represent either a single record or a collection of records
+
+Examples of endpoints:
+/api/v1/games			← Collection
+/api/v1/games/1234		← Single resources because of the identifier at the end
+
+Whether you use singular or plural names for your resources, keeping your URL designs consistent goes a long way towards discoverability and usability of your API.
+
+ Now, let’s talk about verbs. They’re things for doing or want to do. In RESTful API design, they’re actions you’re going to take on resources, but instead of being in your URL, they’re represented by the type of request the client makes to the API. We have 4 verbs or HTTP methods, that we use for REST APis
+
+GET: used for fetching either a collection of resources or a single resource
+POST: used to add a new resource to a collection. For example we wouldn’t POST to players/567 or games/1234 because they aren't collections.
+We could, however, POST to /players or /games to create a new player or a new game
+PUT: is the HTTP method, or verb that we use when we want to update a record. We wouldn’t use PUT on collection or list URLs
+DELETE: used for sending a DELETE request to a detail record, a URL for a single record, should elete just that record. Sending DELETE to an entire collection would delete the whole collection but that’s usually not implemented, with good reason
+ 
+With a combination of nouns and verbs, we can write just about any sentence we want, at least within the constraints of our API
+
+TN:
+A resource is a piece of data, which usually comes out of a database (but doesn't have to!). Resources are gathered together into collections. Resources are usually available at endpoints that point to either individual resources or collections of resources. Endpoints don't represent actions that you take on those resources, though. Actions are determined by the data provided to an endpoint and the HTTP method used to access the endpoint.
+
+By combining endpoints and HTTP methods, we can build complete sentences with just HTTP and REST.
+
+URL vs URI, what’s the difference?
+The acronyms URL and URI are often interchangeable. Although they can be referencing the same thing, there are some distinctions:
+URI stands for “Uniform Resource Identifier”, the keyword being “identifier”. This can mean name, location or both:  Example /api/v1/games/1234
+URL stands for “Uniform Resource Locator”, the keyword being “locator” so it provides full details to locate the resource. Example: https://teamtreehouse.com/alenaholligan
+The part that makes something a URL is the combination of the name and an access method, such as https:// or mailto:.
+URLs are URIS, but the opposite is not true. So saying URI is always technically accurate, but if you're discussing something that’s both a full URL and a URI (which URLs are) ot’s best to call it a “URL” because it’s more specific.
+
+https://teamtreehouse.com/library/http-basics/get-and-post-requests-in-a-browser/html-review-and-uris-vs-urls
+https://danielmiessler.com/study/url-uri/
+https://tools.ietf.org/html/rfc3986#section-1.1.3
+
+### Requests
+The request that a user sends in, can provide a lot more information than just the end points and HTTP can provide a lot more information than just end points and HTTP can. Different aspects of the request can be used to change the format of the response.
+
+Using Postman
+We can send more information to the API through parameters
+HTTP headers are one of the most amazing and useful pieces to a great API
+
+	HTTP Headers
+Accept: Specifies the file format the requester wants
+Accept-language
+Cache-control: Specifies whether the response can be generated from a cache or a quick-to-access memory bank of data or not
+
+
+Again, you don’t have to implement all of the headers. You don’t have to implement any of them. But smarter clients and smarter APIs take advantage of the Http spec, to make transactions cleaner and more explicit. When consuming a third party API make sure you check the documentation to understand which headers that API accepts..
+
+PENDING
+
+You might be thinking that your user will send all of their GET request content to you in the query string where they are URL encoded. POST request on the other hand encode the content as either 
