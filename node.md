@@ -10,6 +10,7 @@ Author: Sheila Anguiano
 4. [Asynchronous Code in Express](#async-express)
 5. [SQL ORMs with Node.js](#sql-orm-with-node)
 5. [Sequelize ORM with Express.js](#sequelize-express)
+6. [REST APIs with Express](#api-express)
 
 
 ## Node.js <a name="node"></a>
@@ -2561,3 +2562,168 @@ You can extend this project:
 - Add pagination
 [Sequelize](https://sequelize.org/master/manual/getting-started.html)
 [Express APIl](https://expressjs.com/en/4x/api.html)
+
+## REST APIs with Express <a name="api-express"></a>
+### Getting to Know REST APIs
+#### Intro to REST APIs
+ To define a REST API, we first need to talk about a traditional web application. This applications handle both server side and client side concerns. Say you build a web application to keep a record of your favorite recipes. To view a certain recipe, you'd click on that recipe's URL, and your browser would request that recipe from a server. A traditional server side application would respond to that request by finding the recipe data in a database, assembling that data into HTML templates and sending that HTML back to the browser to be displayed. But what if you wanted to use that same recipe information to build a mobile app, or an entirely different application, that's where REST API comes in, when you request specific recipe in a RESTful application, the application respond only with the recipe data, typically in the form of JSON, sending JSON data rather that HTML means that the back end only has to be built once, while any number of front end applications can consume and display the data.
+
+When designing an application this way, you can manipulate the same data in endless ways. If a have a REST API for recipes, for example, I could create a recipe website, but I could also use the same data to create a meal planning app, a calorie tracking app, a virtual cookbook, and on, an on.
+
+REST APIs can provide data and content for rich web applications, mobile apps, and other server side applications, even those other applications written in other programming languages. Basically, a REST API let's you retrieve data and present thatd ata in any way you want, providing amazing flexibility.
+
+In this course, we'll use Node and Express to build out a simple API that provides data about famous quotes. When we're finished, users will be able to request famous quotes from our API, as well as add new quotes, edit and delete existing quotes, and request a random quote.
+
+[Javascript-from-callbacks-to-async-await-1cc090ddad99/](https://www.freecodecamp.org/news/javascript-from-callbacks-to-async-await-1cc090ddad99/)
+
+#### What is a REST API
+To get a better sense of what a REST API is, let's first talk about how information is transferred on the web. First a client (an applications often JavaScript running in a web browser) request information from a server using a URL.
+
+The REST in REST API stand for **Representational State Transfer**, and it's essentially a set of ideas about how the server should respond to a request from a client. A traditional application server side application responds with HTML, a REST API simply responds with data. It's then up to another application, a front-end application build with a framework like React or Vue, or a mobile device, or even a command line tool to format and display the data from the API.
+
+http://api.github.com/users/:username
+http://api.github.com/users/sheilaanguiano
+
+Notice that in API speak, this is known as requesting a resource, the GitHub data in this case being the resource. The URL from which I request the resource is called an endpoint. By entering this URL into the browser, I'm making a GET request, and in response GitHub's REST API is sending me back the information I requested. In order to do anything useful with this information, I need a way to make a GET request programmatically with jQuery, the Fetch API or a library like Axios
+
+[Axios](https://github.com/axios/axios)
+[Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
+[https://randomuser.me/](https://randomuser.me/)
+[https://developer.github.com/v3/](https://developer.github.com/v3/)
+
+#### HTTP Methods and CRUD Operations
+We use web applications for a huge variety of things, but at their simples, many follow a common patter, CREATE, READ, UPDATE and DELETE. Take a blog or a popular social media site. You can usually make a new post, view other posts, edit a post or delete a post. This pattern is commonly known by the acronym **CRUD**. REST APIs allow a client to manipulate data using actions that map closely to the idea of CRUD. These actions are GET, POST, PUT and DELETE, which are known as HTTP verbs or HTTP methods. There are actually many more HTTP methods.
+
+Information in a REST API is typically organized using nouns that describe what the data represents, nouns like users, posts, movies or recipes. Using HTTP methods and API nouns, a client can tell a REST API what information it wants and what it wants to do with that information.When we write an API, we're essentially programming responses to various HTTP requests for resources. 
+
+#### A Simple API
+A simple route that responds to a GET request with JSON.
+
+1- Download the project files and install the needed packages running `npm install`
+2- Create an Express GET route handler. Recall that the Express functions adds a bunch of methods to Node's HTTP server to make it easier for us to receive and respond to requests.
+3- Inside the callback function , we wanna send back JSON, so to do that, we can use the JSON method available.
+
+By visiting `localhost:3000/greetings` we're sending a GET request to the greetings rote, which we've programmed in our Express application to send back a JSON object containing a greeting. So, we wrote code that respond with JSON when a client makes a request to an endpoint. This is a very simple API
+
+#### Planning Out a REST API
+We can plan a RESTful application by describing what we want it to do in plain english by using the most common HTTP request methods: get, post, put, and delete, and mapping them to CRUD operations, create, read, update, and delete.
+```JavaScript
+//Send a GET request to READ a list of quotes
+//Send a GET request to READ(view) a quote
+//Send a POST request to CREATE a new quote
+//Send a PUT request to UPDATE(edit) a quote
+//Send a DELETE request to DELETE a quote
+//Send a GET request to READ (view) a random quote
+```
+This is a good plan, but let's not forget the nouns we discussed earlier. We use nouns to describe the resources or data representations, that the client can request from the API. A resource can be any number of things: users, customers, books, etc. in our case is quotes. So we want the client to be able to send GET request to `/quotes` to READ a list of quotes, and to view a single quote, the client will send a request to `/quotes/:id` the `:` indicates that `:id` is a representation,  or a parameter or the actual endpoint
+
+```JavaScript
+//Send a GET request to /quotes to READ a list of quotes
+//Send a GET request to /quotes/:id to READ(view) a quote
+//Send a POST request to /quotes to CREATE a new quote
+//Send a PUT request to /quotes/:id to UPDATE(edit) a quote
+//Send a DELETE request to/quotes/:id to DELETE a quote
+//Send a GET request to /quotes/quote/random READ (view) a random quote
+```
+Notice that many of these endpoints are the same, that's because each endpoint can have multiple HTTP methods
+
+### Managing Data and Asynchronous Code
+In this part of the course, we'll talk about persisting data for our API and see how to use async/await to handle asynchronous requests to our datastore.
+#### Managing REST API Data
+To keep things simple and focused, we’re going to store the data for our REST API in this JSON file called data.json. Think of the data.json file as a mock database-- a datastore where we can save and persist information for our API.
+
+Typically, when you're building an application, you store application data in a database such as PostgressSQL or MongoDB. Depending on which database you choose, you'd likely use some kind of library, know as an ORM or **object-relational mapping**, to facilitate the communication between your express app and your database. Some example of ORM's include Mongoose for MongoDB and SQLize for SQL based databases . Learning to use an ORM can get complex, which is why or application won't use one, instead we've provided a module containing a few key function for building out our app.
+
+The `recors.js` will serve as a very basic ORM, where there's a method to get quotes from our data store, a method to get one quote and so on. The purpose of this module is to allow us to work with some data for our API without a lot of the overhead.
+
+Tool for Documention Code JSDoc
+[https://jsdoc.app/about-getting-started.html](https://jsdoc.app/about-getting-started.html)
+
+#### Refactor the GET all quotes route
+The client will send us a requests containing the unique ID number of the requested quote. We'll use that number to find the correct quote in our data store, and then we' send that quote back to the client.
+
+First, we'll need to know the ID of the quote the client is requesting, by using `req.params.id` and store the results in a variable called `quote`, and we send it back the response in json
+
+### Create, Read, Update, Delete
+#### Using Postman to Test Routes
+By default, browsers send GET request, which makes them easy to test. Just hop into a browser and send a request to an endpoint. If you get back the information you were expecting, you know the route is working as intended. 
+Sending other types of request from the browser like POST or DELETE, can be a little trickier.
+**Postman** is an application that will allow us to send a variety of request to our API so that we can write endpoints to create, update and delete quotes, and then make sure our application us functioning as we expected. 
+
+- Make sure the server is running.
+
+#### Create a New Quote
+To be able to access values on `req.body` we need to put a line of code (middleware)`app.use(express.json())` when a request comes in it'll be sent through this function before it hits one of our rout handlers. This middleware tells Express that we're expecting requests to come in as JSON, that way, Express can take the JSON we're sent, via the request body, and make it available to us on the request object on the property called body.
+
+On Postman
+* Select Post > route
+* On the Body Tab > Select JSON and then write an object:
+{
+	"quote":"There is no place like home",
+	"author": "Dorothy"
+}
+*hit SEND
+
+#### Using Try/Catch with Async/ Await
+Not much to add
+
+#### HTTP Status Code
+Sending proper status codes is a crucial part of building a useful and usable restful API.
+
+#### Edit a Quote
+A put request indicates to our application that a change is going to be made to an existing resource.
+We'll expect the client to send us an object containing the author and the quote text to replace the current values. The client will send a request containing the new object, from the endpoint of the quote they wish to change.
+
+For a put request, it is convention to send status code 204, which means no content. This generally means that everything went okay, but there's nothing to send back. Up until now, we've responded tp request with JSON, but for put request, it's convention not to respond with anything, but we need another way to end the request or the server will just hand indefinitely. We can end the request with the Express end method, which simply tells Express that we're done.
+
+In a more real-world situation, you'd also wanna validate the information the client has sent to you. For example, has the client sent data for all the required properties? Is the data in the form your API is expecting, like a string or a number. When you're using an ORM you'll most likely create data models to do exactly that. You define the shape of your data in one place, which properties are required, which data type each property expect, and so on.
+
+#### Delete a Quote
+The delete route is going to be a lot like the update quote route, only it will completely remove the specified quote form the data store.
+
+### Refactoring and Modularizing a REST API
+#### Writing a Global Error Handler
+A lot can go wrong in an application, and a big part of a developer’s job is to account for and gracefully deal with a variety of errors. We'll write a global error handler to send error messages to the client as JSON.
+We're already doing a decent job of that, but there are some things we can do that will cut down on some of our repeating code.
+
+There are two basic types of errors we're dealing with, stuff that went wrong with the request, and stuff that went wrong with the server. For our API, we're going to need to create our own custom error handler so that we can send the error message as a JSON object. We'll do that first by writing some middleware that creates an error, we'll then pass that error to an express error handling function, and that function will send error message as JSON. Express middleware are functions that run after a request comes in from the client and before a response is sent.
+
+Middleware will run each time a request comes in unless you specify otherwise.
+
+Express will call middleware functions in the order they've been added, so we'll want to place this middleware function below all of our other routes. This way if a request comes in, that doesn't match any of these routes, the request will fall into this piece of middleware.
+
+#### Refactor with Express middleware
+Using try/catch blocks to handler errors for each route can get messy after a while. We can write a middleware function that can abstract away the try/catch block to DRY up our code.
+
+#### Structuring your REST API
+If you've accessed information from an API in the past, you may have noticed that often, you request information from a `/api` route, like the randomuser API or the star wars API.
+
+We can set up our API the same way within an express router, which is created using a method called express.router. Doing this way will be beneficial in two ways:
+* We can map each of our routes to an endpoint that starts with `/api` without having to repeat /api for each and every route.
+* Will keep our express files more modular, by moving all our routes out of app.ks and into their own file
+
+`app.use('/api', routes);` Here we're saying when a request starts with the path `/api` use the routes inside of the `routes.js` file 
+
+Back in `routes.js` we'll set up a new router. The router method allows us to route everything to `/api`without having to specify it on every single route
+
+So we've created a new module named routes and moved all our quote routes into it. We're using the express router method which allow us to map these routes to a specified path. We're assigning express router to a variable called router, and using it to handle our various types of request. Finally, at the bottom of the file, we're exporting router along with all the routes we've defined in our file
+
+#### Get a Random Quote
+
+#### Going Further
+When you're bulding your own API there are a number of things to consider
+**Using a Database anr ORM**
+* CORS
+* User Authentication
+* User Authorization
+
+Now that you've had an introduction to building REST APIs with xPress, a natural next step would be to build an API using a database and an ORM. A database will help you maintain and persist larger and more complex datasets, while an ORM will help you interact with the database more easily. CORS, or cross-origin resource sharing is a mechanism that allows one web domain to communicate with another. If you tried to build a front-end for the REST API we just created, you could run into problems due to CORS.
+
+Most applications involve some sort of login system, which is where user authentication and authorization come into play. Both involve building a login system for your application so that only authenticated users can use the API.
+
+
+
+[https://www.html5rocks.com/en/tutorials/cors/](https://www.html5rocks.com/en/tutorials/cors/)
+[https://expressjs.com/en/resources/middleware/cors.html](https://expressjs.com/en/resources/middleware/cors.html)
+[https://serverfault.com/questions/57077/what-is-the-difference-between-authentication-and-authorization](https://serverfault.com/questions/57077/what-is-the-difference-between-authentication-and-authorization)
+[https://teamtreehouse.com/library/oauth-authentication-with-passport](https://teamtreehouse.com/library/oauth-authentication-with-passport)

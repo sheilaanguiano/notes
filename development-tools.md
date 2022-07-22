@@ -557,3 +557,34 @@ Again, you don’t have to implement all of the headers. You don’t have to imp
 PENDING
 
 You might be thinking that your user will send all of their GET request content to you in the query string where they are URL encoded. POST request on the other hand encode the content as either 
+
+### Response
+Like an HTTP request, an HTTP response also has headers. In Postman, we can also view the response Headers
+- Content-Type: is used to specify what type of response is returned. This should match the type that was requested
+- Status Codes:
+    * 200-299   Good
+    * 300-399   Understood but located elsewhere/ perform redirects
+    * 400-499   Client Errors
+    * 500-599   Server's end error
+
+[HTTP Headers](https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Response_fields)
+[HTTP Status Codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes)
+
+### Security
+An API that can't keep up with the demand is almost worse than no API at all. The firs step towards making sure that your API is available for clients is usually *caching*
+
+A cache is usually a service that runs in memory to hold recently requested results, like a newly created record, or a large data set.
+
+This helps to prevent database calls and even constly calculations on your data. Maybe your data is spread across several databases, or tables in your database, and gathering up all of that information, sorting it, and presenting it to the user takes several seconds. Putting that final calculated data into a cache means that subsequent lookups only take as long as required for your cache to find and return the right key.
+
+The second step on our path to having a resilient API is rate limiting, which simply means that each user is allowed a certain number of request to your API in a given time period, once a user exhaust their allotment, they'll have to wait untilk the timer runs out so they can get more. This helps prevents your API to get flooded wtih request as well as to prevent **distributed denial of service or **DD0S** attacks*
+
+Finally, authentification. It's hard to rate limit users when you don't have any idea which request is from which user. When building an API, how your user gets accounts is up to you, and whatever tools you're using, but there are some common ways like:
+* API TOKENS: When setting up an API account a user is given a token and a secret pair. The user wull pass those credentials when making a request to the server, this allow the API's server to verify the communication. The servers takes the pair of credentials and checks that they're active proper users in the database, it's a lot like including a user name and a password when you log into a site. Users need to include their token with every request because of the statelessness of HTTP.
+
+Most of the time, the token and secre are included as keys in the JSON or XML data that a client will send, but it is possible for them to be included in the authentication headers in the HTTP request.
+
+Make sure you understand where the information will be included when consuming or building an API 
+
+There are othe rmethod of handling authetication like cross realm authetication, HTTP Digest and others, but a lot of tgem will be specific to the API or tools you're using, POSTMAN should allow you to send any type of authetication request that you encounter
+[Memcached](http://www.memcached.org/)
