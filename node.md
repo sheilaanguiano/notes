@@ -11,6 +11,7 @@ Author: Sheila Anguiano
 5. [SQL ORMs with Node.js](#sql-orm-with-node)
 5. [Sequelize ORM with Express.js](#sequelize-express)
 6. [REST APIs with Express](#api-express)
+7. [Data Relationshipts with SQL and Sequelize](#sequelize-data-relationships)
 
 
 ## Node.js <a name="node"></a>
@@ -2727,3 +2728,345 @@ Most applications involve some sort of login system, which is where user authent
 [https://expressjs.com/en/resources/middleware/cors.html](https://expressjs.com/en/resources/middleware/cors.html)
 [https://serverfault.com/questions/57077/what-is-the-difference-between-authentication-and-authorization](https://serverfault.com/questions/57077/what-is-the-difference-between-authentication-and-authorization)
 [https://teamtreehouse.com/library/oauth-authentication-with-passport](https://teamtreehouse.com/library/oauth-authentication-with-passport)
+
+## Data Relationships with SQL and Sequelize <a name="sequelize-data-relationships"></a>
+### Understand Data Relationships
+#### Data Relationships
+A SQL database is a relational database
+- Organize data into tables
+- Store, access, and connect data in relation to other data
+- Think about and use data as related sets
+
+For example, when designing an applications database, it's a common practice to start by listing all of the things that the application will be working with or all of the *nouns* and you reprent these nouns in multiple tables.
+
+There are also relationships between these nouns or tables, these are called *data relationships*
+
+#### Explore Data Relationship in a SQL Database
+Data relationships are useful to  save storage space, let's imagine that we have a movie database with:
+* id
+* title
+* releaseYear
+* directorFirstName
+* directorLastName
+
+In the case of Steven Spilberg we'd have to repeat his name 37 times, without much reason. By creating a separate table named People we can connect this information using a single **foreign key**
+
+**People Table**
+id			Integer, primary key
+firstName	varchar(255)
+lastName	varchar(255)
+
+**Movies**
+id					Integer, primary Key
+title				varchar(255)
+releaseYear			Integer
+direcrorPersonId	Integer, Foreign Key
+
+With one number we have replaced the first name, last name and any other related information
+
+#### Database Normalization
+Database designers often refer to related or duplicated data within a single table as "unnormalized" data and splitting that data into separate tables as "normalization".
+
+During the normalization process, database designers think about how to best fit relevant data into tables while looking for data that could potentially repeat, as well as values that depend on one another, and anything that could be grouped logically. That way, as you learned earlier, they avoid having to make changes to their data across multiple places (perhaps even millions of rows!).
+
+After determining the tables you need, the next step in data normalization is to understand relationships and how they apply to the data you're working with.
+
+[Ridiculously Unnormalized Database Schemas – Part One](https://michaeljswart.com/2011/01/ridiculously-unnormalized-database-schemas-part-one/)
+
+#### Data Relationship Types
+There are three types of relationships between tables. Developers describe these types by how many rows can relate to each other on either side of the relationship.  
+*  "One to One"
+* "One to Many"
+* "Many to Many"
+
+### Data Relationships in Sequelize
+#### Database and Sequelize Configuration
+The project uses SQLite, a simple, easy-to-use, relational database that doesn't require you to install anything on your system to make use of it. This makes it an ideal database for learning projects. For production-ready applications, you'll want to rely upon a database server platform like PostreSQL, Oracle, SQL Server, or one of the cloud-based solutions from Amazon, Microsoft, or Google.
+
+One benefit of using an ORM like Sequelize is that it'll create the database for your application based upon your models. Sequelize generates and executes the following SQL statements to create the model's associated tables:
+
+```sql
+CREATE TABLE IF NOT EXISTS `People` (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `firstName` VARCHAR(255) NOT NULL,
+    `lastName` VARCHAR(255) NOT NULL
+);
+```
+```sql
+CREATE TABLE IF NOT EXISTS `Movies` (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `title` VARCHAR(255) NOT NULL,
+    `releaseYear` INTEGER NOT NULL
+);
+```
+In the db/index.js file, Sequelize is configured as follows:
+
+The dialect parameter specifies the specific version of SQL you're using (the SQL dialect of the database), which in this case it's sqlite.
+The storage key sets the file path or the storage engine for SQLite. The value 'movies.db' creates a database file in your project named 'movies.db'.
+Timestamps are disabled by setting the timestamps option to false. This removes the createdAt and updatedAt columns from the tables that Sequelize generates from our models.
+```javascript
+const options = {
+  dialect: 'sqlite',
+  storage: 'movies.db',
+  define: {
+    timestamps: false,
+  },
+};
+```
+#### Connect to Database
+The app.js file is the entry point into the application. Within this file, we will use the Sequelize models to create and retrieve data from the database. Let's review this file to understand the overall behavior of the application.
+
+At the very top of the file, we declare the sequelize and models variables and initialize them to the sequelize and models objects imported from the ./db module:
+```javascript
+const { sequelize, models } = require('./db');
+```
+In the above code, we're using JavaScript destructuring to get references to the sequelize and models objects. Without destructuring, the code looks like:
+```javascript
+const dbModule = require('./db');
+const sequelize = dbModule.sequelize;
+const models = dbModule.models;
+```
+**Async/await**
+Every interaction with the database using Sequelize is an asynchronous operation represented by a JavaScript Promise.
+
+In this course, we'll use the ES2017 async/await syntax for all asynchronous calls made with Sequelize. We'll keep things simple by executing all Sequelize queries, and instance methods in `app.js` within an *async* immediately invoked function expression (IIFE). Inside the IIFE, a try/catch statement runs the code that needs to be executed and catches any exceptions that are thrown.
+```javascript
+(async () => {
+  try {
+    // all asynchronous calls made with Sequelize
+
+  } catch(error) {
+    // catch and display Sequelize validation errors
+  }
+})();
+
+```
+To test the connection we'll call the sequelize `authenticate()` method and sync the models by calling `sync()`
+```javascript
+console.log('Testing the connection to the database...');
+
+(async () => {
+  try {
+    // Test the connection to the database
+    await sequelize.authenticate();
+    console.log('Connection to the database successful!');
+
+    // Sync the models
+    console.log('Synchronizing the models with the database...');
+    await sequelize.sync({ force: true });
+
+             ...
+  } catch(error) {
+    ...
+  }
+})();
+```
+**Note**: The {force: true} parameter completely drops a table and re-creates it afterwards each time you start your app (it's a destructive operation). While useful for testing purposes, it might not be safe to use in a project (or production database) where you'd want your data to persist.
+
+[Testing the connection](https://sequelize.org/docs/v6/getting-started/#testing-the-connection)
+[Immediately invoked function expression (IIFE)](https://developer.mozilla.org/en-US/docs/Glossary/IIFE)
+
+#### Define Data Relationships in Seuqelize
+When interacting with the database directly, developers write and execute SQL statements to make changes to the database.
+
+When using an ORM like Sequelize, you don't interact with the database directly. Instead, you define models and model relationships to configure how Sequelize creates the database.
+
+Sequelize refers to data relationships as **"associations"**. Just as there are data relationship types, there are a variety of association types. You determine the type of association to use by the data relationship type between two models—the "source" model and the "target" model.
+
+Let's start by examining the association from the Person model's point of view (the source model) to the Movie model (the target model). A single (or "one") person can be associated with one or more (or "many") movies as its director. So the Sequelize association type between the Person and Movie models is a one-to-many association.
+
+Now let's flip it around and examine the association from the Movie model's point of view (making it the "source" model) to the Person model (making it the "target" model). A single (or "one") movie can be associated with a single (or "one") person as its director. So the association type between the Movie and Person models is a one-to-one association.
+
+**Note**: In real life, a movie can have more than one director. For our purposes, we're taking a simplified approach and allowing a movie to only have a single director.
+
+While it's technically possible to define a data relationship using only a single association within a single model, defining the relationship using an association within each model gives us flexibility when retrieving data from the database. You'll learn how this works in a later step.
+[Associations](https://sequelize.org/docs/v6/core-concepts/assocs/)
+[Defining the Sequelize Associations](https://sequelize.org/docs/v6/core-concepts/assocs/#defining-the-sequelize-associations)
+
+#### Define a One-to-Many Relationship Using Sequelize Associations
+Currently our person file looks like this: 
+```javascript
+'use strict';
+const Sequelize = require('sequelize');
+
+module.exports = (sequelize) => {
+  class Person extends Sequelize.Model {}
+  Person.init({
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    firstName: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    lastName: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+  }, { sequelize });
+
+  Person.associate = (models) => {
+    // TODO Add associations.
+  };
+
+  return Person;
+};
+```
+We the add the association
+```javascript
+  Person.associate = (models) => {
+    // one-to-many associations between Person and Movie model
+    Person.hasMany(models.Movie);
+  };
+```
+This tells Sequelize that a person can be associated with one or more (or "many") movies.
+If we run the command npm start, we'll see that Sequelize generates and executes the following SQL statements to create the models' associated tables:
+```sql
+CREATE TABLE IF NOT EXISTS `People` (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `firstName` VARCHAR(255) NOT NULL,
+    `lastName` VARCHAR(255) NOT NULL
+);
+```
+```sql
+CREATE TABLE IF NOT EXISTS `Movies` (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `title` VARCHAR(255) NOT NULL,
+    `releaseYear` INTEGER NOT NULL,
+    `PersonId` INTEGER REFERENCES `People` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+);
+```
+The SQL for the People database table is unchanged from what it was before, but the SQL for the Movies database table now contains a PersonId foreign key column definition:
+
+**Defining a One-to-One Association**
+Now let's define the relationship from the "one" side, by adding a one-to-one association to the Movie model.
+```javascript
+ Movie.associate = (models) => {
+    // one-to-one association
+    Movie.belongsTo(models.Person);
+  };
+```
+#### Refine Sequelize Associations
+We've defined our first data relationship using Sequelize associations. Great! Unfortunately, our current approach has the following issues:
+
+* The Movie table PersonId foreign key column name doesn't match the column naming convention of the other table columns (i.e., id, title, releaseYear) nor does it convey anything about the relationship of a person to a movie.
+* The PersonId foreign key column currently allows null values, so a movie isn't required to have a director set.
+
+Sequelize provides various association options that we can use to fix these shortcomings.
+
+**Customize the foreign key name**
+```javascript
+ Movie.associate = (models) => {
+    // one-to-one association
+    Movie.belongsTo(models.Person, { foreignKey: 'directorPersonId'});
+  };
+
+```
+```javascript
+  Person.associate = (models) => {
+    // one-to-many associations between Person and Movie model
+    Person.hasMany(models.Movie, { foreignKey: 'directorPersonId' });
+  };
+
+```
+Notice that we're updating both sides of the relationship with the same options. You must keep the foreign key configuration in sync across the Movie and Person models, or Sequelize will not be able to understand that the associations describe the same data relationship! Not keeping the options in sync will (typically) result in a duplicate foreign key column being added.
+
+**Configure the Nullability of the Foreign Key Column**
+To configure the nullability of the foreign key column (i.e., whether or not you can set the column to null), we can use the foreignKey property on the options object that's passed to the belongsTo() and hasMany() method calls.
+```javascript
+  Movie.associate = (models) => {
+    // one-to-one association
+    Movie.belongsTo(models.Person, { 
+      foreignKey: {
+        fieldName: 'directorPersonId',
+        allowNull: false,
+      }, 
+    });
+  };
+```
+
+### Create Related Data Using Sequelize Models
+#### Create Reladted Movie and Person Data
+Now it's time to start creating related data using our Movie and Person models.
+
+To set a director on a Movie record, we first need to create the Person records. This is necessary because each Person model instance id value must be available before attempting to set the Movie model directorPersonId foreign key property.
+
+At the top of the app.js file, we declare the Person and Movie variables and initialize them to the individual Person and Movie models available on the models object:
+```javascript
+'use strict';
+
+const { sequelize, models } = require('./db');
+
+// Get references to our models.
+const { Person, Movie } = models;
+```
+**Notice**: Declaring a variable for each record is impractical when seeding the database with a large number of records. A more robust solution would use a query to retrieve records from the database before creating any related records. We're using this example only for this course.
+
+#### Populate the Database with Seed Data
+We'll start with populating the People database table with five records.
+1. Create a person record. Call the Person model create() method, passing in an object literal with the desired property values. 
+The create() method returns a promise that when fulfilled, gives us access to the Person model instance for Brad Bird. There are five records to create, so we call the create() method a total of five times.
+2. Use the Promise all() method to wait until all five promises have been fulfilled. Store the aggregate promise in the variable peopleInstances:
+```JavaScript
+const peopleInstances = await Promise.all([
+      Person.create({
+        firstName: 'Brad',
+        lastName: 'Bird',
+      }),
+      Person.create({
+        firstName: 'Vin',
+        lastName: 'Diesel',
+      }),
+
+```
+await Promise.all() returns a resolved promise containing all of the Person model instances we just created (in an array), which is stored in the peopleInstances variable.
+3. Use a combination of the console.log() and JSON.stringify() methods to log the data stored in peopleInstances to the console as a JSON string:
+
+**Note**: The JSON stringify() method defines two optional parameters after the first value parameter. We're passing a numeric value of 2 for the second optional parameter—the space parameter—in order to indicate how many space characters should be used for whitespace.
+
+4. Use Array destructuring to pluck the individual Person model instances from the peopleInstances variable (which is an array of values returned from the Promise all() method call):
+```javascript
+ console.log(JSON.stringify(peopleInstances, null, 2));
+  
+    // Update the global variables for the people instances
+    [bradBird, vinDiesel, eliMarienthal, craigTNelson, hollyHunter] = peopleInstances;
+```
+[Database Seeding](https://en.wikipedia.org/wiki/Database_seeding#:%7E:text=Seeding%20a%20database%20is%20a,initial%20setup%20of%20an%20application.)
+[Creating an Instance](https://sequelize.org/docs/v6/core-concepts/model-instances/#creating-an-instance)
+
+#### Create a Movie Record
+```javascript
+try {
+  // Code removed for brevity's sake...
+
+  // Add Movies to the Database
+  console.log('Adding movies to the database...');
+  const movieInstances = await Promise.all([ 
+    // Movie instances
+  ]);
+  console.log(JSON.stringify(movieInstances, null, 2));
+
+  // Retrieve movies
+  const movies = await Movie.findAll();
+  console.log(movies.map(movie => movie.get({ plain: true })));
+
+  // Retrieve people
+  const people = await Person.findAll();
+  console.log(people.map(person => person.get({ plain: true })));
+
+  process.exit();
+
+} catch(error) {
+  ...
+}
+```
+When converting an instance or collection of instances to JSON, calling .get({ plain: true}) returns the same as calling .toJSON() – a plain object with just the model attributes and values.
+
+**Set a Movie's Director**
+In our models, we used the foreignKey property to specify the foreign key name directorPersonId.
+
+1. Set a movie's director by adding a directorPersonId property within the object passed to Movie.create(). The directorPersonId value needs to be set to a Person model instance id property value. For example, Brad Bird is the director for The Iron Giant, so set the directorPersonId property to the bradBird.id property value:
+
+
