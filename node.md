@@ -13,6 +13,7 @@ Author: Sheila Anguiano
 6. [REST APIs with Express](#api-express)
 7. [Data Relationshipts with SQL and Sequelize](#sequelize-data-relationships)
 8. [REST API Validation with Express](#rest-api-validation-with-express)
+9. [Sequelize Model Validation](#sequelize-model-validation)
 
 
 ## Node.js <a name="node"></a>
@@ -3541,3 +3542,301 @@ When possible, we should avoid writing code that we don't need to write. Using a
 If you're using an ORM library like Sequelize, you can take advantage of its built-in data validation capabilities instead of using a validation library like express-validator.
 [A note about rounds](https://www.npmjs.com/package/bcrypt#a-note-on-rounds)
 [What are Salt rounds](https://stackoverflow.com/questions/46693430/what-are-salt-rounds-and-how-are-salts-stored-in-bcrypt)
+
+## Sequelize Model Validation <a name="sequelize-model-validation"></a>
+#### Introducing the Project
+Sequelize can run validation on a model to require specific values and define constrains to prevent incorrect, unexpected or potentially harmful data from being recorded into the database.
+We'll continue to use Sequelize to wirte robust server side data validation for a REST API developed with Express.
+
+#### Set Validations for a Model
+Let's begin setting up validations and constrains for the user model to prevent invalid data from being entered into the database
+
+User Model
+```javascript
+module.exports = (sequelize) => {
+  class User extends Model {}
+  User.init({
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false    
+    },
+```
+Also since the Sequelize Validator returns a lot of information we're going to tailor it to provide more user friendly messages, inside our route handler
+```javascript
+// Route that creates a new user.
+router.post('/users', asyncHandler(async (req, res) => {
+  try {
+    await User.create(req.body);
+    res.status(201).json({ "message": "Account successfully created!" });
+  } catch (error) {
+    console.log('ERROR: ', error.name);
+
+    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+      const errors = error.errors.map(err => err.message);
+      res.status(400).json({ errors });   
+    } else {
+      throw error;
+    }
+  }
+}));
+```
+
+#### Validators and Customr Error Messages
+Sequelize offers several built-in validators that allow you to specify validations for each attribute of the model as well as custom error messages. To being using them add the `validation` object
+*Not NUll doesn't cover for empty or blank string
+```javascript
+module.exports = (sequelize) => {
+  class User extends Model {}
+  User.init({
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'A name is required'
+        },
+        notEmpty: {
+          msg: 'Please provide a name'
+        }
+      }
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'An email is required'
+        },
+        isEmail: { //isEmail is a special Sequelize validator for email
+          msg: 'Please provide a valid email address'
+        }
+      }    
+    },
+    birthday: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'A birthday is required'
+        },
+        notEmpty: {
+          msg: 'Please provide a birthday'
+        }
+      }
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'A password is required'
+        },
+        notEmpty: {
+          msg: 'Please provide a password'
+        }
+      }
+    }
+  }, { sequelize });
+
+  return User;
+};
+```
+#### Set Unique Constrains
+Let's continue by adding a constrain to our user model. By constrains, I mean rules for more in-depth checks perfomed at the SQL level versus at the sequelize level.
+
+For example when a email is used a query is done to check that is a unique email in the database, and we can add custom errors
+```javascript
+email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        notNull: {
+          msg: 'An email is required'
+        },
+        isEmail: { //isEmail is a special Sequelize validator for email
+          msg: 'Please provide a valid email address'
+        }
+      }    
+    },
+```
+Or with a tailored message
+```javascript
+email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: {
+        msg: 'The email you enter already exists'
+      },
+      validate: {
+        notNull: {
+          msg: 'An email is required'
+        },
+        isEmail: { //isEmail is a special Sequelize validator for email
+          msg: 'Please provide a valid email address'
+        }
+      }    
+    },
+```
+
+#### Date and Lenght Validators 
+Now, we're going to use the `isDate` validator to check for validate strings for the birthday field and use the `len` or length validator to allow a password value only if it falls within a specific length or an expected range of characters
+```javascript
+ birthday: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'A birthday is required'
+        },
+        isDate: {
+          msg: 'Your birthday must be a valid date'
+        }
+      }
+    },
+
+```
+When you set a validator to an object, you can pass values or arguments to it
+via an `args` property, in this case, we'll use it to pass an array to define a range of characters for the password
+```javascript
+ password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'A password is required'
+        },
+        notEmpty: {
+          msg: 'Please provide a password'
+        },
+        len: {
+          args: [8, 20],
+          msg: 'The password shold be between 8 and 20 characters in length'
+        }
+      }
+    }
+```
+#### Password Confirmation and Hashing
+The User model validation is almost complete. In this step, we'll write the validation for the user password confirmation. This will be a required attribute (or field) that checks if its value matches the password field's value.
+
+If the values match, we'll protect the password by hashing it with the bcrypt library before creating the database's new user record. If the values do not match, we'll display a validation error message.
+
+**Add the Model Attribute**
+1. In the file `user.js`, add a new attribute named `confirmedPassword` inside the `User.init({ })` object.
+2. Set the `confirmedPassword` data type to `STRING` and disallow `null` values with `allowNull: false`.
+```javascript
+class User extends Model {}
+User.init({ 
+  name: { ... },
+  email: { ... },
+  birthday: { ... },
+  password: { ... },
+  confirmedPassword: { // new attribute
+    type: DataTypes.STRING,
+    allowNull: false,
+  }
+}, { sequelize });
+```
+**Compare passwords values**
+Next, we'll compare passwords, hash the confirmed password if they match, and set the value to store in the database. Sequelize lets you define custom setters for model attributes with the set() function.
+
+1. Add the set() function inside the confirmedPassword object. set() receives the value to set via a parameter. Name that parameter val:
+```javascript
+confirmedPassword: {
+  type: DataTypes.STRING,
+  allowNull: false,
+  set(val) {
+
+  }
+}
+```
+`val` represents the value being set for confirmedPassword.
+2. Inside the setter, check if the confirmedPassword value matches the value of password:
+```javascript
+confirmedPassword: {
+  type: DataTypes.STRING,
+  allowNull: false,
+  set(val) {
+    if ( val === this.password ) {
+
+    }
+  }
+}
+```
+If the values match, we'll hash (or protect) the confirmed password's value using bcrypt, a popular library that makes it simple to hash passwords. You can learn more about bcrypt and hashing in the instruction step resources.
+
+3. The bcrypt package is already included in the project. Import the bcrypt module at the top of user.js:
+4. In the setter function, if the values are the same, we will hash the confirmed password and assign it to the variable hashedPassword.
+One way to hash a password with bcrypt is calling `bcrypt.hashSync()`.
+5. `hashSync()` accepts two arguments: the value to hash and the number of "salt rounds" used to hash the password. Let's hash the value assigned to val using 10 salt rounds:
+
+```javascript
+set(val) {
+  if (val === this.password) {
+    const hashedPassword = bcrypt.hashSync(val, 10);
+  }
+}
+```
+n short, it will help encrypt the password mathematically by transforming the value into a jumble of characters.
+
+**Set the password value to Store**
+Now let's set the value of confirmedPassword to the hashed password.
+1. Inside the if statement, call the setDataValue Sequelize method, which is used inside setters to update the underlying data value:
+`setDataValue` accepts two arguments. The first argument is the key (or property) to set for the User model instance (or the record stored in the database). The second is the value to set for the given property.
+2. Set the `confirmedPassword` value to the hashed password assigned to `hashedPassword`
+Sequelize calls the setter automatically and hashes the confirmed password before sending data to the database. That way the database stores the hashed value only.
+```javascript
+set(val) {
+  if (val === this.password) {
+    const hashedPassword = bcrypt.hashSync(val, 10);
+    this.setDataValue('confirmedPassword', hashedPassword);
+  }
+}
+```
+**Disallow a `null` value for `confirmedPassword`**
+We've defined our setter function to set the value for `confirmedPassword`. However, if the passwords do not match, then the setDataValue method does not run and the SQL query will attempt to set the confirmedPassword value to null. In that case, the allowNull check throws a validation error.
+Below the `set()` function, add a `validate` object and define a custom error message for `null` values, using the `notNull` validator:
+```javascript
+...
+confirmedPassword: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      set(val) {
+        if( val === this.password) {
+          const hashedPassword = bcrypt.hashSync(val, 10);
+          this.setDataValue('confirmedPassword', hashedPassword);
+        }
+      },
+      validate: {
+        notNull: {
+          msg: 'Both passwords must match'
+        }
+      }
+    }
+  }, { sequelize });
+```
+**Virtual Fields**
+If both passwords match, we'll only store the confirmed password in the database because that's the hashed password. We also don't want to store two password values for each user – we want to avoid any irrelevant or duplicate data.
+
+Sequelize provides a VIRTUAL data type for defining "virtual fields". These are attributes of a Model that only Sequelize populates but don't actually exist or get inserted as a column into the SQL database table.
+
+Set the password attribute's data type to VIRTUAL:
+```javascript
+class User extends Model {}
+  User.init({
+    ...
+    password: {
+      type: DataTypes.VIRTUAL, // set a virtual field
+      allowNull: false,
+      validate: {
+        ...
+      }
+    },
+    confirmedPassword: { ... }
+  }, { sequelize });
+```
+That's it for password validation! You'll test all your latest updates using Postman
