@@ -5,13 +5,14 @@ Author: Sheila Anguiano
 
 -----
 1. [Node.js](#node)
-2. [npm](#npm)
-3. [Express](#express)
+2. [npm Basics](#npm)
+3. [Express Basics](#express)
 4. [Asynchronous Code in Express](#async-express)
 5. [SQL ORMs with Node.js](#sql-orm-with-node)
 5. [Sequelize ORM with Express.js](#sequelize-express)
 6. [REST APIs with Express](#api-express)
 7. [Data Relationshipts with SQL and Sequelize](#sequelize-data-relationships)
+8. [REST API Validation with Express](#rest-api-validation-with-express)
 
 
 ## Node.js <a name="node"></a>
@@ -296,7 +297,7 @@ function printError(error) {
 
 
 
-## Build a simple dynamic site with Node
+
 ## npm Basics <a name="npm"></a>
 ### Introduction to npm
 #### What's NPM
@@ -398,7 +399,7 @@ Over time, newer version of packages are release, or we may find new, better pac
 [npm uninstall](https://docs.npmjs.com/uninstalling-packages-and-dependencies)
 
 
-## npm as task runner
+
 ## Express Basics <a name="express"></a>
 ### Getting Started with Express
 Build your first Express App from scratch
@@ -1357,8 +1358,8 @@ This course has been about writing JavaScript to assemble and serve webpages to 
 
 
 
-## Understanding Closures
-## Debug Node Applications with VSC
+
+
 ## Asynchronous Code in Express <a name="async-express"></a>
 ### Asynchronous Code in Express
 Asynchronous programming in JavaScript has evolved rapidly in recent years. Due to this change, handling asynchronous tasks in Express, such as getting information from a database, can be achieved in a variety of ways. 
@@ -1458,7 +1459,8 @@ app.get('/', asyncHandler(async (req,res)=>{
 
 ```
 
-## REST APIs with Express
+
+
 
 ## Using SQL ORMs with Node.js <a name="sql-orm-with-node"></a>
 ### Getting Started with Sequelize
@@ -2575,17 +2577,17 @@ REST APIs can provide data and content for rich web applications, mobile apps, a
 
 In this course, we'll use Node and Express to build out a simple API that provides data about famous quotes. When we're finished, users will be able to request famous quotes from our API, as well as add new quotes, edit and delete existing quotes, and request a random quote.
 
-[Javascript-from-callbacks-to-async-await-1cc090ddad99/](https://www.freecodecamp.org/news/javascript-from-callbacks-to-async-await-1cc090ddad99/)
+[JavaScript Async/await callbacks](https://www.freecodecamp.org/news/javascript-from-callbacks-to-async-await-1cc090ddad99/)
 
 #### What is a REST API
 To get a better sense of what a REST API is, let's first talk about how information is transferred on the web. First a client (an applications often JavaScript running in a web browser) request information from a server using a URL.
 
 The REST in REST API stand for **Representational State Transfer**, and it's essentially a set of ideas about how the server should respond to a request from a client. A traditional application server side application responds with HTML, a REST API simply responds with data. It's then up to another application, a front-end application build with a framework like React or Vue, or a mobile device, or even a command line tool to format and display the data from the API.
 
-http://api.github.com/users/:username
-http://api.github.com/users/sheilaanguiano
+* http://api.github.com/users/:username
+* http://api.github.com/users/sheilaanguiano
 
-Notice that in API speak, this is known as requesting a resource, the GitHub data in this case being the resource. The URL from which I request the resource is called an endpoint. By entering this URL into the browser, I'm making a GET request, and in response GitHub's REST API is sending me back the information I requested. In order to do anything useful with this information, I need a way to make a GET request programmatically with jQuery, the Fetch API or a library like Axios
+Notice that in API speak, this is known as *requesting a resource*, the GitHub data in this case being the resource. The URL from which I request the resource is called an endpoint. By entering this URL into the browser, I'm making a GET request, and in response GitHub's REST API is sending me back the information I requested. In order to do anything useful with this information, I need a way to make a GET request programmatically with jQuery, the Fetch API or a library like Axios
 
 [Axios](https://github.com/axios/axios)
 [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
@@ -2601,8 +2603,23 @@ Information in a REST API is typically organized using nouns that describe what 
 A simple route that responds to a GET request with JSON.
 
 1- Download the project files and install the needed packages running `npm install`
-2- Create an Express GET route handler. Recall that the Express functions adds a bunch of methods to Node's HTTP server to make it easier for us to receive and respond to requests.
+2- Create an Express GET route handler. Recall that the Express functions adds a bunch of methods to Node's HTTP server to make it easier for us to receive and respond to requests. These express methods include GET, POST, pUT and DELETE
 3- Inside the callback function , we wanna send back JSON, so to do that, we can use the JSON method available.
+```javascript
+const express = require('express');
+const app = express();
+ 
+ /* 
+ The GET method takes 2 arguments:
+ 1.Route that we wanna handle
+ 2.The callback functionwe want to run when this request comes in, how we want to respond 
+ The callback takes at least 2 arguments, one representing the incoming request from the client, and one representing the ongoing response from the server shortened into: req & res
+ */
+app.get('/greetings', (req, res) => {
+  res.json({greeting: "Hello World"})
+});
+
+```
 
 By visiting `localhost:3000/greetings` we're sending a GET request to the greetings rote, which we've programmed in our Express application to send back a JSON object containing a greeting. So, we wrote code that respond with JSON when a client makes a request to an endpoint. This is a very simple API
 
@@ -2628,8 +2645,35 @@ This is a good plan, but let's not forget the nouns we discussed earlier. We use
 ```
 Notice that many of these endpoints are the same, that's because each endpoint can have multiple HTTP methods
 
+#### GET a Quote, GET all the Quotes
+```javascript
+const express = require('express');
+const app = express();
+
+//Send a GET request to /quotes to READ a list of quotes
+app.get('/quotes', (req, res) => {
+	res.json(data);
+});
+
+//Send a GET request to /quotes/:id
+app.get('/quotes/:id', (req, res) => {
+	const quote = data.quotes.find(quote => quote.id == req.params.id);
+	res.json(quote);
+});
+
+
+const data = {
+	quotes: [
+		{
+			id: 8721,
+			quote: 'Hello World',
+			author: 'Someone'
+		}
+	]
+}
+```
+
 ### Managing Data and Asynchronous Code
-In this part of the course, we'll talk about persisting data for our API and see how to use async/await to handle asynchronous requests to our datastore.
 #### Managing REST API Data
 To keep things simple and focused, we’re going to store the data for our REST API in this JSON file called data.json. Think of the data.json file as a mock database-- a datastore where we can save and persist information for our API.
 
@@ -3068,5 +3112,432 @@ When converting an instance or collection of instances to JSON, calling .get({ p
 In our models, we used the foreignKey property to specify the foreign key name directorPersonId.
 
 1. Set a movie's director by adding a directorPersonId property within the object passed to Movie.create(). The directorPersonId value needs to be set to a Person model instance id property value. For example, Brad Bird is the director for The Iron Giant, so set the directorPersonId property to the bradBird.id property value:
+```javascript
+console.log('Adding movies to the database...');
+const movieInstances = await Promise.all([ 
+  Movie.create({
+    title: 'The Iron Giant',
+    releaseYear: 1999,
+    directorPersonId: bradBird.id,
+  }),
+  ...
+]);
+```
+You might recall that the Movie model defines only three properties or attributes—id, title, and releaseYear:
+If we're defining only those three properties, how does Sequelize add the directorPersonId property to the Movie model? Sequelize adds it to the model because of the association that's defined between the Movie and Person models:
+[Logging Instances](https://sequelize.org/docs/v6/core-concepts/model-instances/#note--logging-instances)
+[Shirtcut to Create Method](https://sequelize.org/docs/v6/core-concepts/model-instances/#a-very-useful-shortcut--the--code-create--code--method)
 
+### Retrieve Related Data in Sequelize Queries
+#### Retrieve Data with findAll()
+Towards the end of the try block in the app.js file, we use the Movie findAll() method to retrieve the movie and person data from the database:
+```javascript
+try {
+  // Code removed for brevity's sake...
 
+  // Retrieve movies
+  const movies = await Movie.findAll();
+  console.log(movies.map(movie => movie.get({ plain: true })));
+
+  // Retrieve people
+  ...
+
+  process.exit();
+
+} catch(error) {
+  ...
+}
+```
+The `process.exit()` method instructs Node.js to terminate the process (or program) immediately.
+When we call the Movie findAll() method, Sequelize generates and executes the following SQL SELECT statement:
+```sql
+SELECT `id`, `title`, `releaseYear`, `directorPersonId` FROM `Movies` AS `Movie`;
+```
+The data returned from the database looks like this:
+```javascript
+[
+  {
+    "id": 1,
+    "title": "The Iron Giant",
+    "releaseYear": 1999,
+    "directorPersonId": 1
+  },
+  {
+    "id": 2,
+    "title": "The Incredibles",
+    "releaseYear": 2004,
+    "directorPersonId": 1
+  }
+]
+```
+As you can see from the above SQL statement and retrieved data, the Movie findAll() method is targeting the Movies table only. Because of this, the only information that we have about a movie's director is its directorPersonId value—the primary key value for the director's row in the People table.
+
+On its own, this isn't very useful information to have. We could use the primary key value to retrieve the director's row from the People table, but that'd require another database operation. Luckily, Sequelize gives us a way to retrieve related data via a single query method call.
+
+**Use the Sequelize `include` Query Option**
+When calling the Movie findAll() method, we can pass an options object literal to configure the query. One of the available options—specified using the include property—allows us to indicate that we want any related Person model data.
+1. Within the options object literal, add an include property and set it to an array of objects – one object literal for each related model that we want to include:
+```javascript
+...
+// Retrieve movies
+const movies = await Movie.findAll({
+  include: [
+    {
+      model: Person,
+    },
+  ],
+});
+console.log(movies.map(movie => movie.get({ plain: true }
+```
+There's currently only one model associated with the Movie model—the Person model—so the array only has one object.
+2. Run the app with the npm start. Now when we call the Movie findAll() method with the include option, Sequelize generates and executes the following SQL SELECT statement:
+```sql
+SELECT `Movie`.`id`, `Movie`.`title`, `Movie`.`releaseYear`, `Movie`.`directorPersonId`, `Person`.`id` AS `Person.id`, `Person`.`firstName` AS `Person.firstName`, `Person`.`lastName` AS `Person.lastName`
+FROM `Movies` AS `Movie`
+  LEFT OUTER JOIN `People` AS `Person`
+  ON `Movie`.`directorPersonId` = `Person`.`id`;
+
+```
+```javascript
+[
+  {
+    "id": 1,
+    "title": "The Iron Giant",
+    "releaseYear": 1999,
+    "directorPersonId": 1,
+    "Person": {
+      "id": 1,
+      "firstName": "Brad",
+      "lastName": "Bird"
+    }
+  },
+  ...
+```
+[Model Querying Basics](https://sequelize.org/docs/v6/core-concepts/model-querying-basics/)
+[Fetching al Associated Elements](https://sequelize.org/docs/v6/advanced-association-concepts/eager-loading/#fetching-all-associated-elements)
+
+#### Customized the Associated Model Property Name
+The Person property in the retrieved movie data doesn’t convey anything about the relationship of a person to a movie:
+
+This makes it difficult to understand that the person is the movie's director. The Person property also doesn't match the property naming convention of the other model properties (i.e. id, title, releaseYear, directorPersonId). This increases the chance that clients will introduce capitalization related bugs into their code.
+
+To address these shortcomings, we’ll provide an alias for the model association and include that alias in our query method options.
+1. Open the db/models/movie.js file. Create an alias for the model association by adding an as property to the belongsTo() method options object literal:
+```javascript
+Movie.associate = (models) => {
+  Movie.belongsTo(models.Person, {
+    as: 'director', // alias
+    foreignKey: {
+      fieldName: 'directorPersonId',
+      allowNull: false,
+    },
+  });
+};
+```
+The value of the as property is the alias that we want to use for this association. Let's also keep the Person model association in sync with the Movie model association.
+2. Open the db/models/person.js file. Add an as property to the hasMany() method options object literal and set its value to 'director':
+```javascript
+Person.associate = (models) => {
+  Person.hasMany(models.Movie, {
+    as: 'director', // alias
+    foreignKey: {
+      fieldName: 'directorPersonId',
+      allowNull: false,
+    },
+  });
+};
+```
+3. Back in the app.js file, update the Movie.findAll() method include option with the same as alias property:
+```javascript
+const movies = await Movie.findAll({
+  include: [
+    {
+      model: Person,
+      as: 'director',
+    },
+  ],
+});
+console.log(movies.map(movie => movie.get({ plain: true }
+```
+
+#### Take Full Advantage of Your Model Associations
+Earlier, you learned that defining a data relationship from both models' point of view gives you flexibility in retrieving data from the database. Let's see that in action by updating our Person findAll() method call to include any related Movie model data.
+
+1. In the app.js file, update the Person findAll() method call by passing in an options object literal with an include property to indicate that we want any related Movie model data:
+```javascript
+// Retrieve people
+const people = await Person.findAll({
+  include: [
+    {
+      model: Movie,
+      as: 'director',
+    },
+  ],
+});
+console.log(JSON.stringify(people, null, 2));
+```
+
+## REST API Validation with Express <a name="rest-api-validation-with-express"></a>
+### The Importance of Data Validation
+#### What is Data Validation
+When we develop REST APIs that allow users to create or update data, we're establishing a relationship with our users.
+
+Regardless of how well we know or trust our users, users often want to do the right thing when creating and updating data. Sometimes though, knowing what the "right" thing is can be challenging to determine. And in rare circumstances, users might try to do something that's unexpected or unwanted—or even worse, harmful.
+
+As developers, we should strive to create applications that ensure that data created and updated by our users is useful.
+
+We want our application's data to be useful—or said another way, to be "high quality" data. To do that, we need to validate the data that users submit to our REST APIs.
+
+When developing full stack web applications, we can validate data in the following places:
+
+**Client**: For web applications, client-side validation typically means writing JavaScript that'll run in the browser to validate form data before submitting it to the server.
+
+**Server**: Implementing server-side validation means writing code to validate data sent to a server via an HTTP request. You can do this using your chosen language and platform, such as Python and Django, or Ruby on Rails. Our application is built using Node.js and the Express web application framework, so we'll use JavaScript (again) to implement our server-side validation.
+
+**Database**: Most databases provide ways to validate data as it's inserted or updated, but that will depend on which database platform you're using (i.e., MySQL, Postgres, SQL Server, etc.).
+
+Also, it's not an either/or choice—it's best to validate data on the client, on the server, and (if possible) within the database. Validating data on the client ensures that users have the best possible experience by providing immediate feedback as they update form fields. Validating data on the server ensures that savvy users can't submit bad data by bypassing client-side validation. Validating data within the database ensures that another application (or a user who has the ability to access the database directly) can't persist bad data into the database.
+
+#### Review the Routes
+Our REST API contains two routes (formatted in the following way: HTTP METHOD Route Response HTTP Status Code):
+
+* GET /api/users 200 - Returns a list of user accounts.
+* POST /api/users 201 - Creates a new user account.
+
+Open the app.js file. The router is imported from the routes module into the app.js file and added to the main application using the Express Application use() method:
+
+```javascript
+// Add routes.
+app.use('/api', routes);
+
+```
+Notice that a path is passed to the use() method before passing in the router, so routes defined in the router will only be considered if the requested route starts with the /api path. This means that the complete path for the GET and POST user routes is /api/users.
+
+**Review the Get Users Route**
+Open the routes.js file. The GET `/api retrieves a list of user accounts and returns it as JSON:
+```javascript
+router.get('/users', (req, res) => {
+  res.json(users);
+});
+
+```
+The app will store users in the JavaScript Array declared near the top of the routes module. Using an array instead of a database keeps things as simple as possible for this course:
+
+**Review the Create User Route**
+The POST /api/users route (also defined in the routes.js file) creates a new user account:
+```javascript
+router.post('/users', (req, res) => {
+  // Get the user from the request body.
+  const user = req.body;
+
+  // Add the user to the `users` array.
+  users.push(user);
+
+  // Set the status to 201 Created and end the response.
+  res.status(201).end();
+});
+```
+The Express Router post() method call registers a route handler to handle POST requests to the "/users" path. We retrieve new user data from the Express Request body property and push it into the users array in the route handler.
+```javascript
+// Get the user from the request body.
+const user = req.body;
+
+// Add the user to the `users` array.
+users.push(user);
+```
+Lastly, we use the status() method to set the status to 201 Created, followed by a call to the end() method to end the response:
+```javascript
+// Set the status to 201 Created and end the response.
+return res.status(201).end();
+```
+#### Test the Create User Route
+To test creating a new user account using the POST /api/users route, start the application by running npm start from the command line, open Postman, and complete the following steps:
+
+1. Select the "POST" HTTP method in the drop-down list to the left of the URL field.
+2. Change the URL to "http://localhost:5000/api/users".
+3. Switch to the "Body" tab, and select "raw" and "JSON (application/json) for the body format.
+4. Provide body content similar to the following:
+
+#### Further Testing the New User Account Route
+Currently, if we supply name, we'll notice that currently we avoid supply any information and still get a 201 code, so now we can add the validation.
+
+### Validating Data
+#### Define Data Validation Requirements
+In a software development project, a set of written requirements typically guides the development of the application.
+
+The written requirements often describe the data that the application will use. If the app allows users to create data, the requirements will also describe how data should be validated to determine if that data meets the expectations for "high quality" data.
+
+**Validate Data in a Request Handler**
+We need name and email values to create a new user account per our requirements. The name and email values are known as "required values". To ensure that new users have those values, we'll implement "required" value (or field) validation rules.
+
+**Write Our First Required Validation Rule**
+We create new users by sending an HTTP request to the POST /api/users route, so we'll implement our required validation rules by adding code to the route's request handler.
+
+We'll add our validation rules just after the user variable declaration and initialization. That'll give us access to the request body (via the user variable) within our validation rule code. Also, if there's a problem with the request data, we'll prevent adding the user to the users array and return any validation errors to the client.
+
+2. Before writing our first validation rule, let's declare and initialize a variable for an array of error messages.
+3. Write the first validation rule by adding a conditional statement that checks if the user.name property has a value by checking the following:
+- The name property exists on the user object
+- The name property isn't set to undefined, null, or an empty string ('')
+
+If the name property doesn't exist on the user object, then attempting to access that property will return undefined
+undefined, null, and an empty string are all "falsy" in JavaScript
+The logical NOT operator (!) flips a "falsy" value to "truthy" so that the code in the if statement's code block will execute
+If the if statement's condition is met, push an error message into the errors array
+```javascript
+router.post('/users', (req, res) => {
+  // Get the user from the request body.
+  const user = req.body;
+
+  const errors = [];
+
+  // Validate that we have a `name` value.
+  if (!user.name) {
+    errors.push('Please provide a value for "name"');
+  }
+
+  // Add the user to the `users` array.
+  users.push(user);
+
+  // Set the status to 201 Created and end the response.
+  res.status(201).end();
+});
+```
+
+#### Return Validation Error Messages
+If the errors array contains any elements (indicating that one of our validation rules failed) let's return a response with a 400 Bad Request HTTP status code along with the errors.
+1. In route.js, add the if statement shown below to the POST /api/users route handler:
+```javascript
+// Validate that we have a `name` value.
+if (!user.name) { ... }
+
+// Validate that we have an `email` value.
+if (!user.email) { ... }
+
+// If there are any errors...
+if (errors.length > 0) {
+  // Return the validation errors to the client.
+  res.status(400).json({ errors });
+} 
+```
+**Note**: The object literal that's passed to the Express Response object `json()` method is using the [ES2015 object initializer shorthand syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#property_definitions). You can use this syntax as long as the property and variable names are the same.
+
+2. Next, move the code that pushes the user into the users array and returns a 201 Created HTTP status code into an else clause. This code will execute only if there are no validation errors:
+```javascript
+if (errors.length > 0) {
+  // Return the validation errors to the client.
+  res.status(400).json({ errors });
+} else {
+  // Add the user to the `users` array.
+  users.push(user);
+
+  // Set the status to 201 Created and end the response.
+  res.status(201).end();
+}
+```
+#### Test Validation Rules in Postman
+Let's test our POST /api/users route validation rules! Start the application by running npm start from the command line, open Postman, and complete the following steps:
+Select the "POST" HTTP method in the drop-down list to the left of the URL field.
+Change the URL to "http://localhost:5000/api/users".
+Switch to the "Body" tab, and select "raw" and "JSON (application/json) for the body format.
+Provide the following body content:
+```javascript
+{}
+```
+5. Click the "send" button
+
+If you set up the validation rules correctly, you'll receive a 400 Bad Request HTTP status code back from the server, meaning that it did not create the user. The response body will also contain a JSON formatted list of validation errors
+
+#### Format Validation Error Messages
+There's no standard format for REST API validation errors, so you're free to choose a format that suits your application's needs. Whatever format you use, it's important to be consistent so that clients can reliably parse and display validation errors returned by your REST API.
+
+**Consider your Audience**
+It's also worth considering your audience: are your validation error messages meant to be read by a developer (who's using your REST API) or by an end-user (who uses an application that's using your REST API)? If it's a developer, it's generally okay to display technically worded messages. If it's an end-user, you'll want to make your messages friendlier and avoid anything that only a developer would understand.
+
+In some situations, it might be both developers and end-users who need to read your messages! If that's the case, you can provide separate messages as shown below:
+```javascript
+{
+  "errors": {
+    "name": [
+      {
+        "message": "The request body must contain a \"name\" field set to the user's name",
+        "userMessage": "Please provide a value for \"name\""
+      }
+    ],
+    "email": [
+      {
+        "message": "The request body must contain a \"email\" field set to the user's email address",
+        "userMessage": "Please provide a value for \"email\""
+      }
+    ]
+  }
+}
+```
+Again, the possibilities are endless. Research, experiment, and choose a format, but remember to be consistent.
+
+#### Explore Data Validation Types
+Required value validation rules only scratch the surface of what's possible with data validation. Other common validation types include:
+
+* Data type validation
+* Range and constraint validation
+* Consistency check validation
+
+**Data Type Validation**
+Sometimes string values need to be converted to another data type. For example, numbers or dates that are sent to the server via the request body as strings. Data type validation rules ensure that you can successfully convert string values to the expected data type before attempting the conversion.
+
+**Range and Constraint Validation**
+Range validation rules ensure that values fall within an expected range. For example, does a password contain at least eight characters but no more than 20 characters? Does the user's age fall between 16 and 120 years?
+
+Constraint validation rules check that values match an expected pattern. For example, does a provided value match the expected pattern for an email address, phone number, credit card number, or URL? Developers often use regular expressions to implement constraint validation rules.
+
+**Consistency Check Validation**
+Consistency check validation rules validate that values are logically consistent when compared with other values. For example, does the start date for a course come before the end date? Does a user's password match their password confirmation?
+
+**Other Validation Types**
+Validation rules sometimes need to perform operations that involve systems or APIs outside of your application to determine if a value is valid. For example, while a constraint validation rule can validate that a string value matches the expected pattern for an email address, it can't determine if you can successfully deliver an email to that address. Other examples include using external or third party APIs to validate credit card numbers or physical location addresses.
+
+#### Next Steps: Expamd Data Validation Requirements
+Now that you've learned about some additional validation types let's expand the data validation requirements for creating new user accounts by requiring a password.
+1. In your POST /api/users route request handler, add an if statement that checks for a missing password value
+2. Restart your application by running ctrl-C then npm start. Test your changes in Postman by selecting the "POST" HTTP method and providing body content similar to the following:
+```javascript
+{
+  "name": "Anwar Montasir",
+  "email": "anwar@testing.com",
+  "password": "abc123"
+}
+
+```
+**Hash User Passwords**
+To protect our users' security, we shouldn't store user passwords in "plain" text—text that's not hashed or encrypted. Anyone with access to the data store (typically the application's underlying database) could write a query to retrieve a list of users and access each user's password.
+
+You'll learn more about protecting user passwords before storing them in a database with a technique called "hashing" in a later course (and comparing an unhashed password to a hashed password). To wrap up this course, we'll use the bcrypt npm package to hash user passwords before saving them to the users array.
+
+1. The bcrypt package is already included in your project. Start by importing the bcrypt module at the top of routes.js
+```javascript
+const bcrypt = require('bcrypt');
+```
+2. In your /api/users post route handler, add an else clause to the password validation. Use bcrypt's hashSync() method to hash the user's password before adding the user to the users array, as shown below:
+```javascript
+  // Validate that we have a `password` value.
+  if (!user.password) {
+    errors.push('Please provide a value for "password"');
+  } else {
+    user.password = bcrypt.hashSync(user.password, 10);
+  }
+```
+3. Restart your application by running ctrl-C then npm start. Test that the password hashing worked by creating a new user.
+
+A hash is a fixed-length value generated from a value of any length using a hashing function—an algorithm that mathematically transforms a value into a jumble of characters. For example, a hash of the password "abc123" might look like:
+```
+$2b$10$GXkppqnLNvFwTWr9nuN2Kui2.37nCGiEMaX1QVg6NbEHCdpThTC7e
+```
+The second value passed to bcrypt.hashSync() is the number of "salt rounds" used to hash the password – in this case, 10 rounds. You can learn more about salt rounds in the "Resources" section of this page.
+
+**Using a Data Validation Library**
+When possible, we should avoid writing code that we don't need to write. Using a library can help make applications quicker to develop, more reliable, and easier to maintain. [Review this (optional) instruction step](https://teamtreehouse.com/library/using-a-data-validation-library) to learn how to use the express-validator library to validate input and report any errors before creating a user.
+
+**Validating Data Using an Object-Relational Mapping Library**
+If you're using an ORM library like Sequelize, you can take advantage of its built-in data validation capabilities instead of using a validation library like express-validator.
+[A note about rounds](https://www.npmjs.com/package/bcrypt#a-note-on-rounds)
+[What are Salt rounds](https://stackoverflow.com/questions/46693430/what-are-salt-rounds-and-how-are-salts-stored-in-bcrypt)
