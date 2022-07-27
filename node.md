@@ -14,7 +14,7 @@ Author: Sheila Anguiano
 7. [Data Relationshipts with SQL and Sequelize](#sequelize-data-relationships)
 8. [REST API Validation with Express](#rest-api-validation-with-express)
 9. [Sequelize Model Validation](#sequelize-model-validation)
-
+10 [REST API Authentication with Express](#rest-api-auth-with-express)
 
 ## Node.js <a name="node"></a>
 ### Introduction to Node.js
@@ -3840,3 +3840,288 @@ class User extends Model {}
   }, { sequelize });
 ```
 That's it for password validation! You'll test all your latest updates using Postman
+
+## REST API Authentication with Express <a name="rest-api-auth-with-express"></a>
+### What is User Authentication
+Without a way to identify users, your REST API could allow users to create new data, without distinguishing which data was created by which users.
+
+This is probably not what you or your users would expect. By default, you'd likely expect a user to be able to view anyone's data (depending on what that data is), but to only be able to modify their data. To do this, your application needs to support something known as "user authentication".
+
+**User Authentication**
+User authentication provides a way to identify users. Once you know the identity of your users, you can associate specific data with specific users. You can also control what they can and cannot do in your application based on their identity. This is known as **user authorization**.
+
+There are different types of authentication *schemes*, which differ in security strength and client or server software availability. This workshop will explore the most common user authentication scheme: *Basic Authentication* and how to implement it within an Express REST API application.
+
+After getting to know the "Basic Authentication" scheme, you'll create and apply a custom middleware function that authenticates users, and you'll define a protected route on the server. The middleware function will parse the user's credentials from an "Authorization request header" (more about this soon).
+
+If the client makes a request to the protected route without a valid username and password credentials, the request will fail. A request with valid user credentials will succeed and send the current authenticated user's information (formatted as JSON) in the response body.
+
+* [Authentication Schemes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#authentication_schemes)
+
+### Introducing Basic Authentication
+A common approach to identifying users is a process called "key-based authentication". Key-based authentication requires two pieces of information: a unique key or identifier (typically the user's username or email address) and a secret, typically the user's password.
+
+When a client application, such as a web browser or mobile application, requests a "protected" or "private" route (a route that requires user authentication) the client needs to include the user's key and secret as part of the HTTP request that's sent to the server. The REST API's authentication scheme dictates the format of the user's key and secret.
+
+You'll use the Basic Authentication scheme to implement key-based authentication in a simple REST API. The Basic Authentication scheme is part of the overall authentication framework provided by HTTP (see this [page](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication) on MDN web docs for more information).
+
+**Authorization Request Header**
+When using Basic Authentication, the client sets an "Authorization" header on each request that's sent to a protected route on the server.
+Here's an example Authorization header and value:
+```
+Authorization: Basic am9lQHNtaXRoLmNvbTpqb2VwYXNzd29yZA==
+```
+In this example, the header field name is Authorization, followed by a colon (i.e. ":"), and to the right of the colon is the header value: Basic am9lQHNtaXRoLmNvbTpqb2VwYXNzd29yZA==.
+
+[Basic Access Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication)
+
+Using Postman we'll create a new user.
+
+### Set up the Authentication Middleware
+Now that we've implemented user registration and have a way to create new users, we can turn our attention to implementing user authentication.
+
+One approach would be to update each REST API route that needs to be protected (or requires authentication) with the necessary code to implement Basic Authentication. This approach, however, would introduce a lot of duplicated code in our Express request handlers.
+
+Luckily, Express provides a more efficient option, creating a custom middleware function that you can apply to each route that needs to be protected.
+
+**Create a Custom Middleware Function**
+A custom Express middleware function is a JavaScript function that defines three parameters:
+req or request (for the [request](https://expressjs.com/en/4x/api.html#req) object)
+res or response (for the [response](https://expressjs.com/en/4x/api.html#res) object)
+next (a function that tells Express when to hand off processing to the next middleware in the request pipeline)
+
+1. Open the file middleware/auth-user.js. This module will hold the middleware to authenticate the request using Basic Authentication.
+2. In the module, define (and export) a middleware function named authenticateUser(), as shown below:
+
+`exports.authenticateUser` exports the middleware function so that you're able to import it from within another module. The `next()` function passes execution to the next middleware.
+
+The custom middleware function in middleware/auth-user.js currently doesn't do anything other than call the next() method. A completed version of the authenticateUser() function should implement the following functionality (described for now using code comments – or pseudocode):
+
+```javascript
+exports.authenticateUser = async (req, res, next) => {
+  // Parse the user's credentials from the Authorization header.
+
+  // If the user's credentials are available...
+     // Attempt to retrieve the user from the data store
+     // by their username (i.e. the user's "key"
+     // from the Authorization header).
+
+  // If a user was successfully retrieved from the data store...
+     // Use the bcrypt npm package to compare the user's password
+     // (from the Authorization header) to the user's password
+     // that was retrieved from the data store.
+
+  // If the passwords match...
+     // Store the retrieved user object on the request object
+     // so any middleware functions that follow this middleware function
+     // will have access to the user's information.
+
+  // If user authentication failed...
+     // Return a response with a 401 Unauthorized HTTP status code.
+
+  // Or if user authentication succeeded...
+     // Call the next() method.
+};
+```
+### Parse the Authorization Header
+Writing a helper function to parse the user's credentials from the Authorization header manually can help gain a deeper understanding of how Basic Authentication works. But in general, it's preferable not to have to write code that someone else has already written (and presumably tested) for you.
+
+In this step, we'll use the [basic-auth npm package](https://www.npmjs.com/package/basic-auth) to do all of the user credential parsing for us.
+
+Within the `authenticateUser` function, use the `auth()` method to parse the user's credentials from the Authorization header, and assign them to the variable credentials:
+```javascript
+exports.authenticateUser = async (req, res, next) => {
+  // Parse the user's credentials from the Authorization header.
+  const credentials = auth(req);
+
+  next();
+};
+```
+Assuming that the request contains a valid Basic Authentication Authorization header value, the credentials variable will be set to an object containing the user's key and secret (their username and password). You'll experience how it all works in the next step.
+[`auth(req)`](https://www.npmjs.com/package/basic-auth#authreq)
+
+### Authenticate the User
+Now that we're getting the user's key and secret in the request, we can authenticate the user. To be safe, let's add a conditional statement to check that we could successfully parse the user's credentials from the Authorization header.
+
+1. In middleware/auth-user.js, add an if statement that checks if the user's credentials are available. Now we can check if the user's key (username or email address) is associated with a known user account in the database using a Sequelize finder method.
+2. Import the User model at the top of auth-user.js as shown below:
+3. Inside the if statement, use the Sequelize findOne() method on the User model to find a user account whose username property matches the user credential's name property. Assign the user returned by User.findOne() to the variable user:
+```javascript
+'use strict';
+
+const auth = require('basic-auth');
+const { User } = require('../models');
+
+// Middleware to authenticate the request using Basic Authentication.
+exports.authenticateUser = async (req, res, next) => {
+    // Parse the user's credentials from the Authorization header.
+    const credentials = auth(req);
+
+    if(credentials){
+        const user = await User.findOne({ where:{username: credentials.name}});
+    }
+  
+    next();
+  };
+
+```
+The Authorization header object in the request might look like this:
+```javascript
+Credentials {
+  name: 'user@website.com',
+  pass: 'mypassword'
+}
+```
+The value of credentials.name will be the value assigned to the name key, and credentials.pass is the value set for the pass key.
+
+**Compare User Passwords**
+Next, in the authenticateUser function, we'll check that we found a known user account. If an account is found, the user's secret (their password) is then checked against the known user account's password.
+
+Remember that the user's stored password is hashed, and the password from the user credentials is in clear text (parsed from the [base64 encoded string](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization#directives)). To compare the two values, we can use the `bcrypt compareSync()` method.
+
+1. Inside the function, use another conditional statement to check if a user was successfully retrieved from the database
+
+2. Next, within the if statement, use the bcrypt `compareSync()` method to compare the user's password (from the Authorization header) to the encrypted password retrieved from the database. Assign the result to the variable authenticated:
+
+Internally the compareSync() method hashes the user's password before comparing it to the stored hashed value).
+```javascript
+exports.authenticateUser = async (req, res, next) => {
+    // Parse the user's credentials from the Authorization header.
+    const credentials = auth(req);
+
+    if(credentials){
+        const user = await User.findOne({ where:{username: credentials.name}});
+        if(user){
+            const authenticated = bcrypt.compareSync(credentials.pass, user.confirmedPassword);
+        }
+    }
+  
+    next();
+  };
+
+```
+*Remember that the user's hashed password is stored in the database under the confirmedPassword attribute*.
+
+**Store the Retrieved User Object on the Request Object**
+The `compareSync()` method returns `true` if the passwords match or `false` they don't.
+1. Use another conditional statement to check if the passwords match.
+2. Next, we'll add the user account (retrieved from the database) to the Request object and call the next() method to continue with processing the request (i.e., retrieving or persisting data):
+```javascript
+exports.authenticateUser = async (req, res, next) => {
+  const credentials = auth(req);
+
+  if (credentials) {
+    const user = await User.findOne({ where: {username: credentials.name} });
+    if (user) {
+      const authenticated = bcrypt
+        .compareSync(credentials.pass, user.confirmedPassword);
+      if (authenticated) {
+        console.log(`Authentication successful for username: ${user.username}`);
+
+        // Store the user on the Request object.
+        req.currentUser = user;
+      }
+    }
+  }
+
+  next();
+};
+```
+`req.currentUser` means that you're adding a property named currentUser to the request object and setting it to the authenticated user.
+
+So far, we've only implemented what is known as the **"happy" path**—the path that will be executed as long as everything goes as expected. In the next step, we'll add the code to execute if user authentication fails
+
+### Handle Failed User Authentication
+To finish the authenticateUser() middleware function, let's add else statements to our if statements so that we can handle each of our expected failure cases. Inside the each statements, we'll set a value on a message variable that describes the failure that occurred, then check at the bottom of the function if the message variable has a value.
+
+1. At the top of the authenticateUser function, use the let keyword to declare a message variable:
+2. Add an else statement to each of the three if statements to handle the expected failure cases, as shown below. Each else clause assigns a new message to the message variable.
+3. Add a final if...else statement near the bottom of the authenticateUser function:
+```javascript
+'use strict';
+
+const auth = require('basic-auth');
+const { User } = require('../models');
+
+// Middleware to authenticate the request using Basic Authentication.
+exports.authenticateUser = async (req, res, next) => {
+    let message; // store the message o display
+
+    // Parse the user's credentials from the Authorization header.
+    const credentials = auth(req);
+
+    if(credentials){
+        const user = await User.findOne({ where:{username: credentials.name}});
+        if(user) {
+            const authenticated = bcrypt.compareSync(credentials.pass, user.confirmedPassword);
+            if(authenticated) {
+                console.log(`Authentication successful for username: ${user.username} `);
+                //Store the user on the request object
+                req.currentUser = user;
+            } else {
+                message = `Authentication failure for username: ${user.username}`;
+            }
+        } else {
+            message = `User not found for username: ${credentials.name}`;
+        }
+    } else {
+        message = `Auth header not found`;
+    }
+
+    if (message) {
+        console.warn(message);
+        res.status(401).json({ message: 'Access Denied'});
+    } else {
+        next();
+    }
+  };
+
+```
+Suppose the message variable has a value. In that case, we know that a failure occurred. In the above code, we log the message to the console (for debugging purposes) and return a 401 Unauthorized HTTP status code and a generic "Access Denied" message in the response body.
+
+If the client makes a request to a protected route but doesn't provide an Authorization header value, or if verification of the user's key or secret fails, our authenticateUser() middleware function will halt further processing of the request and return a response with a 401 Unauthorized HTTP status code. This indicates to the client that the request failed because it lacked valid authentication credentials.
+
+The generic message returned in the response body is intentionally vague, because returning a more specific message, such as "Username not found" or "Incorrect password" would inadvertently help anyone attempting to hack a user account.
+
+### Define a Protected Route
+Some application routes would likely display private information that we don't want unauthorized (or logged-out) users to view. So you'll often need to protect specific routes in your application from unauthorized users.
+
+This final step will put our authenticateUser() middleware function to use by creating a protected route.
+
+**Define the GET User route**
+1. Open the file routes.js. At the top of the file, import the authenticateUser middleware function from the auth-user module, as shown below.
+2. Next, use router.get() to define the GET '/users' route just above the user registration route
+3. Pass the authenticateUser middleware function into router.get() before the router handler function:
+This instructs Express to route GET requests to the path "/api/users" first to our custom middleware function and then to the inline router handler function.
+4. Within the route handler, retrieve the current authenticated user's information from the Request object's currentUser property
+```javascript
+// Route that returns a list of users.
+router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
+  const user = req.currentUser;
+
+}));
+```
+The authenticateUser middleware function will set the currentUser property on the Request object if and only if the request is successfully authenticated. We can use the currentUser property with confidence because our inline route handler function will never be called if the request doesn't successfully authenticate.
+5. Finally, use the Response object's json() method to return the current user's information formatted as JSON:
+```javascript
+// Route that returns a list of users.
+router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
+  const user = req.currentUser;
+
+  res.json({
+    name: user.name,
+    username: user.username
+  });
+}));
+```
+
+**Test the Protected Route**
+Test the get user route by running npm start from the command line, then open Postman and complete the following steps:
+
+1. Click the plus (+) icon to open a new a tab and create a new test.
+2. Select the "GET" HTTP method in the drop down list to the left of the URL field.
+3. Change the URL to "http://localhost:5000/api/users".
+4. Switch to the "Authorization" tab, and select "Basic Auth" for the "TYPE", and provide the username and password for the user account that you added earlier when creating a user.
+5. Click the "Send" button.
+
+
