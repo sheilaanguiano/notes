@@ -9,12 +9,12 @@ Author: Sheila Anguiano
 3. [Express Basics](#express)
 4. [Asynchronous Code in Express](#async-express)
 5. [SQL ORMs with Node.js](#sql-orm-with-node)
-5. [Sequelize ORM with Express.js](#sequelize-express)
-6. [REST APIs with Express](#api-express)
-7. [Data Relationshipts with SQL and Sequelize](#sequelize-data-relationships)
-8. [REST API Validation with Express](#rest-api-validation-with-express)
-9. [Sequelize Model Validation](#sequelize-model-validation)
-10. [REST API Authentication with Express](#rest-api-auth-with-express)
+6. [Sequelize ORM with Express.js](#sequelize-express)
+7. [REST APIs with Express](#api-express)
+8. [Data Relationshipts with SQL and Sequelize](#sequelize-data-relationships)
+9. [REST API Validation with Express](#rest-api-validation-with-express)
+10. [Sequelize Model Validation](#sequelize-model-validation)
+11. [REST API Authentication with Express](#rest-api-auth-with-express)
 
 
 ## Node.js <a name="node"></a>
