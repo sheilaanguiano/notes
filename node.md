@@ -14,7 +14,8 @@ Author: Sheila Anguiano
 7. [Data Relationshipts with SQL and Sequelize](#sequelize-data-relationships)
 8. [REST API Validation with Express](#rest-api-validation-with-express)
 9. [Sequelize Model Validation](#sequelize-model-validation)
-10 [REST API Authentication with Express](#rest-api-auth-with-express)
+10. [REST API Authentication with Express](#rest-api-auth-with-express)
+
 
 ## Node.js <a name="node"></a>
 ### Introduction to Node.js
