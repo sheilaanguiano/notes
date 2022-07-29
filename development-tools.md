@@ -613,6 +613,7 @@ A **repository** is the most basic element of Github, this folder contains all t
 *fork* is a copy of a repository, similar to a branch and is typically used when you don't have access to a project, but let's you freely experiment with the project
 *Create a repo*
 
+### Working By Yourself
 #### Using Issues
 Issues are typically used to track bugs or features, but really issues can be uses for justa about any task you want to track hahahs
 
@@ -627,11 +628,83 @@ Branching allow you to conveniently work on multiple versions of your code at on
 * `touch file-name.ext` creates a file from the terminal
 * `git push origin branch`
 
-### Working By Yourself
+#### Open a Pull Request
+Pull request are use to propose changes to the project files. They're a way to start a discussion about commits and are often use for code review.
+
+*Conversation View* :A pull request is typically used as a discussion about the changes being made to the repository
+*Commits View* Contain information about who's made changes to the files. Each commit is an updated view of the repository, allowing us to see how changes have happened from commit to commit
+*Files Changed View*: Allows you to see the changes that is being proposed, called the *dif*. The green text it's what has been added or red if something has been deleted. You can add line comments here as part of the code review
+
+Most project teams require someone to sign off on the change before is merged
+
+#### Conflict Resolution
+When you're just getting started uwing Git and GitHub avoid make any edits on the website, doing all your work locally will help you avoid conflicts
 
 ### Working on a Team
+#### Creating an Organization
+You can create a free organization on GitHub, you can do this on the "+" sign on the top right side of the screen
+#### Creating a Team
+Teams allow you to share a set of permissions with groups of like people.
+
+Inside your organization > Teams tab> Create a new team
+- Setting (tab menu)
+- Collaborators & Teams (left menu)
+    - Then give the team the permission level (3 levels)
+
+#### Creating a Repository in your Organization
+Inside your Organization, click the "+" sign and create a new repo, just on the OWNER pick the organzation and not your USER
+
+#### Open a Pull Request for your Team to Review
+When you're working with a team is important to be clear about WHAT you're changing, and WHY you're making that change
+
+Title: Kepp this action oriented
+Description: Write the what and why, and you can do team-mentions to notify your team
+
+#### Workflow Demostration
+`git branch --remote`
+`git checkout`
+
+Pull request can have a few different methods of getting merged
+- a team member always merges the pull requests
+- the person that submitted the pull request will merged it 
 
 ### Create a Web Presence
+#### GitHub Pages
 
 ### Get Involved in Open Source
+#### Introduction to Open Source
+Open source software is software that is modifiable and enhanceable by anyone becayse the software's license allows it. This code is publicly viewable on Github and doesn't require private access to view the code.
+- Add a LICENSE
+MIT License
 
+[Choose an Open Source License](https://choosealicense.com/)
+
+#### How to Find an Open Source Project
+- GitHub Explore
+
+#### Contributing to a Project with an Issue
+How to create a great bug report
+- Check existing issue (to not create duplicate issue)
+- If it's not there then we create a clear title
+- In the body, we describe reproducible steps so the maintainers and contributors see what I can see
+- Include systems details (OS details, language version)
+- Include intput and output, using markdown
+
+#### Creating your Own Fork of an Open Source Repository
+* Owner - Who owns the repo a user or an organization
+* Collaborators - Teammates
+* Mainteiner - Is someone the owner trusts to review pull request and keep the project on track
+* Contributor - Someone who doesn't have direct push access to the code
+* Community Members - People that use the project
+
+As a contributor you need to **fork* the repository. A fork is a GitHUB feature where we take a copy of the repos in its current state and we move into our user account or organization.
+
+Since a fork is owned by us (user/org) we can make changes directly and then submit a pull request between both repos
+[Contributing to Projects](https://docs.github.com/en/get-started/quickstart/contributing-to-projects)
+
+#### Contributing to a Project with a Pull Request
+It is important to remember that not all Pull Requests will be merged. Try to keep your pull requests valuable to the main project by providing documentation, a bug fix, or a new feature. Avoid “gotcha” pull requests that only fix a single bit of wording. Regardless, not all pull requests get merged (and I have had dozens that get closed without merging). Don’t feel bad: keep at it and with more context and experience you will be an open source machine in no time.
+
+- Add Unit Tests
+- Include Screenshots
+- Follow the style of the project
