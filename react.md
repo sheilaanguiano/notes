@@ -12,6 +12,7 @@ Author: Sheila Anguiano
 4. [Data Fetching in React](#fetch-react)
 5. [React Router 4](#react-router)
 6. [Deploy React App](#deploy-react-app)
+7. [React Context API](#react-context-api)
 
 ## React Basics <a name="react"></a>
 ### First Steps in React
@@ -2487,3 +2488,270 @@ Now, you can publish your build to a gh-page branch on the github repo by runnin
 When using React Router, if your app is served from a sub-directory, pass the 'basename' prop to the router to set the base URL for all locations. For example:
 
 <BrowserRouter basename="/course-directory">
+
+## React Context API <a name="react-context-api"></a>
+### What is the Context API
+In the typical React data flow, components communicate with each other via props. A parent passes props down to child components. Sometimes the intermediary components get props passed to them with the sole purpose of passing that data down one (or several) more levels deep. This cascade of props is often referred to as **prop drilling**.  While prop drilling is not completely discourage or considered a bad practice, but it can become tedious, difficult to manage and error prone.
+
+To get around prop drilling and help prevent state management issues developers often turn to third party libraries like **MobX or Redux. Both help maintain and manage application state in a more scalable and predictable way. Now, in some cases using a library like Redux just to avoid prop drilling might be overkill, so React offers a built in way to do this without having to reach for a state management tool
+
+The **React Context API** provides a way to pass data to components without having to pass props manually at every single level.
+
+Context was an experimental feature in older versions of React, and it officially became a stable feature in React 16.3. In fact, libraries like redux and React Router use **context** behind the scenes as a way to communicate between components 
+
+[Context – React docs](https://reactjs.org/docs/context.html)
+[Prop Drilling](https://blog.kentcdodds.com/prop-drilling-bb62e02cb691)
+
+### How Context Works
+The context API has three essential parts:
+- `createContext()`
+- Provider
+- Consumer
+
+First, you have to create the context, so `React.createContext()` sets up a context and returns an object with a provider and a consumer, the two main components of the Context API.
+
+A single **provider** component is used as highest possible in the tree, it allows consumer components to subscribe to context changes. **Consumers** access the provider to get any data they need, thus avoiding prop drilling. The provider and consumers are constantly communicating, it's the communication between the two that makes Context work.
+
+### Create Context
+We'll create a new folder named `Context` and  create a new file named `index.js` where we're going to define our context, provider and consumer:
+
+```jsx
+import React from  'react';
+
+const ScoreboardContext =  React.createContext();
+  
+export  const Provider =  ScoreboardContext.Provider;
+export  const Consumer =  ScoreboardContext.Consumer;
+```
+We'll make use of the `Provider` in the parent `App.js` component.
+
+You don't need to include `index.js` in the import path when resolving the import path to the context directory, node will look for an `index.js` file and load it. So `./Context` is really a path to `'./Context/index.js'`
+
+To provide the context to all children of app, we'll wrap all the JSX in the return statement with a `<Provider>` tag
+
+```jsx
+import React, { Component} from 'react';
+import { Provider } from  './Context';
+...
+
+render() {
+	return (
+		<Provider value={ this.}>
+			<div  className="scoreboard">
+				<Header
+					title="Scoreboard"
+					players={  this.state.players }
+				/>
+				{/* Players list */}
+				{this.state.players.map( (player, index)  =>
+				<Player
+				...
+				 <AddPlayerForm  addPlayer={this.handleAddPlayer}  />
+			</div>
+		</Provider>
+
+		);
+	}
+}
+```
+
+[`React.createContext()`](https://reactjs.org/docs/context.html#reactcreatecontext)
+[Provider](https://reactjs.org/docs/context.html#provider)
+
+### Provide and Consume State
+The provider usually lives at the top level of your app. In requires a value prop to share data. This value can be anything, but it's usually the application state and any actions or event handlers shared between components. 
+```jsx
+...
+	<Provider value={this.state.players}>
+```
+A single provider, can be connected to many consumers, no matter how far down they are on the component tree.
+
+So now, we'll add context to the `Stats.js` component from this:
+```jsx
+import React from  'react';
+import PropTypes from  'prop-types';
+
+const  Stats  =  ({ players })  => {
+  const totalPlayers = players.length;
+	const totalPoints = players.reduce((total, player)  => {
+		return total + player.score;
+		}, 0);
+	return (
+	<table  className="stats">
+		<tbody>
+			<tr>
+				<td>Players:</td>
+				<td>{ totalPlayers }</td>
+			</tr>
+			<tr>
+				<td>Total Points:</td>
+				<td>{ totalPoints }</td>
+			</tr>
+		</tbody>
+	</table>
+	);
+}
+
+Stats.propTypes = {
+	players:  PropTypes.arrayOf(PropTypes.shape({
+		score:  PropTypes.number
+		}))
+	};
+export  default Stats;
+```
+To this
+
+```jsx
+import React from  'react';
+import { Consumer} from  './Context';
+
+const  Stats  =  ()  => {
+	return(
+		<Consumer>
+			{ context => {
+				const totalPlayers = context.length;
+				const totalPoints = context.reduce((total, player)  => {
+					return total + player.score;
+				}, 0);
+				
+				return (
+				<table  className="stats">
+					<tbody>
+						<tr>
+							<td>Players:</td>
+							<td>{ totalPlayers }</td>
+						</tr>
+						<tr>
+							<td>Total Points:</td>
+							<td>{ totalPoints }</td>
+						</tr>
+					</tbody>
+				</table>
+				);
+			}
+		}
+		</Consumer>
+	);
+}
+export  default Stats;
+```
+
+
+
+To render anything inside the consumer, you use a pattern in React called **Render Prop**, this refers to a method for sharing code between React components using a prop whose value is a function. A component is provided a prop which takes a function that returns a React element. This pattern is also called **function as a child**, because instead of passing a prop, you're also able to write a function inside the opening and closing Consumer tags. The function returns the part of the UI you want to render. So, we'll use a function that returns the stats UI (from the exercise) inside the consumer, this function is required and needs to be placed inside a JSX expression.
+
+The function takes the current context value as a parameter, and returns JSX. This parameter is commonly named value or context. The context parameter passed to the function will be equal to the value prop of the provider, in other words, the data we pass into the provider's value prop. So the consumer is now subscribed to any context changes
+
+```jsx
+<Component render={ data => (
+	<h1>Hello, {data.user}!</h1>
+)} />
+```
+
+And now, we can clean `Header.js`
+Before using context
+```jsx
+import React from  'react';
+import PropTypes from  'prop-types';
+import Stats from  './Stats';
+import Stopwatch from  './Stopwatch';
+
+const  Header  =  ({ players, title })  => {
+	return (
+		<header>
+		<Stats  players={ players }  />
+		<h1>{ title }</h1>
+		<Stopwatch  />
+		</header>
+	);
+}
+
+Header.propTypes = {
+	title:  PropTypes.string,
+	players:  PropTypes.arrayOf(PropTypes.object)
+}
+
+Header.defaultProps = {
+	title:  'Scoreboard'
+}  
+
+export  default Header;
+```
+After Context
+```jsx
+import React from  'react';
+import Stats from  './Stats';
+import Stopwatch from  './Stopwatch';
+
+const  Header  =  ({ title })  => {
+	return (
+		<header>
+		<Stats />
+		<h1>{ title }</h1>
+		<Stopwatch  />
+		</header>
+	);
+}
+export  default Header;
+```
+`React.Fragment` lets you group a list of sibling elements or components without having to add an unnecessary wrapper element. It doesn't render anything out to the DOM.
+
+
+[Consumer](https://reactjs.org/docs/context.html#consumer)
+[Using Props Other Than render](https://reactjs.org/docs/render-props.html#using-props-other-than-render)
+[Fragments](https://reactjs.org/docs/fragments.html)
+[Render props](https://reactjs.org/docs/render-props.html)
+
+#### Provide and Consume Actions
+We've learned how to read from the state provided by context. But we can also pass functions that modify that state, that way consumers can respond to user interactions with state updates.
+
+It's common to pass the provider's value prop an object to store multiple properties in state, as well as any event handlers or actions you want to perform on the data.
+
+App.js
+```jsx
+...
+render() {
+	return (
+		<Provider  value={{
+			players:  this.state.players,
+			actions: {
+				changeScore:  this.handleScoreChange
+			}
+		}}>
+
+```
+Counter.js
+```jsx
+...
+<button  className="counter-action decrement"  onClick={()  => context.actions.changeScore(index, -1)}> - </button>
+...
+```
+#### Provide Remaining Actions to Child Components
+The consumer doesn't always have to wrap everything in the return statement, we can just wrap the part of the UI that need to consume the Provider's actions
+
+```jsx
+return (
+  <div  className="player">
+    <Consumer>
+      { context => (
+          <span  className="player-name">
+			  <button  className="remove-player"  onClick={()  => context.actions.removePlayer(id)}>✖</button>
+			  <svg  viewBox="0 0 44 35">
+			    <path  d=".."/>
+				<rect  width="30.4986"  height="3.07759"  transform="translate(6.56987 31.5603)"/>
+			  </svg>
+			{ name }
+        </span>
+		)}
+	  </Consumer>
+   <Counter
+     score={ score }
+     index={ index }
+   />
+  </div>
+);
+```
+
+Finally, we can move the `<Provider>` along with the state and actions into a separate (higher order) component. As a result, the `App` component will have less code and responsibilities, making it easier to think about and maintain.
+
+[Higher-Order Components](https://reactjs.org/docs/higher-order-components.html)
