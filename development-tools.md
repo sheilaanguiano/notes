@@ -11,6 +11,7 @@ Author: Sheila Anguiano
 3. [Introduction to Git](#git)
 4. [HTTP Basics](#http)
 5. [Introduction to REST API's](#intro-rest-api)
+6. [GitHub Basics](#github)
 
 
 ## Regular Expressions in JavaScript <a name="regex"></a>
@@ -588,3 +589,49 @@ Make sure you understand where the information will be included when consuming o
 
 There are othe rmethod of handling authetication like cross realm authetication, HTTP Digest and others, but a lot of tgem will be specific to the API or tools you're using, POSTMAN should allow you to send any type of authetication request that you encounter
 [Memcached](http://www.memcached.org/)
+
+## GitHub Basics<a name="github"></a>
+### Hello GitHub
+#### Introduction
+* Git: Version control system that's typically used with Github
+* GitHUb: Website for hosting and collaborating on Projects
+
+With git every developer has a **local** copy of the repository on their computer and then as they make changes they can upload those changes to GithUb and share them with a larger team
+
+#### Search and Explore
+A **repository** is the most basic element of Github, this folder contains all the project files, including documentation and stores the history of each file
+- code view: You'll find the files included in the repo
+    * license file
+    * README
+- issues: used to track bugs and feature request
+- pull requests
+* githubcom/explore we can browse through popular repos
+
+#### Social Coding
+*Star*ring a Project is the simplest way to let someone know that you appreceiate their project, 
+*watch* to get project notifications
+*fork* is a copy of a repository, similar to a branch and is typically used when you don't have access to a project, but let's you freely experiment with the project
+*Create a repo*
+
+#### Using Issues
+Issues are typically used to track bugs or features, but really issues can be uses for justa about any task you want to track hahahs
+
+#### Mastering Markdown
+Markdown is text to HTML conversion system that allows you to write in plain-text and then easily convert to HTML
+
+#### Create a Branch
+Branching allow you to conveniently work on multiple versions of your code at once. It's an exact copy of the original branch as it was at that point in time. This means you're free to experiment and commit changes safe in the knowledge that your new branch won't be merged until you're ready 
+
+* branch names cannot have spaces
+* `git checkout -b branch-name` switches branches
+* `touch file-name.ext` creates a file from the terminal
+* `git push origin branch`
+
+### Working By Yourself
+
+### Working on a Team
+
+### Create a Web Presence
+
+### Get Involved in Open Source
+
