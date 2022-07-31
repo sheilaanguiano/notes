@@ -13,6 +13,7 @@ Author: Sheila Anguiano
 5. [React Router 4](#react-router)
 6. [Deploy React App](#deploy-react-app)
 7. [React Context API](#react-context-api)
+8. [React Hooks](#hooks)
 
 ## React Basics <a name="react"></a>
 ### First Steps in React
@@ -2929,3 +2930,523 @@ Finally, we can move the `<Provider>` along with the state and actions into a se
 [Higher-Order Components](https://reactjs.org/docs/higher-order-components.html)
 
 #### Provide Remaining Actions to Child Components
+The consumer doesn't always have to wrap everything in the return statement, in the example below the consumer only wraps the part of the UI that needs to consume the `removePlayer` action.
+```jsx
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+import { Consumer } from './Context';
+import Counter from './Counter';
+
+class Player extends PureComponent {
+
+  static propTypes = {
+    name: PropTypes.string.isRequired,
+    score: PropTypes.number.isRequired,
+    id: PropTypes.number.isRequired,
+    index: PropTypes.number.isRequired
+  };
+ 
+  render() {
+    
+    const { 
+      name,
+      id,
+      score,
+      index
+    } = this.props;
+
+    return (
+      <div className="player">
+        <Consumer>
+          { context => (
+            <span className="player-name">
+              <button className="remove-player" onClick={() => context.actions.removePlayer(id)}>✖</button>
+              { name }
+            </span>
+
+          )
+          }
+        </Consumer>
+        
+  
+        <Counter 
+          score={score}
+          index={index}
+      
+        />
+      </div>
+    );
+  }
+}
+
+export default Player;
+```
+
+#### Refactor the Provider
+Now, we can move the provider along with state and actions into a separate high order component as a result our main app component will have less coding responsabilities making it that much easier to think about and maintain.
+
+In JavaScript a higher-order function is a function that accepts another function as an argument, in a similar way a **Higher-Order Component(HOC)** access a wrapper takes an existing component and returns a new component. Higher-order component lets you share functionality accross multiple components.
+
+```jsx
+//index.js
+export class Provider extends Component { 
+    state = {
+        players: [
+          {
+            name: "Guil",
+            score: 0,
+            id: 1
+          },
+          {
+            name: "Treasure",
+            score: 0,
+            id: 2
+          },
+          {
+            name: "Ashley",
+            score: 0,
+            id: 3
+          },
+          {
+            name: "James",
+            score: 0,
+            id: 4
+          }
+        ]
+      };
+
+      // player id counter
+  prevPlayerId = 4;
+
+  handleScoreChange = (index, delta) => {
+    this.setState( prevState => ({
+      score: prevState.players[index].score += delta
+    }));
+  }
+
+  handleAddPlayer = (name) => {
+    this.setState( prevState => {
+      return {
+        players: [
+          ...prevState.players,
+          {
+            name,
+            score: 0,
+            id: this.prevPlayerId += 1
+          }
+        ]
+      };
+    });
+  }
+
+  handleRemovePlayer = (id) => {
+    this.setState( prevState => {
+      return {
+        players: prevState.players.filter(p => p.id !== id)
+      };
+    });
+  }
+
+    render() {
+        return (
+            <ScoreboardContext.Provider value={{
+                //Inside this object, we'll pass in our data with a set of properties
+                players: this.state.players,
+                actions: {
+                  changeScore: this.handleScoreChange,
+                  removePlayer: this.handleRemovePlayer,
+                  addPlayer: this.handleAddPlayer 
+                }
+              }}>
+              { this.props.children }
+            </ScoreboardContext.Provider>   
+         );
+    }
+
+} ScoreboardContext.Provider;
+
+```
+**children** is a special prop in React that lets you pass components as data to other components. Whenevever we use the Provider component by defining a set of provider tags, any elements placed between the tags is considered to be children of the component. So `props.children` is going to pass anything we include between the opening and closing tags into the Provider component and render it to the UI.
+
+For example, the provider should live as close to the top as possible. So in the App entry file
+
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from './components/Context';
+
+import App from './components/App';
+import './index.css';
+
+ReactDOM.render(
+  <Provider>
+    <App />
+  </Provider>, 
+  document.getElementById('root')
+);
+
+```
+`props.children` is what allows the App component, along with all of the app's children to be passed into the provider and rendered.
+
+So now App is a simple staleess component. so we can simplify it even further by converting it to a function.
+```jsx
+//App.js
+
+import React from 'react';
+import Header from './Header';
+import PlayerList from './PlayerList';
+import AddPlayerForm from './AddPlayerForm';
+
+const App = () => {
+  return (    
+    <div className="scoreboard">
+      <Header />
+
+      <PlayerList />
+      
+      <AddPlayerForm />
+    </div>
+  );
+}
+  
+  
+
+export default App;
+
+```
+
+#### Refactor Consumers
+Just like we've done with props, we can use ES2015 destructuring to extract the state and actions from the value object receipt from the provider
+
+In PlayerList we can unpack the players property by passing the consumers function and object with the variable players, then replace 	`contest.players` with just players
+
+We've successfully offloaded state management and the distribution of events handlers on to the provider. The provider component is now the App's single source of truth for the data and actions
+
+Notice that we didn't use a consumer in the Stopwatch component, the stopwatch consist of local component state, and actions not shared with other components in the app.
+
+*You might not always know how many components will be between the parent and the nested children you want to get that data to, so context provides an incredible handy way for components at any nesting level to directly access the data they need.
+
+*Pending to destructure the actions and players in the STATS and AddPlayerForm components*
+
+##  React Hooks <a name="hooks"></a>
+The React library has traditionally allowed developers to create and manage state, as well as run certain code based on the lifecycle of a component. 
+Class components provide one way to declare and manage state, and call lifecycle methods like `componentDidMount` and `componentWillUnmount` but they with some drawbacks like:
+- Optimizing classes can be slower to process for machines, making it more dificult to minify files
+- Can also interfere with React tools and features like hot reloading
+
+Until recently, developers referred to function components which are regular JavaScript functions, as stateless components, because you weren't able to access features like state and lifecycle methods, but that's where React Hooks come in.
+
+React hooks are special built-in functions that allow you to hook into the power of class components, with a cleaner and more straightforward syntax. Hooks solve common tasks like 
+- Handling state and rendering UI when state changes.
+- Provide easier access to your React app's context
+- Update components with an alternative to lifecycle methods.
+
+### useState Hook
+Usually, to create a stateful class component, you add a constructor that assigns the initial `this.state`:
+```javascript
+class App extends React.Component {
+ constructor(props) { 
+	 super(props); 
+	 this.state = { 
+		 score: 0 
+	 }; 
+  }   
+render() {...} 
+}
+```
+You use Hooks inside functions only (Hooks don't work inside classes), so  `this`  is not available inside a function component. Instead, you use the  `useState`  Hook for state management. As you'll learn,  `useState()`  is the equivalent of both  `this.state`  and  `this.setState`  for function components.
+
+Once you import  `useState`  from React, the next step is to declare a state variable by calling  `useState()`. The following declares a state variable named  `score`
+
+`useState()`  accepts one optional argument – the initial value of the state variable. In the example above, the initial value of the  `score`  state is  `0`. Calling  `useState()`  with the initial state returns an array with two values:
+
+The first array element is a variable with the current state value (`0`  in this case). It's similar to  `this.state`. The second element is a function to update that value, and it's similar to  `this.setState()`.
+
+When working with React Hooks, you use  [destructuring assignment syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)  to assign each returned value to a distinct variable.
+
+In class components, the state always has to be an object. With  `useState()`  state can be an object, array, or another JavaScript primitive like a string or integer.
+```javascript
+import React, { useState } from  'react';
+import  './App.css';
+
+function  App() {
+	const [ score, setScore ] =  useState(0);  // [0, f]
+  
+  return (
+	<div  className="App">
+		<header  className="App-header">
+			<h1>  { score }</h1>
+		</header>
+	</div>
+  );
+}
+export  default App;
+```
+
+### Update State
+The first time you call  `useState()`, it sets the initial component state, and on all following calls, you're able to access or update what's in state.
+
+In a class component, you call  `this.setState()`  to update what's in state, for example:
+```javascript
+class App extends React.Component {
+ ...   
+ render() {
+	return ( 
+		<div className="App"> 
+			<header className="App-header"> 
+				<h1>{ this.state.score }</h1> 
+				<button onClick={() => this.setState({ score: this.state.score + 1 })}> Increase score 
+				</button> 
+			</header> 
+		</div> 
+	); 
+  } 
+}
+```
+but with Hooks
+```javascript
+  return (
+	<div  className="App">
+		<header  className="App-header">
+			<h1>  { score }</h1>
+			<button  onClick={()  =>  setScore(score +  1)}> // update the score state
+			</button>
+		</header>
+	</div>
+  );
+}
+```
+With Hooks, you can easily set and update the state without worrying about using  `this`  as the state is already within the scope of the component!
+
+### Declare Multiple States
+`useState()` lets you declare one state variable at a time, but you aren’t limited to just one `useState()` call inside a component. You can call `useState()` numerous times to declare multiple state variables
+```javascript
+function  App() {
+	const [ score, setScore ] =  useState(0);  // [0, f]
+	const [ message, setMessage ] =  useState('Welcome');
+  
+  return (
+	<div  className="App">
+		<header  className="App-header">
+			<h1>  { message }</h1>
+			<h2>{ score }</h2>
+			<button  onClick={()  =>  setScore(score +  1)}>  {/* Update score */}
+			Increase Score
+			</button>
+		</header>
+	</div>
+  );
+}
+export  default App;
+```
+### Update State Based on Previous State
+If you need to update state using the previous state value, you can pass a function to the method updating state. The function receives the previous state value and uses it to return the updated value.
+```javascript
+<button  onClick={()  =>  setScore(prevScore => prevScore +  1)}>  {/* Update score */}
+Increase Score
+</button>
+```
+
+### Perform Side Effects with useEffect
+You've learned that there are different phases in a React component's lifecycle: mounting, updating, and unmounting. React provides lifecycle methods to run code at these specific moments. They are used to re-render a component, update the DOM when data changes, fetch data from an API or perform any necessary cleanup when removing a component. Developers refer to these types of actions as "side effects" because you cannot perform them during rendering (additional code runs after React updates the DOM).
+
+Common lifecycle methods React uses to handle side effects in class components are `componentDidMount`, `componentDidUpdate`, and `componentWillUnmount`. Forgetting to include one of these methods when needed, can leave us with stale data or [memory leaks](https://teamtreehouse.com/library/prevent-memory-leaks-with-componentwillunmount).
+
+>If you’re familiar with React class lifecycle methods, you can think of useEffect Hook as componentDidMount, componentDidUpdate, and componentWillUnmount combined. -- [React Docs](https://reactjs.org/docs/hooks-effect.html)
+
+```javascript
+import React, { useState, useEffect } from 'react';   
+
+function App() {
+ const [score, setScore] = useState(0); 
+ const [message] = useState('Welcome!');   
+	
+  // The effect happens after render 
+  useEffect(() => { 
+	  console.log('useEffect called!'); 
+  });   
+
+  return (...); 
+}
+```
+The  `useEffect`  Hook instructs React to do  _something_  after render, so it's called when the component first renders and after each subsequent re-render or update. If you run the code above, notice how "useEffect called!" immediately displays in the console. The message displays, again and again, each time the  `score`  state updates.
+
+### Prevent `useEffect` from Causing Unnecessary Renders
+Since  `useEffect`  gets called after every render, applying it after each render might create a performance problem. The  `useEffect`  Hook takes an optional array as a second argument that instructs React to skip applying an effect (and re-rendering) if specific values haven’t changed between re-renders.
+
+In the array, you list any dependencies for the effect. In other words, any state variables that are used or updated inside  `useEffect`. The array instructs the  `useEffect`  Hook to run  **only**  if one of its dependencies changes.
+
+```javascript	
+  // The effect happens after render 
+  useEffect(() => { 
+	  console.log('useEffect called!'); 
+  }, []); // pass an empty array to useEffect once   
+```
+### Access State inside `useEffect`
+You're able to access a state variable (even update state) from inside `useEffect`. A common example is updating the document's title when state changes. Manually changing the DOM in React components, as shown below, is one example of a side effect:
+```javascript
+useEffect(()  => {
+	document.title =`${message}. Your score is ${score}`
+	}, [message, score]);
+```
+React runs `useEffect` to compare `score` from the previous render to `score` from the next render. Each time the value of `score` changes (increments/decrements), React re-applies the effect and updates the page's title:
+
+### Data Fetching with `useEffect`
+You'll most likely use the `useEffect` Hook to fetch data from an API, similar to how you'd use the `componentDidMount` method in a class. Consider the following example, which fetches data (a random dog image) from the [Dog API](https://dog.ceo/dog-api/):
+```javascript
+function App() {
+ const [data, setData] = useState('');   
+
+  useEffect(() => { 
+	  console.log('useEffect called!'); 
+	  fetch('https://dog.ceo/api/breeds/image/random') 		
+	  .then(res => res.json()) 
+	  .then(data => setData(data.message)) 
+	  .catch(err => console.log('Oh noes!', err)) 
+	  }, []);   
+	
+ return ( 
+	 <div className="App"> 
+	 <img src={data} alt="A random dog breed" /> 
+	 </div> 
+  ); 
+}
+```
+Again, passing `useEffect` an empty array as the second argument ensures that it runs only once after the component's initial render. In some cases, omitting the second array argument causes `useEffect()` to execute in an infinite loop, endlessly fetching data. This happens because you're modifying the component's state inside `useEffect()`, which triggers the effect again and again.
+
+-   [`useEffect`  - React docs](https://reactjs.org/docs/hooks-reference.html#useeffect)
+-   [Using the Effect Hook - React docs](https://reactjs.org/docs/hooks-effect.html)
+-   [Tip: Use Multiple Effects to Separate Concerns](https://reactjs.org/docs/hooks-effect.html#tip-use-multiple-effects-to-separate-concerns)
+
+#### "Clean Up"  `useEffect`
+
+Some side effects in React require "cleanup," or running additional code when a component unmounts (to prevent a memory leak, for example). With classes, you'd use the  `componentWillUnmount()`  lifecycle method to perform any necessary cleanup.
+
+With Hooks, you don't need a separate function to perform cleanup. Returning a function from your effect takes care of the cleanup, running the function when the component unmounts. Review the  [Hooks documentation](https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup)  to learn more about effects with cleanup.
+
+### Create a GIF Search App with React Hooks
+1. First, we'll declare the GIF data State by using `useState` hook, passing it an empty array. the `data` state will hold the array of GIF objects returned from the Giphy API. In the `App` component's `return` statement, render the `<GifList>` component and pass it the `data` state via a prop named `data` 
+```javascript
+import React, { useState } from 'react';
+...
+function App(){
+  const [data, setData] = useState([]);
+}
+```
+2. We'll use **axios** to fetch the GIF data. Since you use `useEffect` hook when you need to do something after your component renders (perform a side effect) thus we'll use to make the fetch request with axios.
+
+In the `then()` method, we'll use the `setData()` function to update the `data` state with the data returned from the API.
+
+Then we'll declare the state variable to hold the GIF search query. This state will be updated with the value the user types into the search field
+
+```javascript
+import React, { useState, useEffect } from  'react'
+import  '../App.css';
+import key from  '../key.js';
+import axios from  'axios';
+
+import SearchForm from  './SearchForm';
+import GifList from  './GifList';
+
+function  App() {
+	const [data, setData] =  useState([]);
+	const [query, setQuery] =  useState('cats');
+  
+	useEffect(()=> {
+		axios(`http://api.giphy.com/v1/gifs/search?q=${query}&limit=24&api_key=${key}`)
+		.then(response =>  setData(response.data.data))
+		.catch(error =>  console.log('Error fetching and parsing data', error))
+		}, []);
+		
+	return (
+		<>
+			<div  className="main-header">
+				<div  className="inner">
+					<h1  className="main-title">GifSearch</h1>
+					
+					<SearchForm  />
+				</div>
+			</div>
+			<div  className="main-content">
+				<GifList  data={ data }  /> //pass down the data state
+			</div>
+		</>
+	);
+}
+export  default App
+```
+The  `query`  state is now a dependency of the  `useEffect`  Hook (we're using it in the search query parameter), so we need to include it in the dependency array -- that's the second argument passed to  `useEffect()`:
+
+```javascript    
+ useEffect(() => {
+     axios(`http://api.giphy.com/v1/gifs/search?q=${query}&limit=24&api_key=YOUR_API_KEY`) .then(response => setData(response.data.data)) .catch(error => console.log('Error fetching and parsing data', error)) }, [query]); // add the query dependency 
+    
+```
+Adding the  `query`  dependency instructs React to call  `useEffect()`  each time the  `query`  state updates.
+
+To update the `query` state, we'll create a function called  `performSearch` that updates the query state
+```javascript
+function App() {
+ const [data, setData] = useState([]); 
+ const [query, setQuery] = useState('cats');   
+ // update the query state 
+ const performSearch = (value) => setQuery(value);   
+
+  useEffect(() => { 
+	  ... 
+  }, [query]);
+```
+Now we need to wire the function up to the `SearchForm` component. In the `App` component's `return` statement, give the `SearchForm` component the prop `onSearch`, passing it a reference to the `performSearch` function
+```javascript
+return (
+  ...
+  <SearchForm  onSearch={ performSearch }  />
+  ...
+);
+```
+Then we need to declare the `SearchForm` component State, in here we'll declare the state that updates the search query on form submit
+1. We'll import `useState` and declare the variables that will handle state: `searchText` and `setSearchText` setting the initial state to an empty string.
+2. In the `onSearchChange` function, we'll call `setSearch` to update the `searchText` state with the value on the search field. 
+```javascript
+function SearchForm(props) {
+ const [searchText, setSearchText] = useState('');   
+ 
+ const onSearchChange = (e) => setSearchText(e.target.value);
+ ...
+```
+The `performSearch` function in `App.js` accepts one argument -- the search query. In the `handleSubmit` function, pass the `searchText` state up to the `App` component via the `onSearch` function callback. On form submit, the search  `query`  state gets updated, which triggers the  `useEffect()`  Hook to fetch new data.
+```javascript
+ const handleSubmit = (e) => { e.preventDefault(); 
+ // pass the search text back to the App component   
+ props.onSearch(searchText); 
+ e.currentTarget.reset();
+```
+Finally, we'll add the loading indicator
+```javascript
+function  App() {
+  ...
+  const [isLoading, setIsLoading] =  useState(true);
+
+useEffect(()=> {
+	axios(`http://api.giphy.com/v1/gifs/search?q=${query}&limit=24&api_key=${key}`)
+
+	.then(response =>  setData(response.data.data))
+	.catch(error =>  console.log('Error fetching and parsing data', error))
+	.finally(()  =>  setIsLoading(false));
+  }, [query]);
+
+return (
+<>
+
+<div  className="main-header">
+	<div  className="main-content">
+		{
+			isLoading
+				?  <p> Loading... </p>
+				:  <GifList  data={ data }  />  //pass down the data state
+		}
+	</div>
+  </>
+);
+}
+```
