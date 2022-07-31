@@ -2503,6 +2503,7 @@ Context was an experimental feature in older versions of React, and it officiall
 [Prop Drilling](https://blog.kentcdodds.com/prop-drilling-bb62e02cb691)
 
 ### How Context Works
+Context is mainly used when some data needs to be accessible by many components at different nesting levels
 The context API has three essential parts:
 - `createContext()`
 - Provider
@@ -2513,7 +2514,7 @@ First, you have to create the context, so `React.createContext()` sets up a cont
 A single **provider** component is used as highest possible in the tree, it allows consumer components to subscribe to context changes. **Consumers** access the provider to get any data they need, thus avoiding prop drilling. The provider and consumers are constantly communicating, it's the communication between the two that makes Context work.
 
 ### Create Context
-We'll create a new folder named `Context` and  create a new file named `index.js` where we're going to define our context, provider and consumer:
+We'll create a new folder named `Context` and  create a new file named `index.js` (This folder and naming structure naming isn't required) where we're going to define our context, provider and consumer:
 
 ```jsx
 import React from  'react';
@@ -2707,51 +2708,224 @@ We've learned how to read from the state provided by context. But we can also pa
 
 It's common to pass the provider's value prop an object to store multiple properties in state, as well as any event handlers or actions you want to perform on the data.
 
+For instance, the `handleScoreChange` function defined in the App component, is passed to the Counter componet by a way on the PlayerLists and Player Component
 App.js
 ```jsx
-...
-render() {
-	return (
-		<Provider  value={{
-			players:  this.state.players,
-			actions: {
-				changeScore:  this.handleScoreChange
-			}
-		}}>
+//App.js
 
+import React, { Component } from 'react';
+/* 2. You don't need to include /index.js
+in the import path, when resolving the import path to the context directory node will look for an index file and load it
+*/
+import { Provider } from './Context';
+import Header from './Header';
+import PlayerList from './PlayerList';
+import AddPlayerForm from './AddPlayerForm';
+
+class App extends Component {
+  state = {
+    players: [
+      {
+        name: "Guil",
+        score: 0,
+        id: 1
+      },
+      {
+        name: "Treasure",
+        score: 0,
+        id: 2
+      },
+      {
+        name: "Ashley",
+        score: 0,
+        id: 3
+      },
+      {
+        name: "James",
+        score: 0,
+        id: 4
+      }
+    ]
+  };
+
+  // player id counter
+  prevPlayerId = 4;
+
+  handleScoreChange = (index, delta) => {
+    this.setState( prevState => ({
+      score: prevState.players[index].score += delta
+    }));
+  }
+
+  handleAddPlayer = (name) => {
+    this.setState( prevState => {
+      return {
+        players: [
+          ...prevState.players,
+          {
+            name,
+            score: 0,
+            id: this.prevPlayerId += 1
+          }
+        ]
+      };
+    });
+  }
+
+  handleRemovePlayer = (id) => {
+    this.setState( prevState => {
+      return {
+        players: prevState.players.filter(p => p.id !== id)
+      };
+    });
+  }
+
+  render() {
+    return (
+    /*
+    * 3. Wrap everything after the return statement inside the Provider tag
+    4. We'll passed the value state > Stats.js
+    */ 
+      <Provider value={this.state.players}>
+        <div className="scoreboard">
+          <Header />
+
+          <PlayerList 
+       
+            changeScore={this.handleScoreChange}
+            removePlayer={this.handleRemovePlayer}   
+          />
+          
+          <AddPlayerForm addPlayer={this.handleAddPlayer} />
+        </div>
+      </Provider>
+    );
+  }
+}
+
+export default App;
 ```
-Counter.js
-```jsx
-...
-<button  className="counter-action decrement"  onClick={()  => context.actions.changeScore(index, -1)}> - </button>
-...
-```
-#### Provide Remaining Actions to Child Components
-The consumer doesn't always have to wrap everything in the return statement, we can just wrap the part of the UI that need to consume the Provider's actions
 
 ```jsx
-return (
-  <div  className="player">
+//PlayerList Component
+import React from 'react';
+import { Consumer } from './Context';
+import PropTypes from 'prop-types';
+import Player from './Player';
+
+const PlayerList = (props) => {
+  return (
     <Consumer>
-      { context => (
-          <span  className="player-name">
-			  <button  className="remove-player"  onClick={()  => context.actions.removePlayer(id)}>✖</button>
-			  <svg  viewBox="0 0 44 35">
-			    <path  d=".."/>
-				<rect  width="30.4986"  height="3.07759"  transform="translate(6.56987 31.5603)"/>
-			  </svg>
-			{ name }
-        </span>
-		)}
-	  </Consumer>
-   <Counter
-     score={ score }
-     index={ index }
-   />
-  </div>
-);
+      { context => {
+
+        return(
+          <React.Fragment>
+            {context.map( (player, index) =>
+            <Player 
+            /* We using this spread operator to pass the name, score 
+            and ID we're getting from each player object via map all 
+            at once as props, that way you don't have to explicitly list each prop name and value */ 
+              {...player}
+              key={player.id.toString()} 
+              index={index}
+              changeScore={props.changeScore}
+              removePlayer={props.removePlayer}           
+            />
+            )}
+          </React.Fragment>
+
+
+        );
+      }}
+
+    </Consumer>
+  );
+}
+
+PlayerList.propTypes = {
+  changeScore: PropTypes.func.isRequired,
+  removePlayer: PropTypes.func.isRequired,
+};
+
+export default PlayerList;
 ```
+```jsx
+//Player component
+
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+import Counter from './Counter';
+
+class Player extends PureComponent {
+
+  static propTypes = {
+    changeScore: PropTypes.func.isRequired,
+    removePlayer: PropTypes.func.isRequired,
+    name: PropTypes.string.isRequired,
+    score: PropTypes.number.isRequired,
+    id: PropTypes.number.isRequired,
+    index: PropTypes.number.isRequired
+  };
+
+  render() {
+    
+    const { 
+      name,
+      id,
+      score,
+      index,
+      removePlayer,
+      changeScore
+    } = this.props;
+
+    return (
+      <div className="player">
+        <span className="player-name">
+          <button className="remove-player" onClick={() => removePlayer(id)}>✖</button>
+          { name }
+        </span>
+  
+        <Counter 
+          score={score}
+          index={index}
+          changeScore={changeScore} 
+        />
+      </div>
+    );
+  }
+}
+
+export default Player;
+```
+Before making it's way into the Counte. The prop passed to each component acts as a callback function, that's called at a later time to change a piece of state
+
+```jsx
+import React from 'react';
+import PropTypes from 'prop-types';
+
+const Counter = ({ index, score, changeScore }) => {
+  return (
+    <div className="counter">
+      <button className="counter-action decrement" onClick={() => changeScore(index, -1)}> - </button>
+      <span className="counter-score">{ score }</span>
+      <button className="counter-action increment" onClick={() => changeScore(index, 1)}> + </button>
+    </div>
+  );
+}
+
+Counter.propTypes = {
+  index: PropTypes.number,
+  score: PropTypes.number,
+  changeScore: PropTypes.func  
+};
+
+export default Counter;
+```
+Se, we'll start by providing the `handleScoreChange` function, along with the players state directly to a consumer.
+
 
 Finally, we can move the `<Provider>` along with the state and actions into a separate (higher order) component. As a result, the `App` component will have less code and responsibilities, making it easier to think about and maintain.
 
 [Higher-Order Components](https://reactjs.org/docs/higher-order-components.html)
+
+#### Provide Remaining Actions to Child Components
