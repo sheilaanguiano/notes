@@ -14,6 +14,7 @@ Author: Sheila Anguiano
 6. [Deploy React App](#deploy-react-app)
 7. [React Context API](#react-context-api)
 8. [React Hooks](#hooks)
+9. [React Authentication](#react-auth)
 
 ## React Basics <a name="react"></a>
 ### First Steps in React
@@ -3129,6 +3130,7 @@ Notice that we didn't use a consumer in the Stopwatch component, the stopwatch c
 *Pending to destructure the actions and players in the STATS and AddPlayerForm components*
 
 ##  React Hooks <a name="hooks"></a>
+
 The React library has traditionally allowed developers to create and manage state, as well as run certain code based on the lifecycle of a component. 
 Class components provide one way to declare and manage state, and call lifecycle methods like `componentDidMount` and `componentWillUnmount` but they with some drawbacks like:
 - Optimizing classes can be slower to process for machines, making it more dificult to minify files
@@ -3450,3 +3452,488 @@ return (
 );
 }
 ```
+
+## React Authentication <a name="react-auth"></a>
+### Introducing the Project
+Authentication provides password protection to hide content from unauthorized users. It lets you serve content specifically to a user, as well as customize their settings and experience.
+
+When the client wants to authenticate itself with a server (for example, log in a user), it can do so by including an Authorization request header with the user credentials. Basic Auth transmits the credentials as user ID/password pairs, which are encoded using an encoding scheme called base64 – more on this later.
+
+** What you're gonna build**
+In this text-based course, you will learn how to implement Basic Authentication within a React client application, using the Express REST API you built.
+
+You will make requests to the Express API routes from the React client app, implement user registration and login, and configure React Router to protect specific routes (i.e. require that the user be authenticated in order to view a private route). We will be working with the Express app only – no database, just in-memory data. Users will be stored in a JavaScript Array, in order to keep things as simple as possible.
+
+*While this approach works fine for our example, for most situations it'd be less than ideal, as all of the data will be lost between application restarts.*
+
+### Project Preview
+This project consist of 4 main routes or views
+	- Default root route that's public and visible to every user
+	- Sign Up route that's also public with Validation errors for inclomplete submission
+	-Sign In route also with validation
+	- Authenticated route which is accessible to authenticated or logged user only
+
+THe app also preserves the user's authenticated stated across page refreshes or even if the user closes the browser tab by mistake.
+
+For this app, we'll focus only on the client authentication features of this app (not build it from scratch), which means that you will write all the code for this course within the files inside the client folder.
+
+The client/src folder contains the files you will be working with in this course. Let's quickly review the main files and folders.
+
+index.js - The entry point into the application which renders the main <App> component.
+App.js - Renders the router that wraps the components of the app.
+Context.js - A higher-order component (HOC) that shares functionality across the components of the app. This will let you reuse component logic and state. Remember - "Context" is used in React when data needs to be accessible by many components at different nesting levels.
+Data.js - Contains a class of Data with the API authentication utility methods you will use to create, sign up and authenticate a user. The file is mostly pre-written, making GET and POST requests to the REST API, for example. For this course, we're only going to focus on the authentication parts.
+The components folder holds all the individual components of the app. For example, components that render the "Public" and "Authenticated" views, and the sign in and sign up forms.
+The styles folder contains the CSS for the application. We will not be working with the CSS as we go through the project, but feel free to change it as you please.
+
+#### Run the Express Server
+**REST API Routes and Endpoints**
+In the REST API Authentication with Express instruction step, you implemented /users routes to create and login a new user, as well as return the current authenticated user, which you tested using an API testing tool like Postman.
+
+In this course, all POST and GET requests from the React client will be made to the /users endpoint using the helper methods for creating and getting users located in the file client/src/Data.js. Be sure to review this file before the next step.
+
+### Implementing Basic Authentication
+#### Set up User Registration
+```jsx
+import config from './config';
+
+/*
+helper class that provides utility methods to allow the React client to talk to the Express server
+*/
+
+export default class Data {
+
+  api(path, method = 'GET', body = null) {
+
+    /*
+    * The url constant configures the request path using the
+    * base URL defined in config.js, which gets passed to the
+    * returned fetch() method.
+    */
+    const url = config.apiBaseUrl + path;
+  
+    const options = {
+      method,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    };
+
+    if (body !== null) {
+      options.body = JSON.stringify(body);
+    }
+
+    return fetch(url, options);
+  }
+
+  async getUser() {
+    const response = await this.api(`/users`, 'GET', null);
+    if (response.status === 200) {
+      return response.json().then(data => data);
+    }
+    else if (response.status === 401) {
+      return null;
+    }
+    else {
+      throw new Error();
+    }
+  }
+  
+  async createUser(user) {
+    const response = await this.api('/users', 'POST', user);
+    if (response.status === 201) {
+      return [];
+    }
+    else if (response.status === 400) {
+      return response.json().then(data => {
+        return data.errors;
+      });
+    }
+    else {
+      throw new Error();
+    }
+  }
+}
+
+```
+`fetch()` accepts an optional second parameter: a configuration object that lets you control a number of different settings you can apply to the request.
+
+The `options` object, for example, sends a request with the HTTP method, as well as the request headers and a stringified body (if body is provided).
+
+The `getUser()` and `createUser()` methods perform the async operations that create and get an authenticated user of our app, using the api() method.
+
+`getUser()` makes a `GET` request to the `/users` endpoint, and returns a JSON object containing user credentials. And `createUser()` makes a `POST` request, sending new user data to the `/users` endpoint.
+
+**Context Review**
+Context is primarily used when some data needs to be accessible by many components at different nesting levels. Context lets you pass data through the component tree without having to pass props down manually at every level.
+
+**Use Context Through the App**
+1. Pass context to the Provider. In the return() statement pass <Context.Provider> a value prop and, within curly braces, pass it value:
+```jsx
+return (
+  <Context.Provider value={value}>
+    {this.props.children}
+  </Context.Provider>  
+);
+
+```
+
+`value` represents an object containing the context to be shared throughout the component tree.
+2. Create a value object to provide the utility methods of the class Data. In the render() method (above the return statement), initialize a variable named value to an object containing a data property set to this.data:
+```jsx
+const value = {
+  data: this.data,
+};
+
+return (
+  <Context.Provider value={value}>
+    {this.props.children}
+  </Context.Provider>  
+);
+```
+At the bottom of Context.js is a higher-order function named withContext that wraps a provided component in a <Context.Consumer> component. In other words, withContext automatically subscribes (or connects) the component passed to it to all actions and context changes:
+```jsx
+export default function withContext(Component) {
+  return function ContextComponent(props) {
+    return (
+      <Context.Consumer>
+        {context => <Component {...props} context={context} />}
+      </Context.Consumer>
+    );
+  }
+}
+```
+This will come in handy soon when we need to share user authentication data and actions throughout the app.
+
+**Connect the UserSignUp Component to Context**
+Next, we're going to set up the initial user signup logic in the UserSignUp component. Let's connect the component to context first.
+1. In App.js, import the withContext function from Context.js:
+2. Initialize a variable named UserSignUpWithContext. Set the value to call withContext(UserSignUp):
+```jsx
+import withContext from './Context';
+
+const UserSignUpWithContext = withContext(UserSignUp);
+```
+3. Render UserSignUpWithContext. In the signup route, change the component to render when the URL path matches /signup from UserSignUp to UserSignUpWithContext:
+```jsx
+<Switch>
+  ...
+  <Route path="/signup" component={UserSignUpWithContext} />
+  ...
+  <Route component={NotFound} />
+</Switch>
+```
+When React renders a component that subscribes to context, it will read the context value passed to it from its Provider.
+
+#### Implement the Sign up Form
+*Getting the Know `UserSignUp.js`**
+The file contains a `UserSignUp` class that employs the ["render prop"](https://reactjs.org/docs/render-props.html) technique in React to render a form. Notice how the component <Form> uses an elements prop whose value is a function which returns the input fields to be used in each of the forms:
+```jsx
+export default class UserSignUp extends Component {
+  ...
+  render() {
+    ...
+    return (
+      ...
+        <Form 
+          ...
+          elements={() => ( // render prop
+            <React.Fragment>
+              <input ... placeholder="Name" />
+              <input ... placeholder="User Name" />
+              <input ... placeholder="Password" />
+            </React.Fragment>
+          )} /> 
+    )
+  }
+  ...
+}
+```
+**Review Form.js**
+The file components/Form.js exports a function that renders any validation errors sent from the API, via the <ErrorsDisplay> function component. It also renders the "Submit" and "Cancel" buttons of a form, as well as handle their functionality, via the functions handleSubmit and handleCancel. Props are passed to this component – from a parent component like UserSignUp – to provide it the data it needs.
+```jsx
+
+export default (props) => {
+  const {...} = props;
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    submit();
+  }
+
+  function handleCancel(event) {
+    event.preventDefault();
+    cancel();
+  }
+
+  return (
+    <div>
+      <ErrorsDisplay errors={errors} />
+      <form onSubmit={handleSubmit}>
+        { elements() }
+        <div className="pad-bottom">
+          <button className="button" type="submit">{submitButtonText}</button>
+          <button className="button button-secondary" onClick={handleCancel}>Cancel</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+```
+**Write the Submit Functionality**
+Let's write the submit function that creates a new user and sends their credentials to the Express server. A new user will be created using the state initialized in the UserSignUp class and the createUser() method defined in Data.js. Remember, the UserSignUp component is now a component "with context", meaning it's subscribed to the application context – in fact the data is passed to the component via a prop named context.
+1. Open the file UserSignUp.js.
+2. Destructure props and state. In the body of the submit function (line 74), use destructuring assignment to extract the context prop from this.props, and unpack the name, username and password properties from the state object (this.state) into distinct variables
+3. Initialize a variable named user to an object whose properties are name, username and password:
+```jsx
+  submit = () => {
+    const { context } = this.props;
+    const {
+      name,
+      username,
+      password,
+    } = this.state; 
+
+    // New user payload
+    const user = {
+      name,
+      username,
+      password,
+    };
+  }
+```
+This user object is the new user payload that will be passed to the createUser() method. It uses the ES2015 object shorthand syntax to include the just the key names because the values have the same name as the keys.
+
+**Create User**
+To create a new user, call the createUser() method, which you can access via the destructured context variable. Context itself is an object which currently has only one property, data. Earlier, in Context.js, you passed Context.Provider a value prop whose value was an object with a data property. The authentication API utilities provided to app are available via the context.data property.
+1. Call the createUser() method with context.data.createUser(). createUser() accepts one argument, which is the new user payload
+2. Pass the method the user object as the argument:
+createUser() is an asynchronous operation that returns a promise. The resolved value of the promise is either an array of errors (sent from the API if the response is 400), or an empty array (if the response is 201).
+3. Get the value out of the returned promise. Chain a then() method to createUser():
+In the then() method, we'll check if the returned PromiseValue is an array of errors. If it is, we will set the errors state of the UserSignUp class to the returned errors.
+4. Pass then() an arrow function that takes the fulfillment value as a parameter named errors:
+If, for instance, a user submits an empty sign up form, the API returns a response status of 400 as well as an array of validation error messages.
+
+In the body of the function, we'll check **if** there are items in the array returned by the Promise, using `errors.length.` If there are items in the array, it means that there are errors to display to the user.
+5. In the if block, use setState() to update the errors state to the returned errors:
+```jsx
+ submit = () => {
+    ...
+    context.data.createUser(user)
+     .then( errors => {
+       if (errors.length) {
+         this.setState({ errors });
+       }
+     })
+   }
+```
+If the response returns no errors (or an empty array) it means that a new user was successfully created and sent to the server.
+
+6. Add an else statement that logs a 'success' message to the console for now, displaying the username created:
+```jsx
+Sheila Anguiano
+ React Authentication
+Instruction
+Implement the Sign up Form
+In this step, we'll begin implementing the sign up form that connects to the Express server and creates an authenticated user.
+
+Getting to Know 'UserSignUp.js'
+The file contains a UserSignUp class that employs the "render prop" technique in React to render a form. Notice how the component <Form> uses an elements prop whose value is a function which returns the input fields to be used in each of the forms:
+
+export default class UserSignUp extends Component {
+  ...
+  render() {
+    ...
+    return (
+      ...
+        <Form 
+          ...
+          elements={() => ( // render prop
+            <React.Fragment>
+              <input ... placeholder="Name" />
+              <input ... placeholder="User Name" />
+              <input ... placeholder="Password" />
+            </React.Fragment>
+          )} /> 
+    )
+  }
+  ...
+}
+In this case, there is an input field for name, username and password.
+
+Review 'Form.js'
+The file components/Form.js exports a function that renders any validation errors sent from the API, via the <ErrorsDisplay> function component. It also renders the "Submit" and "Cancel" buttons of a form, as well as handle their functionality, via the functions handleSubmit and handleCancel. Props are passed to this component – from a parent component like UserSignUp – to provide it the data it needs.
+
+export default (props) => {
+  const {...} = props;
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    submit();
+  }
+
+  function handleCancel(event) {
+    event.preventDefault();
+    cancel();
+  }
+
+  return (
+    <div>
+      <ErrorsDisplay errors={errors} />
+      <form onSubmit={handleSubmit}>
+        { elements() }
+        <div className="pad-bottom">
+          <button className="button" type="submit">{submitButtonText}</button>
+          <button className="button button-secondary" onClick={handleCancel}>Cancel</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+Write the Submit Functionality
+Let's write the submit function that creates a new user and sends their credentials to the Express server. A new user will be created using the state initialized in the UserSignUp class and the createUser() method defined in Data.js. Remember, the UserSignUp component is now a component "with context", meaning it's subscribed to the application context – in fact the data is passed to the component via a prop named context.
+
+Open the file UserSignUp.js.
+Destructure props and state. In the body of the submit function (line 74), use destructuring assignment to extract the context prop from this.props, and unpack the name, username and password properties from the state object (this.state) into distinct variables:
+
+submit = () => {
+  const { context } = this.props;
+
+  const {
+    name,
+    username,
+    password,
+  } = this.state; 
+}
+This will make the submit handler cleaner and easier to understand.
+
+Initialize a variable named user to an object whose properties are name, username and password:
+
+  submit = () => {
+    const { context } = this.props;
+    const {
+      name,
+      username,
+      password,
+    } = this.state; 
+
+    // New user payload
+    const user = {
+      name,
+      username,
+      password,
+    };
+  }
+This user object is the new user payload that will be passed to the createUser() method. It uses the ES2015 object shorthand syntax to include the just the key names because the values have the same name as the keys.
+
+Create a User
+To create a new user, call the createUser() method, which you can access via the destructured context variable. Context itself is an object which currently has only one property, data. Earlier, in Context.js, you passed Context.Provider a value prop whose value was an object with a data property. The authentication API utilities provided to app are available via the context.data property.
+
+Call the createUser() method with context.data.createUser(). createUser() accepts one argument, which is the new user payload.
+Pass the method the user object as the argument:
+
+  submit = () => {
+    const { context } = this.props;
+    const { .. } = this.state; 
+    const user = { ... };
+
+    context.data.createUser(user)
+ }
+createUser() is an asynchronous operation that returns a promise. The resolved value of the promise is either an array of errors (sent from the API if the response is 400), or an empty array (if the response is 201).
+
+Be sure to have another look at the `createUser()` method in `Data.js` to review its inner-workings.
+Get the value out of the returned promise. Chain a then() method to createUser():
+
+ submit = () => {
+   ...
+   context.data.createUser(user)
+    .then()
+ }
+In the then() method, we'll check if the returned PromiseValue is an array of errors. If it is, we will set the errors state of the UserSignUp class to the returned errors.
+
+Pass then() an arrow function that takes the fulfillment value as a parameter named errors:
+
+  submit = () => {
+    ...
+    context.data.createUser(user)
+     .then( errors => {
+
+     })
+  }
+If, for instance, a user submits an empty sign up form, the API returns a response status of 400 as well as an array of validation error messages.
+
+In the body of the function, we'll check if there are items in the array returned by the Promise, using errors.length. If there are items in the array, it means that there are errors to display to the user.
+
+In the if block, use setState() to update the errors state to the returned errors:
+
+  submit = () => {
+    ...
+    context.data.createUser(user)
+     .then( errors => {
+       if (errors.length) {
+         this.setState({ errors });
+       }
+     })
+   }
+If the response returns no errors (or an empty array) it means that a new user was successfully created and sent to the server.
+
+Add an else statement that logs a 'success' message to the console for now, displaying the username created:
+
+  submit = () => {
+    ...
+    context.data.createUser(user)
+     .then( errors => {
+       if (errors.length) {
+         this.setState({ errors });
+       } else {
+         console.log(`${username} is successfully signed up and authenticated!`);
+       }
+     })  
+  }
+```
+**Handle Errors with catch()**
+A catch() method chained to the promise sequence handles a rejected promise returned by createUser(). For example, if there's an issue with the /users endpoint, the API is down, or there's a network connectivity issue, the function passed to catch() will get called.
+
+1. Chain the `catch()` method to `then()`.
+2. Pass `catch() `an arrow function that takes the parameter `err` (the rejection reason) and logs it to the console, that way we can immediately see the reason why the promise was rejected:
+```jsx
+context.data.createUser(user)
+ .then( errors => {
+   if (errors.length) {
+     console.log(errors);
+   } else {
+     console.log(`${username} is successfully signed up and authenticated!`);
+   }
+ })
+ .catch( err => { // handle rejected promises
+   console.log(err);
+ });  
+
+
+```
+In the event of an error, we will change the current URL from /signup to /error. In other words, redirect the user to another route. Navigating to the /error route will display a "Not Found" message in the browser, providing a user-friendly way to let users know that something went wrong.
+
+**Render and 'Error" Route**
+As you learned in the React Router course, a component rendered by <Route> gets passed a history object (via props) that listens for changes to the current URL, keeps track of browser history and the number of entries in the history stack. The history object can also be used to programmatically change the current URL.
+
+You access `history` inside the `UserSignUp` class with this.props.history
+1. In the `catch()` method, push a new entry onto the history stack using the `push()` method, which you can access with `this.props.history.push()`.
+2. Pass the push() method '/error' as the redirect route:
+```jsx
+context.data.createUser(user)
+ .then( errors => {
+   ...
+ })
+ .catch( err => { 
+   console.log(err);
+   this.props.history.push('/error'); // push to history stack
+ });  
+
+```
+React Router lets you create a 404-like error route that displays when a URL's path does not match any of the paths defined in your routes. /error does not match any URL path defined inside the <Switch> component of App.js. Because of this, when the URL path changes to /error, the router is going to render the NotFound component written in components/NotFound.js.
+
+**Write the `cancel` Function**
+Now we'll wire up the "Cancel" button to the cancel function defined in UserSignUp.js. This should be straightforward. If a user decides to cancel registration, we will redirect them back to the home route upon clicking "Cancel".
+
+
+### React Router Authentication
