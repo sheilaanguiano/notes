@@ -3935,5 +3935,144 @@ React Router lets you create a 404-like error route that displays when a URL's p
 **Write the `cancel` Function**
 Now we'll wire up the "Cancel" button to the cancel function defined in UserSignUp.js. This should be straightforward. If a user decides to cancel registration, we will redirect them back to the home route upon clicking "Cancel".
 
+To accomplish the redirect, we'll once again use history. In the body of the cancel function push the root path ('/') onto the history stack:
+```jsx
+ cancel = () => {
+    this.props.history.push('/');
+  }
+```
+Nice work so far, you've come a long way in this stage! You reviewed the fundamentals of basic authentication and how to connect your React client application to an Express REST API. You also created a user registration component that successfully creates a new authenticated user, as well as display validation errors when necessary.
+
+#### Set Up Basic Auhentication
+In this step, we will implement an Authorization request header and the Basic authentication scheme to authenticate a registered user. That way the user can use their credentials to sign into the app.
+
+**Require Authentication and Credentials**
+1. Open the file `Data.js`. The api() helper method will take two additional arguments that indicate if the request requires authentication and the credentials of the user.
+2. After the body parameter, add a parameter named requiresAuth, giving it a default value of false
+3. Include a credentials parameter with a default value of null.
+We initialize the parameters with default values in case no values or undefined gets passed for either. In the api() method's body, we'll check if an endpoint (or route) requires user authentication
+```jsx
+api(path, method = 'GET', body = null, requiresAuth = false, credentials = null) {
+  ...
+}
+```
+4. Above the return statement, write an if conditional statement that checks if requiresAuth is truthy (or considered true):
+```jsx
+api(....) {
+  ...
+
+  if (body !== null) {...}
+
+  // Check if auth is required
+  if (requiresAuth) {    
+
+  }
+
+  return fetch(url, options);
+}
+```
+If we're making a request to a protected route on the server, authentication is required (the `requiresAuth` is true). In that case, we'll encode the user credentials and set the HTTP `Authorization` request header to the Basic Authentication type, followed by the encoded user credentials.
+
+**Encode User Credentials**
+In the Basic auth scheme, a server requests authentication information (a user ID and password) from a client. The client passes the authentication information to the server in an Authorization header using base-64 encoding.
+
+1. Initialize a constant named encodedCredentials and set the value to the [`btoa()` method](https://developer.mozilla.org/en-US/docs/Web/API/btoa)
+
+The btoa() method creates a base-64 encoded ASCII string from a "string" of data. We'll use btoa() to encode the username and password credentials passed to the api() method. The credentials will be passed as an object containing username and password properties.
+
+2. Pass `btoa()` a template literal that interpolates the `username` and `password` values of the `credentials` object to produce an encoded string. Be sure to separate each property with a colon (`:`) as shown below:
+```jsx
+  ...
+  if (body !== null) {...}
+
+  if (requiresAuth) {    
+    const encodedCredentials = btoa(`${credentials.username}:${credentials.password}`);
+  }
+
+  return fetch(url, options);
+```
+**Implement Authorization**
+We'll set an Authorization header on each request that requires authentication by adding an Authorization property to the headers object. You add new properties to existing JavaScript objects the same way you modify them.
+1. Add an Authorization property to options.headers as shown below
+The `Authorization` request header should hold the credentials to authenticate the client with the server.
+2. Using a template literal, set the `Authorization` type to `Basic`, followed by the encoded credentials, stored in the variable `encodedCredentials`
+```jsx
+  ...
+  if (body !== null) {...}
+
+  if (requiresAuth) {    
+    const encodedCredentials = btoa(`${credentials.username}:${credentials.password}`);
+
+    options.headers['Authorization'] = `Basic ${encodedCredentials}`;
+  }
+
+  return fetch(url, options);
+```
+Below is an example of what an Authorization header sent to the server might look like using Basic auth and encoded credentials:
+```
+Authorization: Basic am9lQHNtaXRoLmNvbTpqb2U=
+```
+
+**Set Required Auth and Credential Arguments**
+The only server request that requires authentication is the `GET` request made to `/users`, which logs in an authenticated user. The `getUser()` method of the Data class calls the `api()` method to return an authenticated user. Let's pass the `api()` method inside `getUser()` values for the `requiresAuth` and `credentials` arguments.
+1. Set requiresAuth to true and credentials should be an object containing the username and password information passed to getUser:
+2. The getUser() method needs to accept arguments for username and password now that it's passing that data to api():
+```jsx
+  async getUser(username, password) { // add new parameters
+    const response = await this.api(`/users`, 'GET', null, true, { username, password });
+    ...
+  }
+```
+Basic auth is all set up on the client side, but there's more work left to do in our React app. Submitting the sign up form does not authenticate the request to `/users `just yet. In the next step, we'll create the `signIn()` function that gets a registered user's credentials from the server, and write the form submit logic in `UserSignIn.js`.
+
+[Authorization](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)
+
+#### Impement Sign In
+In this step, we'll write the signIn() function that retrieves a registered user's credentials from the server, then write a function to log in an authenticated user upon submitting the "Sign In" form.
+
+**Create the Sign in Function**
+1. Open the file Context.js. Scroll down to the signIn function, just below the render() method
+The `signIn` function is an asynchronous function that takes a `username` and `password` as arguments. `signIn` uses those credentials to call the getUser() method in `Data.js`, which makes a `GET` request to the protected /users route on the server and returns the user data.
+2. Start by specifying the parameters username and password in the signIn function definition
+3. In the body of the function, initialize a variable named user and set the value to await a promise returned by this.data.getUser():
+```jsx
+ 
+  signIn = async (username, password) => {
+    const user = await this.data.getUser();
+
+  }
+```
+The returned `PromiseValue` will be an object holding the authenticated user's `name` and `username` values. For example:
+```jsx
+{name: "Guil", username: "guil@guil.com"}
+```
+4. Pass the getUser() method the user credentials with the arguments username and password
+5. Set `signIn()` to return the user object stored in the variable `user`
+That's all the signIn behavior we need for now. We'll revisit this function in a later step to set and store the user data in a cookie, and update state to the authenticated user. This will maintain the user's authenticated state across multiple requests and page refreshes.
+
+**Pass the `singIn` Function to the Provider**
+It's common to pass the Provider's value prop an actions object to store any event handlers or actions you want to perform on data that's passed down through context. Next, we'll need to pass the signIn function to <Context.Provider>, that way we can call it within any component that's connected to context changes.
+
+Above the return() statement is the value object containing the context to be shared throughout the component tree.
+1. Add a new property named actions, and set it to an object
+2. Store the signIn function in a property named signIn; the value should be a reference to the function: this.signIn:
+```jsx
+const value = {
+  data: this.data,
+  actions: { // Add the 'actions' property and object
+    signIn: this.signIn
+  }
+};
+
+return (
+  <Context.Provider value={value}>
+    {this.props.children}
+  </Context.Provider>  
+);
+```
+**Subscribe the `UserSignIn` Component to Context**
+As we did earlier with the UserSignUp component, we'll subscribe (or connect) the UserSignIn component to context – in other words, the data and actions to be shared throughout the component tree.
+1. Open the file `App.js`. Below the `UserSignUpWithContext` variable, initialize a variable named `UserSignInWithContext` whose value calls `withContext(UserSignIn)`:
+
 
 ### React Router Authentication
