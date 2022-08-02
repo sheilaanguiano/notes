@@ -3459,7 +3459,7 @@ Authentication provides password protection to hide content from unauthorized us
 
 When the client wants to authenticate itself with a server (for example, log in a user), it can do so by including an Authorization request header with the user credentials. Basic Auth transmits the credentials as user ID/password pairs, which are encoded using an encoding scheme called base64 – more on this later.
 
-** What you're gonna build**
+**What you're gonna build**
 In this text-based course, you will learn how to implement Basic Authentication within a React client application, using the Express REST API you built.
 
 You will make requests to the Express API routes from the React client app, implement user registration and login, and configure React Router to protect specific routes (i.e. require that the user be authenticated in order to view a private route). We will be working with the Express app only – no database, just in-memory data. Users will be stored in a JavaScript Array, in order to keep things as simple as possible.
@@ -3731,6 +3731,7 @@ If the response returns no errors (or an empty array) it means that a new user w
 
 6. Add an else statement that logs a 'success' message to the console for now, displaying the username created:
 ```jsx
+```
 Sheila Anguiano
  React Authentication
 Instruction
@@ -3761,7 +3762,7 @@ export default class UserSignUp extends Component {
 }
 In this case, there is an input field for name, username and password.
 
-Review 'Form.js'
+Review `Form.js`
 The file components/Form.js exports a function that renders any validation errors sent from the API, via the <ErrorsDisplay> function component. It also renders the "Submit" and "Cancel" buttons of a form, as well as handle their functionality, via the functions handleSubmit and handleCancel. Props are passed to this component – from a parent component like UserSignUp – to provide it the data it needs.
 
 export default (props) => {
