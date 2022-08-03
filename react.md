@@ -3467,11 +3467,12 @@ You will make requests to the Express API routes from the React client app, impl
 *While this approach works fine for our example, for most situations it'd be less than ideal, as all of the data will be lost between application restarts.*
 
 ### Project Preview
-This project consist of 4 main routes or views
-	- Default root route that's public and visible to every user
-	- Sign Up route that's also public with Validation errors for inclomplete submission
-	-Sign In route also with validation
-	- Authenticated route which is accessible to authenticated or logged user only
+This project consist of 4 main routes or views:
+
+- Default root route that's public and visible to every user
+- Sign Up route that's also public with Validation errors for inclomplete submission
+- Sign In route also with validation
+- Authenticated route which is accessible to authenticated or logged user only
 
 THe app also preserves the user's authenticated stated across page refreshes or even if the user closes the browser tab by mistake.
 
@@ -3479,16 +3480,20 @@ For this app, we'll focus only on the client authentication features of this app
 
 The client/src folder contains the files you will be working with in this course. Let's quickly review the main files and folders.
 
-index.js - The entry point into the application which renders the main <App> component.
-App.js - Renders the router that wraps the components of the app.
+* index.js - The entry point into the application which renders the main <App> component.
+
+* App.js - Renders the router that wraps the components of the app.
 Context.js - A higher-order component (HOC) that shares functionality across the components of the app. This will let you reuse component logic and state. Remember - "Context" is used in React when data needs to be accessible by many components at different nesting levels.
-Data.js - Contains a class of Data with the API authentication utility methods you will use to create, sign up and authenticate a user. The file is mostly pre-written, making GET and POST requests to the REST API, for example. For this course, we're only going to focus on the authentication parts.
+
+* Data.js - Contains a class of Data with the API authentication utility methods you will use to create, sign up and authenticate a user. The file is mostly pre-written, making GET and POST requests to the REST API, for example. For this course, we're only going to focus on the authentication parts.
+
 The components folder holds all the individual components of the app. For example, components that render the "Public" and "Authenticated" views, and the sign in and sign up forms.
 The styles folder contains the CSS for the application. We will not be working with the CSS as we go through the project, but feel free to change it as you please.
 
 #### Run the Express Server
 **REST API Routes and Endpoints**
-In the REST API Authentication with Express instruction step, you implemented /users routes to create and login a new user, as well as return the current authenticated user, which you tested using an API testing tool like Postman.
+
+In the REST API Authentication with Express instruction step, you implemented `/users` routes to create and login a new user, as well as return the current authenticated user, which you tested using an API testing tool like Postman.
 
 In this course, all POST and GET requests from the React client will be made to the /users endpoint using the helper methods for creating and getting users located in the file client/src/Data.js. Be sure to review this file before the next step.
 
@@ -3730,17 +3735,16 @@ In the body of the function, we'll check **if** there are items in the array ret
 If the response returns no errors (or an empty array) it means that a new user was successfully created and sent to the server.
 
 6. Add an else statement that logs a 'success' message to the console for now, displaying the username created:
-```jsx
-```
+
 Sheila Anguiano
  React Authentication
 Instruction
-Implement the Sign up Form
+#### Implement the Sign up Form
 In this step, we'll begin implementing the sign up form that connects to the Express server and creates an authenticated user.
 
-Getting to Know 'UserSignUp.js'
+##### Getting to Know 'UserSignUp.js'
 The file contains a UserSignUp class that employs the "render prop" technique in React to render a form. Notice how the component <Form> uses an elements prop whose value is a function which returns the input fields to be used in each of the forms:
-
+```jsx
 export default class UserSignUp extends Component {
   ...
   render() {
@@ -3760,11 +3764,12 @@ export default class UserSignUp extends Component {
   }
   ...
 }
+```
 In this case, there is an input field for name, username and password.
 
-Review `Form.js`
+##### Review `Form.js`
 The file components/Form.js exports a function that renders any validation errors sent from the API, via the <ErrorsDisplay> function component. It also renders the "Submit" and "Cancel" buttons of a form, as well as handle their functionality, via the functions handleSubmit and handleCancel. Props are passed to this component – from a parent component like UserSignUp – to provide it the data it needs.
-
+```jsx
 export default (props) => {
   const {...} = props;
 
@@ -3791,12 +3796,13 @@ export default (props) => {
     </div>
   );
 }
+```
 Write the Submit Functionality
 Let's write the submit function that creates a new user and sends their credentials to the Express server. A new user will be created using the state initialized in the UserSignUp class and the createUser() method defined in Data.js. Remember, the UserSignUp component is now a component "with context", meaning it's subscribed to the application context – in fact the data is passed to the component via a prop named context.
 
-Open the file UserSignUp.js.
+##### Open the file UserSignUp.js.
 Destructure props and state. In the body of the submit function (line 74), use destructuring assignment to extract the context prop from this.props, and unpack the name, username and password properties from the state object (this.state) into distinct variables:
-
+```jsx
 submit = () => {
   const { context } = this.props;
 
@@ -3806,10 +3812,11 @@ submit = () => {
     password,
   } = this.state; 
 }
+```
 This will make the submit handler cleaner and easier to understand.
 
 Initialize a variable named user to an object whose properties are name, username and password:
-
+```jsx
   submit = () => {
     const { context } = this.props;
     const {
@@ -3825,6 +3832,7 @@ Initialize a variable named user to an object whose properties are name, usernam
       password,
     };
   }
+```
 This user object is the new user payload that will be passed to the createUser() method. It uses the ES2015 object shorthand syntax to include the just the key names because the values have the same name as the keys.
 
 Create a User
@@ -3832,7 +3840,7 @@ To create a new user, call the createUser() method, which you can access via the
 
 Call the createUser() method with context.data.createUser(). createUser() accepts one argument, which is the new user payload.
 Pass the method the user object as the argument:
-
+```jsx
   submit = () => {
     const { context } = this.props;
     const { .. } = this.state; 
@@ -3840,20 +3848,22 @@ Pass the method the user object as the argument:
 
     context.data.createUser(user)
  }
+```
 createUser() is an asynchronous operation that returns a promise. The resolved value of the promise is either an array of errors (sent from the API if the response is 400), or an empty array (if the response is 201).
 
 Be sure to have another look at the `createUser()` method in `Data.js` to review its inner-workings.
 Get the value out of the returned promise. Chain a then() method to createUser():
-
+```jsx
  submit = () => {
    ...
    context.data.createUser(user)
     .then()
  }
-In the then() method, we'll check if the returned PromiseValue is an array of errors. If it is, we will set the errors state of the UserSignUp class to the returned errors.
+```
+In the `then()` method, we'll check if the returned PromiseValue is an array of errors. If it is, we will set the errors state of the UserSignUp class to the returned errors.
 
 Pass then() an arrow function that takes the fulfillment value as a parameter named errors:
-
+```jsx
   submit = () => {
     ...
     context.data.createUser(user)
@@ -3861,12 +3871,13 @@ Pass then() an arrow function that takes the fulfillment value as a parameter na
 
      })
   }
+```
 If, for instance, a user submits an empty sign up form, the API returns a response status of 400 as well as an array of validation error messages.
 
 In the body of the function, we'll check if there are items in the array returned by the Promise, using errors.length. If there are items in the array, it means that there are errors to display to the user.
 
 In the if block, use setState() to update the errors state to the returned errors:
-
+```jsx
   submit = () => {
     ...
     context.data.createUser(user)
@@ -3876,10 +3887,11 @@ In the if block, use setState() to update the errors state to the returned error
        }
      })
    }
+```
 If the response returns no errors (or an empty array) it means that a new user was successfully created and sent to the server.
 
 Add an else statement that logs a 'success' message to the console for now, displaying the username created:
-
+```jsx
   submit = () => {
     ...
     context.data.createUser(user)
@@ -4074,6 +4086,532 @@ return (
 **Subscribe the `UserSignIn` Component to Context**
 As we did earlier with the UserSignUp component, we'll subscribe (or connect) the UserSignIn component to context – in other words, the data and actions to be shared throughout the component tree.
 1. Open the file `App.js`. Below the `UserSignUpWithContext` variable, initialize a variable named `UserSignInWithContext` whose value calls `withContext(UserSignIn)`:
+2. Render `UserSignInWithContext`. In the sign in route, change the component to render when the URL path matches /signin from UserSignIn to UserSignInWithContext:
+```jsx
+import withContext from './Context';
 
+const UserSignUpWithContext = withContext(UserSignUp);
+//conect UserSignIn to context
+const UserSignInWithContext = withContext(UserSignIn);
 
+export default () => (
+  <Router>
+    <div>
+      <Header />
+
+      <Switch>
+        <Route exact path="/" component={Public} />
+        <Route path="/authenticated" component={Authenticated} />
+        <Route path="/signin" component={UserSignInWithContext} />
+
+```
+The UserSignIn component now has access to the signIn function, as well as any data or actions passed to <Context.Provider value={value}>.
+
+##### Create the Submit Function
+The `submit()` function will log in an authenticated user upon submitting the "Sign In" form. Most of the logic for this function will resemble what we wrote for the "Sign Up" form.
+1. Open the file `components/UserSignIn.js`. The UserSignIn component is also a component "with context", meaning it's subscribed to the application context – the data is passed to the component via a context prop.
+2. In the body of the submit function, let's again use destructuring assignment to extract the context prop from this.props
+3. To make the function cleaner, unpack the username and password properties from the state object (this.state) into distinct variables – these are the properties needed to sign in a user
+4. Call the `signIn()` function, which you can access via the destructured `context` variable. In `Context.js`, you passed `Context.Provider` a value prop whose value was an object with an actions property. The `signIn()` function provided to the `UserSignIn` component is available via context.actions.signIn
+5. The `signIn` function accepts two arguments, username and password, to log in a registered user
+`signIn()` is an asynchronous operation that calls the `getUser` API method (written in Data.js) and returns a promise. The resolved value of the promise is either an object holding the authenticated user's name and username values (sent from the API if the response is 201), or null (if the response is a 401 Unauthorized HTTP status code). Be sure to have another look at the getUser() method in Data.js to review its inner-workings.
+6. Get the value out of the returned promise by chaining a then() method to signIn
+7. Pass then() an arrow function that takes the fulfillment value as a parameter named user
+8. Inside then(), check if the returned PromiseValue is strictly equal to null (or a response of 400)
+9. If the returned promise value is null, set the errors state of the UserSignIn class to an array which holds the string 'Sign-in was unsuccessful' (this will be the validation message displayed to the user):
+If the response returns the user object (response status is 200), use history and the push() method to navigate the user from the /signin route to the /authenticated route, which will render the "Authenticated" view to let them know sign-in was successful.
+10. Inside an else block, call this.props.history.push(), passing it '/authenticated' as the redirect route
+11. To view the authenticated username (and know that registration worked), log a "Success" message to the console that displays the username
+
+```jsx
+submit = () => { 
+    const { context } = this.props;
+    const { username, password } = this.state;
+    context.actions.signIn(username, password)
+      .then( user => {
+        if(user === null){
+          return {errors: ['Sign-in was unsucccessful']};
+        } else {
+          this.props.history.push('/authenticated');
+          console.log(`SUCCESS! ${username} is now signed in!`);
+        }
+      })
+  }
+
+```
+##### Catch Errors
+Like we did earlier in the UserSignUp component, we'll chain the catch() method to the promise sequence to handle a rejected promise returned by signIn().
+1. Chain the `catch()` method to `then()`
+2. Pass `catch()` an arrow function that takes the parameter `err` (the rejection reason) and logs it to the console.
+3. In the event of an error, again use history and the push() method to navigate the user from /signin to /error, providing a user-friendly way to let them know that something went wrong:
+```jsx
+.catch( err => {
+        console.log(err);
+        this.props.history.push('/error');
+      })
+```
+##### Write the "Cancel" Function
+Let's wire up the "Cancel" button to the cancel function defined in UserSignIn.js. This function will be the same as the cancel function defined in UserSignUp.js. Feel free to copy that code and paste it inside the cancel function of the UserSignIn class.
+
+If a user decides to cancel sign-in, we will redirect them back to the home route upon clicking "Cancel". To accomplish the redirect, push the root path ('/') onto the history stack:
+```jsx
+ cancel = () => {
+    this.props.history.push('/');
+  }
+
+```
+#### Display Authenticated User in the Header
+Currently, when a registered user logs in (via the "Sign In" form), there are no visual changes in the user interface to let them know that they are authenticated (or logged in). Now that we have a way to authenticate and identify users, we can associate data with specific users.
+
+When an authenticated user logs into the app, we'll display a "Welcome" message in the header using their name. We'll also replace the "Sign In" link with a "Sign Out" link.
+
+##### Connect the Header to Context
+The `Header` component needs to be subscribed to the context changes provided by `Context.js`. The data passed to `Header` will determine whether it renders the "Welcome" message displaying the user's name, or the "Sign In" and "Sign Up" links displayed by default.
+
+1. In App.js, initialize a variable named HeaderWithContext and set the value to withContext(Header)
+Like other components "with context," we've provided the `Header` component access to the data and actions passed to <Context.Provider value={value}>
+```jsx
+...
+import withContext from './Context';
+
+// Connect the Header component to context
+const HeaderWithContext = withContext(Header);
+const UserSignUpWithContext = withContext(UserSignUp);
+const UserSignInWithContext = withContext(UserSignIn);
+```
+2. Inside <Router>, change the <Header /> JSX tag to <HeaderWithContext />:
+```jsx
+export default () => (
+  <Router>
+    <div>
+      <HeaderWithContext />
+
+      <Switch>...</Switch>
+    </div>
+  </Router>
+);
+```
+##### Authenticated User State
+You've learned that in React, "state" is the data you want to track in your app. State allows you to create components that are dynamic and interactive, and it's the only data that changes over time. Next, we're going to initialize an `authenticatedUser` state to determine what content gets presented to the user.
+
+If `authenticatedUser` is `null` (there is no authenticated user), we'll display the default header. Otherwise, we'll display the user name in the header in a "Welcome" message alongside a "Sign Out" link.
+
+1. In `Context.js`, initialize an `authenticatedUser` state in the `Provider` class. Set the default state to `null`:
+```jsx
+export class Provider extends Component {
+
+  state = {
+    authenticatedUser: null
+  };
+
+  ...
+}
+```
+2. In the render() method, use destructuring assignment to extract authenticatedUser from this.state
+3. Pass state to <Context.Provider> by adding the `authenticatedUser` variable to the value object
+```jsx
+  render() {
+    const { authenticatedUser } = this.state;
+
+    const value = {
+      authenticatedUser,
+      data: this.data,
+      actions: {
+        signIn: this.signIn
+      },
+    };
+    ...
+  }
+
+```
+##### Conditionally Render the Header Nav
+The `Header` class in `Header.js` now receives the `authenticatedUser` state via context and props, `with this.props.context.authenticatedUser`. We will use this data to determine what to display to the user.
+
+1. In the render() method of the Header class, extract context from this.props to make the data easier to manage
+2. Store the authenticatedUser data in a variable named authUser
+The value of `authUser` is either an object holding the authenticated user's `name` and `username` values, or `null`. In the return statement we'll conditionally render the header nav content based on the value of `authUser` (the `authenticatedUser` state).
+
+```jsx
+export default class Header extends React.PureComponent {
+  render() {
+    const { context } = this.props;
+    const authUser = context.authenticatedUser;
+    ...
+  }
+  ...
+}
+```
+3. Between the <nav> tags, open a JSX expression using curly braces ({ })
+4. Inside the curly braces, use a conditional (ternary) operator to render content representing the current state, using the value of authUser as the condition.
+5. If `authUse`r evaluates to a truthy value (there is an authenticated user in state), the `Header` class renders a <span> element containing a "Welcome" message that displays the user name. Render the user's name with {`authUser.name`}
+When a user is logged in, we should provide them a way to log out.
+6. Below the span tag, add a <Link> component that navigates the user to the path /signout. The link should display the text "Sign Out"
+7. If authUser is falsy (the authenticatedUser state is null, for example), the Header class renders the default navigation, displaying the "Sign Up" and "Sign In" links
+
+```jsx
+<nav>
+  {authUser ?
+    <React.Fragment>
+      <span>Welcome, {authUser.name}!</span>
+      <Link className="signout" to="/signout">Sign Out</Link>
+    </React.Fragment>
+  :    
+    <React.Fragment>
+      <Link className="signup" to="/signup">Sign Up</Link>
+      <Link className="signin" to="/signin">Sign In</Link>
+    </React.Fragment>
+  }
+</nav>
+
+```
+That's all the code we need to include in Header.js. Next, when a registered user logs into the app, we will update the authenticatedUser state. The value in state will be a user object holding the authenticated user's name and username.
+
+##### Update State on Sign in
+In the Context.js file, the `signIn` function of the `Provider` class currently returns `null` or the authenticated user via the `getUser()` method. The data is stored in the variable `user` which, as you learned earlier, is either null or an object holding the authenticated user's name and username values. For example:
+```jxs
+{name: "Guil", username: "guil@guil.com"}
+```
+
+1. Update the `authenticatedUser` state upon sign in with a conditional statement that checks if the value of user is not equal to null
+2. The value of user is not null, update the authenticatedUser state to the value of user
+```jsx
+  signIn = async (username, password) => {
+    const user = await this.data.getUser(username, password);
+    if (user !== null) {
+      this.setState(() => {
+        return {
+          authenticatedUser: user,
+        };
+      });
+    }
+    return user;
+  }
+```
 ### React Router Authentication
+#### Protect Routes that Require Authentication
+You'll often need to protect certain routes in your application from unauthorized users. For instance, the `/authenticated` route would likely display private information that we don't want unauthorized (or logged-out) users to view.
+
+Currently, the '/authenticated' route is accessible to any user, whether they are authenticated or not. This is likely not what you or your users would expect; the route should be private to authenticated users only.
+
+In this step, you will use React Router to control what users can and cannot view in your application based on their identity. You will create a routing feature that allows only logged-in users to view the /authenticated page. Users who are not authenticated will be redirected to the /signin page.
+
+##### Set up the Private Route
+1. In `App.js`, import the PrivateRoute component (located in the src folder)
+2. Within the <Switch> tags, change the <Route> tag that renders the Authenticated component to <PrivateRoute>
+```jsx
+  <Switch>
+    <Route exact path="/" component={Public} />
+    <PrivateRoute path="/authenticated" component={Authenticated} />
+    ...
+  </Switch>
+
+```
+##### Review PrivateRoute.js
+The `PrivateRoute` component will serve as a high-order component for any routes that you want to protect and make accessible to authenticated users only. The component will either allow the user to continue to the specified private component, or redirect them to the sign in page if they are not logged in.
+<PrivateRoute> will work similar to how <Route> works. It will render the private component passed to its component prop when the URL matches the specified path. Let's go over the code for this function component.
+1. Open the file `src/PrivateRoute.js`. The function first destructures and renames the component prop in its parameters. It also collects any props that get passed to it in a ...rest variable:
+
+```jsx
+import React from 'react';
+import { Route, Redirect } from 'react-router-dom';
+import { Consumer } from './Context';
+
+export default ({ component: Component, ...rest }) => {
+  return (
+    <Consumer>
+      { context => (
+        <Route
+          {...rest}
+          render={}
+        />
+      )}
+    </Consumer>
+  );
+};
+```
+2.  Inside `return()`, the <Consumer> component subscribes PrivateRoute to all the actions and data provided by Context.js
+In this case, a <Route> component is rendered inside the consumer and any specified props (like path) are passed to it via ...rest.
+
+##### Redirect the User
+The <Route> component utilizes a "render prop" to render either the protected component or a redirect.
+Anything rendered within <Consumer> is connected to context changes, which means that <Route> has access to the `authenticatedUser` state (via context.authenticatedUser). The value of `context.authenticatedUser` is either an object holding the authenticated user's name and username, or null.
+1. In the render prop, check whether or not the user is authenticated (there is an authenticated user in state)
+If the user is authenticated, the component specified in <PrivateRoute>'s component prop gets rendered.
+```jsx
+...
+    <Consumer>
+      {context => (
+        <Route
+          {...rest}
+          render={props => context.authenticatedUser ? (
+              <Component {...props} />
+            )
+          }
+        />
+    )}
+    </Consumer>
+  );
+```
+2. If the user not authenticated, redirect to /signin:
+The <Redirect> component instructs the router to redirect from one route to another. The value passed to its to prop specifies the URL to redirect to – in this case /signin.
+```jsx
+export default ({ component: Component, ...rest }) => {
+  return (
+    <Consumer>
+      { context => (
+        <Route
+          {...rest}
+          render={ props => context.authenticatedUser ? (
+            <Component {...props} />
+          ) : (
+            <Redirect to='/signin'/>
+          )
+          }
+        />
+      )}
+    </Consumer>
+  );
+};
+```
+##### Connect the `Authenticated` Component to Context
+The `Authenticated` component is currently not subscribed to context, which means that it does not have access to the authenticatedUser state and is not able to display custom content to the user. Header, for example, uses context to render a "Welcome" message displaying the authenticated user's name.
+
+To display custom content in the private Authenticated component (like a user's name and username), we'll need to subscribe the component to context.
+
+1. In `App.js`, initialize a variable named AuthWithContext with a value of withContext(Authenticated)
+2. In the <PrivateRoute> JSX tag, change the value of the `component` prop from `Authenticated` to `AuthWithContext`:
+```jsx
+<Switch>
+    <Route exact path="/" component={Public} />
+    <PrivateRoute path="/authenticated" component={AuthWithContext} />
+    ...
+  </Switch>
+```
+3. Open the file `components/Authenticated.js`. The value of the authenticatedUser state is now available to this function via props.context.authenticatedUser.
+4. To make things cleaner, extract the context property from props in the function's parameters
+5. Store the authenticatedUser data in a variable named authUser.
+6. In the return statement, display the authenticated user's name in the heading, and the username in a paragraph, using the name and username properties provided by context:
+```jsx
+import React from 'react';
+
+export default ({ context }) => {
+  const authUser = context.authenticatedUser;
+
+  return (
+  <div className="bounds">
+    <div className="grid-100">
+      <h1>{ authUser.name } is authenticated!</h1>
+      <p>Your username is {authUser.username}.</p>
+    </div>
+  </div>
+  );
+}
+```
+#### Impement User Sign Out
+User authentication would not be complete without a sign out feature that provides a way to let users log out of your app.
+
+In this step, we'll write a signOut function that sets the authenticatedUser state back to null when invoked. We'll also implement a /signout route and a UserSignOut component that redirects the user to the main public page upon logging out.
+
+##### Write the Sign Out Function
+1. Open the file Context.js. At the bottom of the Provider class is an empty function named signOut (below the signIn function):
+2. Inside the body of the signOut function, use this.setState() to update the authenticatedUser state to null:
+This removes the name and username properties from state – the user is no longer authenticated and cannot view the private components.
+Like the `signIn` function, we will need to pass the `signOut` function as an action to <Context.Provider> to make it available to all components connected to context changes.
+```jsx
+ signOut = () => {
+    this.setState({authenticatedUser: null });
+  }
+```
+3. In the `value.actions` object, store the `signOut` functions in a property name `signOut` and set the value to reference the function, with this.signOut:
+```jsx
+  const value = {
+      authenticatedUser,
+      data: this.data,
+      actions: {
+        signIn: this.signIn,
+        signOut: this.signOut
+      },
+    }
+```
+##### Connect the `UserSignOut` Component to Conext
+The "Sign Out" link in the Header component navigates the user to the `/signout` URL path, so let's now declare the `/signout` route in `App.js`.
+
+1. Initialize a variable named UserSignOutWithContext to withContext(UserSignOut)
+This subscribes the UserSignOut component to context changes, that way we'll be able to reference the `signOut` action (which calls the signOut function) from within the component
+2. Update the sign out <Route> to render `UserSignOutWithContext` when the URL path is /signout:
+
+```jsx
+import React from 'react';
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch
+} from 'react-router-dom';
+
+import Header from './components/Header';
+import Public from './components/Public';
+import NotFound from './components/NotFound';
+import UserSignUp from './components/UserSignUp';
+import UserSignIn from './components/UserSignIn';
+import UserSignOut from './components/UserSignOut';
+import Authenticated from './components/Authenticated';
+
+import withContext from './Context';
+import PrivateRoute from './PrivateRoute';
+
+const HeaderWithContext = withContext(Header);
+const AuthWithContext = withContext(Authenticated);
+
+const UserSignUpWithContext = withContext(UserSignUp);
+const UserSignInWithContext = withContext(UserSignIn);
+const UserSignOutWithContext = withContext(UserSignOut);
+
+export default () => (
+  <Router>
+    <div>
+      <HeaderWithContext />
+
+      <Switch>
+        <Route exact path="/" component={Public} />
+        <PrivateRoute path="/authenticated" component={AuthWithContext} />
+        <Route path="/authenticated" component={Authenticated} />
+        <Route path="/signin" component={UserSignInWithContext} />
+        <Route path="/signup" component={UserSignUpWithContext} />
+        <Route path="/signout" component={UserSignOutWithContext} />
+        <Route component={NotFound} />
+      </Switch>
+    </div>
+  </Router>
+);
+
+```
+##### Redirect the User to the Root Route on Sign-out
+The file `UserSignOut.js` contains a function component we'll use to call the `signOut()` action and redirect the user to the root path ('/').
+1. Open the file components/UserSignOut.js
+2. Extract the `context` property from `props` in the function's parameters
+3. In the body of the function, call the signOut() action passed down through context
+4. Return a <Redirect> component that redirects the user to the root path ('/')
+```jsx
+import React from 'react';
+import { Redirect } from 'react-router-dom';
+
+export default ({ context }) => {
+  context.actions.signOut();
+  return (
+    <Redirect to="/" />
+  );
+}
+
+```
+##### Now you can test User Sign-Out
+The router should navigate to the /signout path and render the UserSignOut component, which immediately redirects to the main public page.
+
+##### Important Update
+In the latest version of React, the following warning will appear in your browser's JavaScript console when signing out of the application:
+```
+index.js:1 Warning: Cannot update during an existing state transition (such as within `render`). Render methods should be a pure function of props and state.
+
+```
+Why the warning: 
+While rendering, the UserSignOut component calls the signout() action to update the application's authenticatedUser state.
+
+Developers refer to these types of actions as "side effects" and React now warns that you shouldn't perform them during rendering.
+
+This state update should happen after the UserSignOut component renders. React now provides a straightforward way to do that with the useEffect Hook.
+
+Update the code in UserSignOut.js as shown below:
+```jsx
+import React, { useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
+export default ({context}) => {
+  // component calls signOut and updates state after render
+  useEffect(() =>  context.actions.signOut());
+
+  return (
+    <Redirect to="/" />
+  );
+}
+
+```
+After the component renders, the signOut action gets called to logout the user. Learn more about useEffect in our React Hooks workshop.
+
+#### Refine and Complete Authentication
+The authentication feature of the React app is effectively complete. We're successfully registering users, and providing ways for them to log in and out.
+
+Currently, when a user submits the registration form on the "Sign Up" page, the app in no way indicates whether they registered successfully. Also, they need to click the "Sign In" link then submit the form to log into the app.
+
+In this step, we'll further refine the registration and sign in experience by automatically signing in the user upon successful registration.
+
+##### Updating the `submit` Function
+The submit() function we wrote earlier only logs a 'success' message to the console if the createUser() method returns no errors. After creating the user, we're also going to sign in the user to retrieve the user data from the API and maintain the user's authenticated state. We'll accomplish this using the signIn() function provided by context.
+1. Open the file UserSignUp.js
+2. In the else block, call signIn(), with context.actions.signIn(). The signIn function accepts two arguments, username and password, to log in a registered user
+```jsx
+submit = () => {
+  ...
+    context.data.createUser(user)
+      .then( errors => {
+        if (errors.length) {
+          this.setState({ errors });
+        } else {
+          context.actions.signIn(username, password)
+        }
+      })
+      .catch((err) => {...});
+}
+```
+As you learned earlier, signIn() is an asynchronous operation that returns a promise. Once the promise is fulfilled (the user was authenticated), we'll navigate the user to the /authenticated URL path.
+3. Chain a then() method to signIn(username, password)
+Once the authenticated user is in state, we'll push a new entry onto the history stack to navigate the user to the `/authenticated` route.
+4. Pass then() a function that calls this.props.history.push('/authenticated')`:
+This renders the `Authenticated` component which displays that registration was a success.
+5. Test the Sign Up Redirect: Clicking the "Sign Up" button should navigate you to the /authenticated route and display the private Authenticated component.
+
+##### Smarter Redirect for Unauthenticated Users
+There's one more improvement we can make to the sign in experience. Currently, a logged-out (or unauthenticated) user who tries to visit /authenticated gets redirected to /signin via the <PrivateRoute> component. Once they sign in, they can access /authenticated.
+
+Our simple app currently has only one private route ( /authenticated), but it's likely that a larger app will have many routes that are private to unauthenticated users. In that case, we'd need to provide a smarter, more efficient login redirect for users.
+
+For example, let's say that our app also has the private route /settings. A user who isn’t authenticated tries to access /settings and is redirected to the "Sign In" page. The user submits the sign in form, and instead of redirecting to /settings (the page they want to access) they redirect to /authenticated. A better experience would be to redirect the user back to the page they were trying to access once they're authenticated. React Router's <Redirect> component provides a simple way to achieve this!
+
+##### Update the <Redirect> Component
+1. Open the file PrivateRoute.js.
+2. In the <Redirect />component, change the to prop from a string to an object
+The object contains information about the path to redirect to (if not authenticated), and the route the user was trying to access before being redirected.
+3. To redirect an unauthenticated user to the "Sign In" page, pass the object a pathname property and set the value to '/signin'
+4. Pass a state property whose value is the current location of the route the user tried to access
+The `state` property holds information about the user's current location (i.e., the current browser URL). That way, if authentication is successful, the router can redirect the user back to the original location (from: props.location).
+
+Since pathname: '/signin' renders the UserSignIn component on redirect, you can access from via this.props.location.state.from within the UserSignIn component
+
+##### Update the UserSignIn Component
+In the UserSignIn component, we'll need to update the submit() function. If the user is redirected to `/signin` from a previous route, `submit()` should navigate them back to the original route once they authenticate.
+Update the submit() function as shown below:
+```jsx
+submit = () => {
+  const { context } = this.props;
+  const { from } = this.props.location.state || { from: { pathname: '/authenticated' } };
+  const { username, password } = this.state;
+
+  context.actions.signIn(username, password)
+   .then( user => {
+     if (user === null) {
+       ...
+     } else {
+       this.props.history.push(from);
+     }
+   })
+   .catch((error) => {...});
+}
+```
+The `from` variable passed to `history.push(from)` contains information about the pathname an unauthenticated user redirected from (via `this.props.location.state`). For example, if a user redirects to the sign up page from `/settings`, `from` will be equal to pathname: "/settings".
+
+If a user submits the sign in form without previously visiting a protected route, they will navigate to `/authenticated` by default. You can learn more about the pathname, state and from properties in the resources below.
+
+##### Test Redirect
+1. Declare a new <PrivateRoute /> in App.js. For example, /settings
+2. Click the "Sign Out" link in the header to make sure that you are logged out.
+3. Try to access /settings. This should redirect you to /signin.
+4. Submit the sign in form. You should redirect back to /settings.
+
+#### Preserve the User State with Cookies
