@@ -11,7 +11,11 @@ Platform: Threehouse
 3. [The Thing About Strings](#the-thing-about-strings)
 4. [Feeling Loopy with Java](#loops)
 5. [Arrays](#arrays)
-6. [Inheritance](# Inheritance)
+6. [Inheritance](#inheritance)
+7. [Interfaces](#interfaces)
+8. [Generics](#generics)
+9. [Java Lists](#list)
+10. [Java Maps](#maps)
 
 
 ## Java Basics <a name="basics"></a>
@@ -1187,6 +1191,10 @@ Radom is another utility that comes with another great method named `next int` t
 
 - Typically we put each class i its own file.
 - While you can have moe than one class in a file, all public classes need their own files, which is why we're not making our class `public`
+
+### Everything inherits from Object
+When thinking about Inheritance think of **IS** a Dog is an Animal. And everything in Java IS an OBJECT
+
 ```java
 public class Main {
     public static void main(String[] args) {
@@ -1211,3 +1219,547 @@ class Dog extends Animal {
 }
 
 ```
+So we can declare Dog as `Animal dog = new Dog()` or even as an object `Object dog = new dog();` but we'll lose the ability to call `makesound`, since the Object class doesn't have that method, luckly we can get our dog back by using something called **cast**
+Now imagine that we create a list of Objects with a new Dog and New food
+```java
+public class Main {
+    public static void main(String[] args) {
+
+       Object[] list = {new Dog(), new DogFood()};
+        dog.makeSound();
+
+    }
+}
+ class Animal {
+    //String field
+    String sound = "";
+
+    void makeSound(){
+        System.out.println(sound);
+    }
+}
+class Dog extends Animal {
+    Dog(){
+        sound = "bark";
+    }
+}
+class DogFood{}
+```
+### Casting Instances
+We just saw how we can group together different objects bu ysing an array with a common base class. 
+
+If we create a new dog variable like the example bleow, it will give us an *incompatible error*
+
+```java
+public class Main { 
+    public static voi d main(String[] args) {
+
+       Object[] list = {new Dog(), new DogFood()};
+       Dog dog = list[0];
+        dog.makeSound();
+
+    }
+}
+
+```
+A cast or **type casting** is when you tell java that an object os a more specific descendant of that object. Essentially moving the object up its family tree. Tou use a cast, you just write the name of the class between parentheses. To write a cast, you just write it between parentheshis.  
+
+ ```java
+public class Main { 
+    public static voi d main(String[] args) {
+
+       Object[] list = {new Dog(), new DogFood()};
+       Dog dog = (Dog)list[0];
+        dog.makeSound();
+
+    }
+}
+```
+But if we try to merge those to lines an make something like below, won't work becyase the call to `.makeSound()` happens before the cast
+ ```java
+public class Main {  
+    public static voi d main(String[] args) {
+
+       Object[] list = {new Dog(), new DogFood()};
+     
+        (Dog)list[0].makeSound();
+
+    }
+}
+```
+So to make sure that the cast happens first, we just need to use some parenthesis.
+ ```java
+public class Main {  
+    public static voi d main(String[] args) {
+
+       Object[] list = {new Dog(), new DogFood()};
+        ((Dog)list[0]).makeSound();
+
+    }
+}
+```
+Now this only works, because we know exactly whe our dog is in the array. So we can loop theough our list array and only call `makeSound` if the object actually has a `makesSeound` method. Using the `instaceof` operator allows us to checi if one object is an instance of another
+```java
+public class Main {
+    public static void main(String[] args) {
+
+       Object[] list = {new Dog(), new DogFood()};
+       for (Object object: list){
+
+           if(object instanceof Animal){
+               ((Animal) object).makeSound();
+           }
+       }
+
+    }
+}
+```
+### Object Methods
+If you look at the instance of one of your objects, you will see the fields and methods for the specific object (like the Dog objects), but also methods that come from class, some of this are:
+* `getClass()` method: When you call the getClass method on an object, it returns a class object that contains information about the class itself, like the class name and what package it's in.
+* `toString()` when you call it on an object. It returns a string with information about the object.
+```java
+public class Main {
+    public static void main(String[] args) {
+        Dog dog = new Dog();
+        System.out.println(dog.toString());
+     }
+}
+//This returns     Dog@28a418fc
+
+```
+In IntelliJ whenever you want to take a deeoer look at something, you just put your cursor on it and use `cmd +B` to jump to its declaration 
+
+* `.hashCode()` when you call this method on an object, you get back an integer representing that object, and the important thing to remember about this, it that it'll return a different integer for every object, so is helpful when checking equality.
+* `.equals` a method that returns a boolean indicating if the two object are equal
+
+### Super Override
+In Java an override is when a child class has a method with the exact same signature as one in the parent class, but with a different implementation, for example we'll create a `toString` method in our animal class that will have a different implementation, that the one that comes from `Object`.
+```java
+ class Animal {
+    //String field
+    String sound = "";
+
+    void makeSound(){
+        System.out.println(sound);
+    }
+    @Override
+    public String toString(){
+        return getClass().getSimpleName() + ": sound = " + sound;
+    } 
+}
+// Dog: sound = bark 
+``` 
+The `@Override` annotation isn't strictly required, but it lets Java know that we're attempting to override an already existing method. Now there is another way we could have done this: `ctrl + O ` opens the override menu, pick up the `toString()` method and accept it, returning the following
+```java
+  @Override
+     public String toString() {
+         return super.toString();
+     }
+```
+`super` keywbord refres to the parent class, meaning this is calling the `.toString()` method of the object class.
+
+But, why do we need the `super` keyword. Let's say that every time a dog makes a sound , it should also wag its tail. To do this, we'll need to override the makeSound method in our dog class.
+```java
+public class Main {
+    public static void main(String[] args) {
+        Dog dog = new Dog();
+        dog.makeSound();
+     }
+}
+
+ class Animal {
+    //String field
+    String sound = "";
+
+    void makeSound(){
+        System.out.println(sound);
+    }
+
+     @Override
+     public String toString() {
+         return getClass().getSimpleName() + ": sound = " + sound;
+     }
+ }
+class Dog extends Animal {
+    Dog(){
+        sound = "bark";
+    }
+
+    @Override
+    void makeSound() {
+        super.makeSound();
+        System.out.println("wags tails");
+    } 
+}
+class DogFood{}
+
+//bark
+//wags tail
+```
+Now, when we call the `makeSound()` method on a Dog object, it'll first call animal make sound method and then print out wags tail
+
+Another place, you might see the `super` keyword is in a constructor. Let's see how that works by making sure that every animal has a sound. We'll add a constructor to the animal class and making sure it takes on a string parameter
+```java
+ class Animal {
+    //String field
+    String sound = "";
+
+    //constructor
+    Animal(String sound){
+        this.sound = sound;
+    }
+
+    void makeSound(){
+        System.out.println(sound);
+    }
+
+     @Override
+     public String toString() {
+         return getClass().getSimpleName() + ": sound = " + sound;
+     }
+ }
+```
+This will give us an error in our Dog class, since Animal now requires a sound in its contructor, we need to call through to that constructor in order to have a valid animal
+```java
+class Dog extends Animal {
+    Dog() {
+        super("bark");
+    }
+
+    @Override
+    void makeSound() {
+        super.makeSound();
+        System.out.println("wags tails");
+    }
+}
+class DogFood{}
+```
+### Abstracting Abstract Classes
+Inheritance is a powerful concept and it gives a huge amount of freedom with how we develop apps. However, someties, it makes sense to limit some of that freedom. Right now if we wanted to, we could create a new animal object, this might not seem like an issue, but what does a generic animal look like
+**Abstract Classes**
+I. Cannot be instantiated. You can't use the `new` keyword with an abstract class
+II. Can have abstract methods, which are methods without a method body. You can think of them as pretty much a forced override.
+
+We're gonna make our animal class abstract and maken an abstract method `.findfood()`, then we'll need to override that method in our dog class, luckily IntelliJ already know how to do this, so we can use (option + enter) to implement the method:
+```java
+public class Main {
+    public static void main(String[] args) {
+        Dog dog = new Dog();
+        dog.findFood();
+     }
+}
+
+ abstract class Animal {
+    //String field
+    String sound = "";
+
+    Animal(String sound){
+        this.sound = sound;
+    }
+    abstract void findFood();
+
+    void makeSound(){
+        System.out.println(sound);
+    }
+
+     @Override
+     public String toString() {
+         return getClass().getSimpleName() + ": sound = " + sound;
+     }
+ }
+class Dog extends Animal {
+    Dog() {
+        super("bark");
+    }
+
+    @Override
+    void findFood() {
+        System.out.println("*looks at human*");
+        makeSound();
+    }
+
+    @Override
+    void makeSound() {
+        super.makeSound();
+        System.out.println("wags tails");
+    }
+}
+class DogFood{}
+/*
+returns the following after compilation:
+ *looks at human*
+ bark
+ wags tails
+*/
+```
+### Object Equality
+When talking about objects, there's typically two ways to think about equality. There is strict equality, which makes sure they're literally the same object and there's looks like equality, where as long as the two things have the same properties, then they are the same, which can be accomplished by overriding the equals and hash code methods.
+```java
+public class Main {
+    public static void main(String[] args) {
+        Dog dog1 = new Dog();
+        Dog dog2 = new Dog();
+        System.out.println(dog1.equals(dog2));
+
+     }
+}
+// false
+```
+So now, we need to change our animal class so that the equality will be based only on the properties of the class, which, for us is just the sound property. To do this, we'll need to override the equals and hash code methods based on the sound property. However, this typically isn't done by hand, so let's use the shortcut, add some space at the bottom of the class and then hit `command + N` to bring up the generate dialog (IntelliJ), then pick up `equals() and jashCode()` and just keep hitting enter, now we can compile our code again:
+```java
+mport java.util.Objects;
+
+public class Main {
+    public static void main(String[] args) {
+        Dog dog1 = new Dog();
+        Dog dog2 = new Dog();
+        System.out.println(dog1.equals(dog2));
+
+     }
+}
+
+ abstract class Animal {
+    //String field
+    String sound = "";
+
+    Animal(String sound){
+        this.sound = sound;
+    }
+    abstract void findFood();
+
+    void makeSound(){
+        System.out.println(sound);
+    }
+
+     @Override
+     public String toString() {
+         return getClass().getSimpleName() + ": sound = " + sound;
+     }
+    //Autogenerated code by IntelliJ to override equals and hashCode
+     @Override
+     public boolean equals(Object o) {
+         if (this == o) return true;
+         if (o == null || getClass() != o.getClass()) return false;
+         Animal animal = (Animal) o;
+         return Objects.equals(sound, animal.sound);
+     }
+
+     @Override
+     public int hashCode() {
+         return Objects.hash(sound);
+     }
+ }
+class Dog extends Animal {
+    Dog() {
+        super("bark");
+    }
+
+    @Override
+    void findFood() {
+        System.out.println("*looks at human*");
+        makeSound();
+    }
+
+    @Override
+    void makeSound() {
+        super.makeSound();
+        System.out.println("wags tails");
+    }
+}
+class DogFood{}
+// true
+```
+And with this, both are the same dog. Now if we want them to make different dogs, they'll need to make different sounds, thus we'll update the contructor to take in a sound
+```java
+...
+class Dog extends Animal {
+    Dog(String sound) {
+        super(sound);
+    }
+...
+```
+And now we need to define different sound for our dogs, and if we run the code, they'll again no longer be the same dog
+```java
+public class Main {
+    public static void main(String[] args) {
+        Dog dog1 = new Dog("bark");
+        Dog dog2 = new Dog("woof");
+        System.out.println(dog1.equals(dog2));
+
+     }
+}
+```
+
+
+## Interfaces in Java <a name="interfaces"></a>
+### Introducing Interfaces
+You can think of interfaces just as a more restricted abstract class. When creating an interface you start with the `interface` keyword followed by a name. Inside an interface, there's really only two things you can do, you can
+1. Declare a constant
+2. Declare an abstract method
+
+Since we're limited to just constants and abstarct methods inside an interface, we don't need to specify static final for our variables or abstract for our functions, it will just be that way by default. 
+
+Once we created the interface, we associate it with a class by using the `implements` keyboard. Then since interface methods are abstract we need to override each of those methods in the class. This is one of the big advantages of interfaces, since thet can't contain any mentod implementations, it's impossible to run into the **diamond problem**. Which mean we should have no problem implementing from more than one interface
+
+A good way to think about interfaces is as job postings for Objects, is a list of actions that an object has to do to get the job. For example, if we have Pilot interface with a `flyPlane()` method, then any object implementing that `flyPlane()` method will be able to get the job of Pilot. This gives us a ton of flexibility about who can be pilots (A human pilot, dog pilot, toaster pilot). Having the pilot's functionality in an interface instead of a class give us a lot more flexibility when writting our code. This principle is called **Composition over Inheritance**. When you're creaeting an application, rather than attaching functionality to a class and requiring it to be inherited, you should put that functionality into an interface and then create classes composing of the required interfaces.
+
+Being able to separate out what something does versus how it does it gives us a lot more flexibility with writting our programs
+
+## Generics in Java <a name="generics"></a>
+<T> stands for a Type parameter
+
+
+## Java Lists <a name="lists"></a>
+A list is pretty much just a more flexible array, the items are indexed and we can access them by their index, we also get some helpful methods like:
+* `.contains()` returns a boolean telling us if a list contains a certain item
+* `.indexOf()`which searches the list for an item and returns the item, if it's found, or negative one if it's not
+
+### Adding, Removing and Accesing
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List<String> groceryLine = new ArrayList<>();
+        groceryLine.add("Jerome");
+        groceryLine.add("Beth");
+        groceryLine.add("Sam");
+        System.out.println(groceryLine);
+        groceryLine.remove("Beth");
+        // groceryLine.remove(1) --> Will work the same as above
+        System.out.println(groceryLine);
+
+        String jerome = groceryLine.get(0);
+        System.out.println(jerome);
+
+    }
+}
+// [Jerome, Beth, Sam]
+//[Jerome, Sam]
+// Jerome
+```
+### The Rest
+```java
+
+int samIndex = groceryLine.indexOf("Sam");
+System.out.println(samIndex);
+//1
+
+int pamIndex = groceryLine.indexOf("Pam"); // doesn't exist
+System.out.println(pamIndex);
+//-1
+```
+It's important to remember that `indexOf` starts from the beggining of the list, so if our list have two repetead items, it'll give us the index of the first one that it finds
+* `.size()` is similar to `lenght()` but for Lists
+* You can use Lists with a `for each loop`
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List<String> groceryLine = new ArrayList<>();
+        groceryLine.add("Jerome");
+        groceryLine.add("Beth");
+        groceryLine.add("Sam");
+        System.out.println(groceryLine);
+        groceryLine.remove("Beth");
+        // groceryLine.remove(1) --> Will work the same as above
+        System.out.println(groceryLine);
+
+        String jerome = groceryLine.get(0);
+        System.out.println(jerome);
+
+        int samIndex = groceryLine.indexOf("Sam");
+        System.out.println(samIndex);
+        System.out.println(groceryLine.size());
+        for (String name: groceryLine){
+            System.out.println(name);
+        }
+
+    }
+}
+```
+
+## Java Maps <a name="maps"></a>
+In Java a map is a data type that lest us store key value pairs. Our keys can be any type we'd like, which means when you create a map you not only need to specify a type.
+- A map is an interface that takes in two type parameters, one for the key and one for the value.
+- Since Map is an interface we won't be able to use it to create a new Map obkject. Instead we'll need to use a class that implements the map interface. It's just what we had to do with our lists except instead of using list and array list here we'll be using map and HashMap
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class Main {
+    public static void main(String[] args) {
+        Map<String, String> meals = new HashMap<>();
+        //Adding entries to the map
+        meals.put("breakfast", "Waffles");
+        meals.put("lunch","Gyros");
+        meals.put("dinner","enchiladas");
+
+        System.out.println(meals);
+    }
+}
+// {lunch=Gyros, breakfast=Waffles, dinner=enchiladas}
+```
+### Map Basics
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class Main {
+    public static void main(String[] args) {
+        Map<String, String> meals = new HashMap<>();
+        //Adding entries to the map
+        meals.put("breakfast", "Waffles");
+        meals.put("lunch","Gyros");
+        meals.put("dinner","enchiladas");
+
+        System.out.println(meals);
+        //Print only what's for dinner
+        System.out.println(meals.get("dinner"));
+        String lunch = meals.remove("lunch");
+        boolean hasLunch= meals.containsKey("lunch");
+        boolean hasGyros = meals.containsValue("Gyros");
+        int size = meals.size();
+
+        System.out.println(lunch + " " + hasLunch + " " + hasGyros + " " + size);
+    }
+}
+// {lunch=Gyros, breakfast=Waffles, dinner=enchiladas}
+// enchiladas
+// Gyros false false 2
+
+```
+- Maps cannot have duplicate keys as it will just overwrite the previous value
+- When you use strings as keys, you almost always want to be using constants, and intelliJ has a shortcut for creating string constants `psfs`
+
+## Local Development Environments <a name="local-dev-env"></a>
+### How it Works
+#### Acronyms
+* SDK - Software Development Kit - A grouping of tools that allow you to create software locally. Also some times referred to as devkits.
+* JDK - Java SE Development Kit - A set of tools specifically for developing Java SE Applications
+* Java SE - Standard Edition
+* JRE - Java Runtime Environment - A minimum set of tools that allow local Java programs to execute
+* Java SE API - Application Programming Interface - A set of libraries provided to build applications.
+* JCL - Java Class Library - A synonym for the Java SE API. More info here.
+* JVM - Java Virtual Machine - an abstract computing machine.
+![JDK](https://i.stack.imgur.com/CBNux.png)
+[JDK](https://docs.oracle.com/javase/8/docs/)
+
+#### JVM 
+When we run the `javac` command, we're converting the code we wrote into **Java bytecode**. Most compiled languages like C, require the user to take the source code and compile it for every specific environment, and this can be a very tedious and long process, so Java from its inceptions wanted to avoid this frustration, thus the **Java Virtual Machine**. 
+
+Many advantages have been made in the JVM arena sicne the beginning of time, and it a lot of cases, due to a method known as just-in-time compiling, or JIT, each JVM can basically run code almost as fast as natively compiled code.
+ 
+* WORA - Write Once Run Anywhere - Java can be compiled into bytecode and run on any device that has a JVM.
+* JIT - Just In Time compilation - A final compilation step that converts bytecode to native machine code during runtime startup
+
+[Java Bytecode](https://en.wikipedia.org/wiki/Java_bytecode)
+[Unix Less Command](https://www.thegeekstuff.com/2010/02/unix-less-command-10-tips-for-effective-navigation/)
+
+
+### Exploring your IDE
+### Advanced Tooling

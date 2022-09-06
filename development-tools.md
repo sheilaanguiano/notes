@@ -12,6 +12,7 @@ Author: Sheila Anguiano
 4. [HTTP Basics](#http)
 5. [Introduction to REST API's](#intro-rest-api)
 6. [GitHub Basics](#github)
+7. [Docker](#docker)
 
 
 ## Regular Expressions in JavaScript <a name="regex"></a>
@@ -708,3 +709,80 @@ It is important to remember that not all Pull Requests will be merged. Try to ke
 - Add Unit Tests
 - Include Screenshots
 - Follow the style of the project
+### Introduction to Docker <a name="docker"></a>
+#### Why Docker?
+Docker bundles your app together with all the libraries and services it depends on into a package called a container, which can then be delivered as a single unit wherever it needs to go. It's kind of like a shipping container. Because shipping containers are all the same shape, they can all be handled the same way, regardless of what they contain. Likewise, no matter what your app's architecture looks like, bundling it into a Docker container allows your coworkers or customers to deploy it anywhere, without worrying about what its components look like.
+
+Dockerfile -- Dockerfiles define how an app should be built/packaged and deployed with Docker. They are simple text files with a number of reference commands defined in the Docker documentation.
+
+#### Building and Image and Running a Container
+
+* Software Delivery Pipelines -- When an app is setup so that it’s easily sent through the process of build, test, and deployment. Often referred to as CI or CD (Continuous Integration or Continuous Delivery).
+* Dockerized App -- An app that has a Dockerfile made for it and can be built into a Docker image and run as a container.
+* Container -- You can think of a container for an app as a real-life shipping container for freight. An app container is also like a VM, but far more lightweight and with the same security and operational isolation from system resources.
+
+#### What is Docker 
+Developers using Docker don't have to worry about installing and configuring complex supporting software like databases, or worry about which version of a language an app is built on. When a developer **Dockerizes** an app all the complexity of building the app is pushed into what Docker calls containers. You can thing of these like shipping containers of software. Containers are easily built, run and shared by any developer with access to the docker file. Docker is used by developers to ensure their apps work on every machine they're deployed to, and operation staff use Docker to better scale systems in production. Enterprise companies use Docker to build agile software delivery pipelines, so they can ship new features quickly, with better security. Docker lets enterpirses deploy to both Linux and Windows Servers easily. Employees joining a new project, no longer have to wait hours while the supporting software installs, you don't have to carefully explain how to setup various services, docker files abstract away the installaion dependencies, allowing you to easily package the app for nunning and test or production environments.
+
+Containers are similar to Virtual Machines, both allow you to install a set of ap  ps and the services they depend on without mixing them whitout mixinf them with the software of the host OS, but containers don't emulate a virtual CPU, memory and other hardware like Virtual Machines do, they run directly on the host computer's hardware, making them more effcient in many situations.
+
+To run an app in a Docker container
+1. Write a docker file
+2. Use the docker command line interface to build and image. And image is essentially a binary file that contains the app defined by the docker file, then you can share the image with others who can run it as a container.
+
+Docker is useful for building and deploying single apps or services, but it's even better when you're building complex distributed systems, ther are existing tools such as **Docker Compose** which is a Docker file for multiple Docker containers and Docker Swarm which allows you to build,deploy and monitor multiple docker containers at once, either as a single services or as a set of services.
+
+Docuker also has a rich networking API
+
+[Infrastructure as Code](https://martinfowler.com/bliki/InfrastructureAsCode.html)
+[It works on my Machine](https://www.usenix.org/conference/ures14/technical-sessions/presentation/it-works-my-machine-how-container-technologies)
+
+#### Why should you use Docker
+When to use Docker:
+- zrunning apps easily with little knowledge of how the app works internally
+- Deploy your app to dev, testing, staging, and production environments
+- Sharing your app with others
+- Docker can act like a version control system for those dependencies
+- Can help maintain consistency between your developers work stations and the testing and production environments.
+- Deploying distributed apps to 1000s of machines
+
+### Fundamentals of Docker
+#### Virtual Machines versus Containers
+Long ago , developers had to install all of their app dependencies on the OS itself before they could begin development work, but this came with many drawbacks. Then came **Virtual Machines**, VMs emulated entire computers within a developer's computer allowing developers to install all their app's dependencies while keeping them isolated from the main OS, but they were slow, big and impractical to distribute
+In 2010 a software project called Vagrant came long, that promised to automate the creation of VMs
+In 2013 Docker arrived
+
+Docker Containers - Pros:
+- Faster startup time
+- Resource re-use
+- Native hardware access
+- Less redundancy
+
+Docker Containers - Cons
+- May be no faster than a VM
+
+Docker runs containers on top of light weight virtualized environmets without fully virtualized in the home machine, because docuker doesn't virtulize entire OS, it can run much quicker and be far more affordable tan a traditional VM. To run virtual machones, the host OST runs software called a **hypervisor**. A hypervirsor manages the life cycle of VM's starting and stopping them as needed, managing theur resources and keeping the whole setup secure by isolating the VMs from the host OS and from each other. And entire guest operating system runs within each virtual machine and your apps dependencies as well as the app itself are run within the guest OS, contrast this with Docker, where containers are run by the Docker daemon software, docker containers omits most of the guest OS except for a few packages, meaning most of the container resources are devoted to your apps dependencies, it doesn't need a guest OS, it somply share the host resoruses like processors, memory and networking devices between each container
+
+* OS - Operating System, think Windows, MacOS/OS X, Linux (Ubuntu, RedHat, etc.)
+* Emulation - When a system will replicate all the functionality of another system so that it’s transparent to the user what the underlying hardware is.
+* Virtual Machine - an emulation of a computer system.
+* Container - a lightweight isolated environment for an app or service to run.
+
+#### Building Blocks of Docker
+Docker packages apps into a single unit called an image. When these images are run via Docker they're called containers. Where a single container is an instance of an image, it's possible to run many containers based on a single image. An image is a mutable file that is essentially a snapshot of a container. Images can be store in the **Docker Registry** which is like GitHub for
+docker images, because images can become pretty large, they're designed to be composed of layers of other images, that means, we only have to send small amoutns of data over the network when transferring images. To make all this magic happen, Docker uses three major components:
+* Docker Daemon:  which is a process running on your host OS
+* Docker Registries: Whihc are server daemons connect to in order to retrieve images they need
+* Docker Client: which issues command to the Docker daemon.
+
+The Docker daemon coordinates running containers, packaging images, and transferring images to an from reegistries
+[Docker Component](https://docs.docker.com/get-started/overview/)
+[Introduction to Docker, VMS and Containers](https://www.freecodecamp.org/news/a-beginner-friendly-introduction-to-containers-vms-and-docker-79a9e3e119b)
+
+
+#### Docker Networking
+
+
+
+### Building Images Using Docker
+### Managing Images and Containers
