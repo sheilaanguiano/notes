@@ -9,7 +9,8 @@ Instructor: Tim Buchalka
 
 # Table of Contents
 
-1. Programming Tools and Setup (#2)
+1. [Programming Tools and Setup](#2)
+2. [First Steps](#3)
 
 
 ## Section 2: Programming Tools and Setup <a name="2"></a>
@@ -17,15 +18,167 @@ Instructor: Tim Buchalka
 * Check in your terminal your java version `java -version`
 * IntelliJ is an integrated development environment or IDE to develop Java code.
 * JShell became a standard component of the JDK (Java Development Kit) in Java9 it's a REPL.
-* Launch jshell writting in the terminal `jshell`, inside if you writte `/help` you'll get a list of commands that you can use.
-
+* Launch jshell writting in the terminal `jshell`
+    * `jshell>/help intro`
+    * `/exit` to exit jshell
 
 
 ## Section 3: First Steps
+### Hello World
+`jshell> System.out.print("Hello World");`
+
+A **statement** is a complete command to be executed. It can include one or more **expressions**.
+
+### Variables
+* Keywords
+* Java is case sensitive, `int` is not the same as `Int`
+* **Variables** are a way to store information. Can be accessed by a name given to them and the computer makes the decision of where to store them in RAM (random access memory)
+* **Data Type**: there are a lot of different types of data, some data types are keywords
+* To define a variable, we need to specify the data type, give the variable a name and optionally add an expression, to initialize the variable with a value `int myFirstNumber = 5;`
+* This statement `int myFirstNumber = 5;` is an specific kind of statement **Declaration statement**. A declaration statement is used to define a variable by indicating the data type, and the name, then optionally to set the variable to a specific value;
+* JShell allows to redeclared variables, something not allowed in normal Java programming
+
+### Starting out with Expressions
+**Expression** is the code segment that is on the right side of the equals sign in an assigment or delcaration statement.
+If you type `/var` in Jshell it will list all your declated variables and their values
+
+### Primitive Types
+In java, primitive types are the most basic data types:
+**Whole Numbers**
+- byte
+- short
+- int
+- long
+**Real Number (Floating point or decimal)**
+- float
+- double
+**Single Character**
+- char
+**Boolean Value**
+- boolean
+
+Consider these types as the building blocs of data manipulation and that these are simply placeholders in memory for a value.
+
+There's a specified range of values allowed for the int, which is true for most data types. What this means, is that the allowable range of values is NOT finite. There is a defined minimum, and maximum value for each data type.
+
+You can get that min and max value programatically
+```java
+int myMinValue = Integer.MIN_VALUE;
+int myMaxValue = Integer.MAX_VALUE;
+
+System.out.print("Integer Minimum Value = " + myMinValue); //Using concatenation 
+```
+`int` is a primitive type that only gives us the option to set the varaible's value. `Integer` on the other hand, is what's called a **wrapper class**, but first we need to undertsand what's a class
+
+A class is a building block for object oriented programming, and allows us to build custom data types. Java uses the concept of wrapper class, for all of its eight primitive data types. A warpper class provides simple operations , as well as some basic information about the primitive data type, which cannot be stored on the primitive itself.
+
+![Wrapper Classes](https://www.google.com/imgres?imgurl=https%3A%2F%2Fmedia.geeksforgeeks.org%2Fwp-content%2Fcdn-uploads%2F20200806191733%2FWrapper-Class-in-Java.png&imgrefurl=https%3A%2F%2Fwww.geeksforgeeks.org%2Fwrapper-classes-java%2F&tbnid=jIV1eid8Ox3knM&vet=12ahUKEwiK2cPz6Iv8AhV-NUQIHRIgC0MQMygAegUIARDEAQ..i&docid=S1QNIcwYVfjelM&w=1000&h=511&q=primitive%20and%20wrapper%20classes%20in%20java&ved=2ahUKEwiK2cPz6Iv8AhV-NUQIHRIgC0MQMygAegUIARDEAQ)
+
+**Overflow** If you try to put a value larger than the maximum value into an int.
+**Underflow**If you try to put a value smaller than the minimum value into an int.
+
+These situation are also know as integer wraparounds.The max value when it overflows, wraps around to the maximum value, and just continues processing without an error. You need to be aware that this could happen.
+
+```java
+int willThisCompile = (Integer.MAX_VALUE + 1); //Yes
+int willThisCompile = (2147483647 + 1); // yes
+
+int willThisCompile = 2147483648; //This will give an error
+
+```
+
+In Java, you cannot put commas in a numeric literal `int myMaxIntTes = 2,147,483,647;` so Java provided an alternative to improve readability, the undescore: `int myMaxIntTes = 2_147_483_647`. You can put the underscore anywhere you want a comma, but CANNOT be at the beggining or end of the numeric literal.
+
+### byte, short, long and width
+
+- byte : has the smallest range (-128 to 127). Can store 256 numbers and occupies 8 bits
+- short:  with a range of -32768 to 32767. Occupies 16 bits and has a width of 16
+- int: Java's default daya type for whole numbers. Occupies 32 bits and has the same width.
+- long: has the largest range -9223372036854775808 to 9223372036854775807 
+
+**Size of Primitive Types and Width**
+Size or width, is the amount of space that determines (or limits) the range of values we've been discussing
+
+In the case of `long myLongvalue = 100;` while the expression is not wrong is a bit misleading. The number `100` by default is an `int`. Java allows certain numeric literals to have a suffix appended to the value, to force it to be a different data type from he default type. The long is one of these types and it's suffix is an `L` either upper or lowercase, so the right way would be `long myLongvalue = 100L;` to avoid any confusion as it easier to read and doesn't get confused with a `1`
+```java
+long myLongvalue = 100L;
+System.out.print("A long has a width of " + Long.SIZE);
+// A long has a width of 64
+```
+
+### Casting in Java
+Casting means to treat or convert a number, from one type to another. We put the type we want the number to be.
+**Rules for declaring multiple variables in one Statement**
+- You cannot declare variables with different data types in a single statement
+- If you delcare multiple variables of the same data typ in a single statement, you must specify the data type only once before any variable names.
+
+The Java compiler doesn't attempt to evaluate the value, in a variable, whe it's used in a calculation, so it doens't know if the value fits, and throws an error
+`byte myNewByteValue = (myMinByteValue /2);`
+If your calcilations uses literal values, Java can figure out the end result at compile time, and whether it fits into the variable, and won't throw an error if it does.
+`byte myNewByteValue = (-128/2);`
+In both examples, an int result is being returned from the calculation, but in the second example, Java knows the returned value can fit into a byte. We know, that if we simply assign a literal value to a byte variable, and the literal value fits, there's not problem, but here we've got an expression, that uses a variable that's been divided by 2. That's the difference compared to what we've done previously, when we've used a literal value. Java can make assumptions about literal values, that it can't make about expressions with variables. This problem comes about because the dafault whole number used by Java, is an int and that's why we've got an error here, so we let Java know by using casting
+```
+(byte) (myMinByteValue/2);
+short myNewShortValue = (short)(myMinShortValue/2);
+```
+
+### Float and Double Primitives
+- float: 32 bits, with a Min Value of 1.43-45 and a Max value of 3.4028235E38
+- double. This is is Java's default type for any decimal or real numbers. 64 bits
+
+Scientific noration can be translated into more familiar temrs, by replacing the E in the number, whith the phrase "times 10 to the power of"
+
+1.4e-45 is the same as 1.4x 10^-45 and 3.4E38 is the same as 3.4x10^38
+
+While the **double** data type is Java's default type for real numbers, this can be specified as a numeric literal with a suffix of either lower or uppercase `D`, but this is optional. You can do the same with the **float** data type.
+```java
+float myFloat = 5; double myDouble = 5;
+
+myfloat = 5f;
+myDouble = 5d;
+
+float myOtherFloat = 5.25;  //This will give you an error because of the default type
+float myOtherFloat = (float) 5.25; //Fixed using casting
+float myOtherFloat = 5.25f; // Another way to fix the problem
+```
+
+### Floating Point Precision
+The double is a better choice in most circumstances
+- It's more precise
+- Modern computers deal with these numbers faster than the equivalent float
+- Java librries are often written to process and return doubles
+- In general, float and double are grea floating point operations, but neither should be used when precise calculations are required - this is due to the limitation with how floating point numbers are stored. Java has the **Big Decimal** that overcomes this.
+
+### The char and bolean Primitive Type
+The char could be any single character, a letter, a digit or any other character, but it is different from a string.
+
+- A char occupies two bytes of memory, or 16 bits and this. 
+- You can store a unicode character `char myUnicode = '\u044' //unicode for letter "D"`
+- There are 3 ways to assign a value to a char. Each ogf these methods represents storing letter D in memory
+```java
+char myChar = 'D';
+char myChar = '\u0044';
+char myChar = 68;
+
+```
+
+Developers will often use the word **is** as a prefix for a boolean variable name. This creates a name that seems to ask a question , which makes reading the code more intuitive, such as
+- isCustomerOverTwentyOne
+- isElegibleDiscount
+- hasValidLicense, etc
+
+
 ### Primitive Types Recap and the String Data Type
+You'll use Java's primitive data types, Java built-in classes (Big decimal)
+and probably some combination of your own custom classes and somebody else's.
+
 A String is a sequence of characters. In the case of the **char**, it could contain a **single character** only (a regular character or Unicode character). Technically  it's limited by memory or the MAX_VALUE of an **int** which was 2.14 billion.
 
-Strings in Java are immutable. That measn you can't change a String after it's created, what happen si a new String is created.
+Strings in Java are immutable. That measn you can't change a String after it's created, what happen is a new String is created.
+
+java has another class aside from string that is more efficient if you're doing a lot of appending of multiple strings or values. The **StringBuilder** class is mutable, but does not share the String's special features, such as being able to assign it as a String literal or use the `+` operator on it.
+
+The String is so intrinsic to the Java language, it can be used like a 9th primitive type, but it's not a primitive type, it's a class.
 
 ### Operators, Operands and Expressions
 **Operators** in Jave are special symbols that perfomr specific operations on one, two or more operands, and then return a result.
@@ -60,9 +213,10 @@ double myThirdValue = (myFirstValue + mySecondValue) * 100d;
 double theRemainder = myThirdValue % 40.00d;
 boolean isNoRemainder = (theRemainder == 0) ? true : false;
 
-
 ```
-## Expressions, Statements, Code blocks, Methods
+## Section 4: IntelliJ Basics
+
+## Section 5: Expressions, Statements, Code blocks, Methods
 Java has 50 reserved keywords.
 Exressions are essntially building blocks of all Java Programs. Expressions are built with values, variables, operators and method calls.
 ```java
@@ -258,7 +412,7 @@ private static final String INVALID_VALUE_MESSAGE = "Invalid Value";
 ``` 
 They cannot be changed
 
-## Section 5: Control Flow
+## Section 6: Control Flow
 ### The Switch Statement
 Switch is good to use if you're testing the same variable and you want to test different values for that variable
 ```java
@@ -640,104 +794,180 @@ Or you can use constants
   int max = Integer.MIN_VALUE;
 ```
 
-## Section 6 OOP Part 1 - Classes
-### Classes
-Software objects are a fundamental part of Object-oriented programming. They're very similar to real world objects because they also consist of state and behaviors.
+## Section 7: Object Oriented Programming Part 1 - Inheritance
 
-A software object store its state in **fields** and we now fields as variables, and they expose their behavior with **methods**
+### Introduction to Classes and Objects
+Object oriented programming is a way to model real world objects, as software objects, which contain both data and code. It's sometimes called class based programming. Class based programming starts with classes, which become the blue prints for objects
+
+Obhects have 2 major components:
+- State : Characteristics about the item that can describe it.
+- Behavior: Actions that can be perfomed by the objects, or upon the object
+
+A **class** is like a template or a blueprint for creating objects. A software object store its state in **fields** which can also be called variables, or attributes. And  objecst expose their behavior with **methods**
+
+The class describes the data(fields), and the behavior (methods), that are relevant to the real world objects we want to describe. These are called class members. A class member can be a field, a method or some other type of dependend element.
+
+If a field is **static**, there is only one copy in memory, and this value is associated with the class, or template itself. If a field is not statics, it's called an **instance field**, and each object may have a different value stored for this field.
+
+A static method can't be dependent on any one object's state, so it cant'e reference any instance members. In other words, any method that operates on instance fields, need to be non-static
 
 A **class** is like a template or a blueprint for creating objects. Class could be thought of as a powerful user-defined data type, sort of an extra data type, this is not correct in the true meaning, but it give us an idea  of what classes really 
 
 - Classes should start with uppercase letters
+- Classes can be organized into logical groupings, which are called packages. You declare a package name in the class using the package statement, if you don't declare a package, the class implicitly belongs to the default package.
+- A class is said to be a top-level class, if it is defined in the source code file, and not enclosed in the code block of another class, type, or method.
+- A top level class has only two valid access modifier options: public or none.
 - **public** is an access modifier. This modifier determines what access we want to allow others to have to this new class. So in this case **public** means unrestricted access to the class.
-- **private** is wfor where no other class can access that class.
+- When the modifier is omitted, this has special meaning, called **package-private acess**, meaning the class is accesible only to classes in the same package.
+- **private** is for where no other class can access that class.
 - **protected** which allows classes in this package to access your class
 - Local variables are only used inside the method they have been initialized.
 
 Classes allow us to create variables that can be seen and are accesible from anywhere within the class that we're creating. These are know as **class or member variables** but most commonly referred as **fields**. When creating a field for a class, you need to also specify an access modifier that works the same way as the access modifier for a class definition. As a general rule, when you're defining fields in Java in a class, you go with the access modifier **private** , unlike the class where we've gone with *public*
 
-So what private means when talking about fields, what we're really doing with it is we're adhering to **encapsulation**, which is a key fundamental rule of object-oriented programming. So encapsulation in Java is usded to hide the fuelds and methods from access publicly.
+So what private means when talking about fields, what we're really doing with it is we're adhering to **encapsulation**, which is a key fundamental rule of object-oriented programming. So encapsulation in Java is used to hide the fields and methods from access publicly.
 
+Encapsulation in Object Oriented Programminh usually gas two meanings:
+- Bundling of behaviour abd attributes on a single object
+- Hiding fields, and some methods from public access
+
+### Introduction to Classes, using Getter Methods
 ```java
+// car.java
 public class Car {
-    //generally you'll always go with private
-    //these variables are the state component for Car
-    //This is the sate which we're defining as fields
-    private int doors;
-    private int wheels;
-    public String model;
-    private String engine;
-    private String colour;
+  private String make;
+  private String model;
+  private String color;
+  private int doors;
+  private boolean convertible;
+
+  public void describeCar(){
+    System.out.println(door + "-Door " +
+    color + " " + 
+    make + " " + 
+    model + " " +
+    ( convertible ? "Convertible" : ""));
+  }
 
 }
 ```
-Now we can go to the *Main* class.
+**null** is a special word in Java, meaning the variable or attributes has a type, but no reference to an object. That means no instance, or object is assigned to the variable or field. Fields with primitive data types are never null.
+
+Fields with a primitive data type. will be assigned a default value by Java.
+
+Now we can assign some default values to our class:
+
+```java
+public class Car {
+  private String make = "Tesla";
+  private String model = "Model X";
+  private String color = "Gray";
+  private int doors = 2;
+  private boolean convertible = true;
+
+```
+This means that every objects that's instantiated, will get assgiend the default values we declared, instead of Java's implicit values.
+
 ```java
 public class Main {
     public static void main(String[] args) {
-        //This is how we define an object of type Car
-        //When we add the `= new Car` we're initializing
-        Car porsche = new Car();
-        Car holden = new Car();
-        //This is one way to access the data, but NOT a good one as it more or less 
-        // violates the rules of encapsulation.
-        porsche.model = "Carrera";
-
-    }
+        Car car = new car();
+        car.describeCar();
+    
+    //2-Door Gray Testla Model X Convertible
 }
 ```
-Now, we'll add a method that will let us update the model
+So now how do we set each field with a different value, since we set the fields to private we cannot use dot notation. `car.make = "Porsche"` we can set them to Public, but this is a BAD practice. So what we're going to do is allow access to this data, either to SET it or GET it through method of this class.
+
+A **getter** is a method on a class, that retrieves the value of a private field, and returns it. You could have getter methods for attributes that are not really declared on your class, but that are devided in some way.
+A **setter** is a method on a class, that sets the value of a private field. A setter method may simply just assign the argument passed to the attribute, but it often contains code to validate data, check addtitional security requirements, ensure immutability of the field value, or any other code required to protect and validate an object's state.
+
+The purpose of these methods is to control, and protect access to private fields.
+
 ```java
+// car.java
 public class Car {
 
-    private int doors;
-    private int wheels;
-    private String model;   //field
-    private String engine;
-    private String colour;
-                                //param
-    public void setModel(String model){
-        this.model = model;
+  private int doors;
+  private boolean convertible;
+  ...
+  public String getMake(){
+    return make;
 
-    }
+  }
 
-    public String getModel(){
-        return this.model;
-    }
+  public void describeCar(){
+   
+  }
 
 }
 ```
-The above code introduces another problem, since you have 2 different types of variables, we have the field in `private String model;` and we have the parameter in our method with the same name, so to distinguish them, in this case we use `this` when you're referring to the field. So now we can set our model correctly with the method
+So our getter is set to public, but we don't use tge word **static**. When writting methods that use non static fields, you method can't be declared static
+
+### Classes, using Setters and Creating Objects
+We talked about best practices for fields, that in general fields of classes should be private, and a getter method should be created to access those fields, this provides encapsultation of the internals of our class and supports maintenance of a public interface that doesn't have to chance even though our class might
+
+```java
+public void setMake(String make){
+    make = make;
+}
+```
+The code above will give us several warnings , but we can solve it using the word `this`. which is a special keyqord in Java. What it really refers to is the instace that was created when the object was instantiated. So `this` is a special reference name for the object or instance, which it can use to describe itself. And we can use `this` to access fields on the class.
+```java
+public void setMake(String make){
+    this.make = make;
+}
+```
+Now we can update our `car` object
 ```java
 public class Main {
     public static void main(String[] args) {
-        Car porsche = new Car();
-        Car holden = new Car();
-        porsche.setModel("Carrera");
-
-    }
+        Car car = new car();
+        car.setMake("Porsche");
 }
 ```
-When you cretae classes, you need to initilize them with the word `new`.
-Advantages of Getters and Setters
-- Validation
-
+With Setters you can do validation:
 
 ```java
-public class Car {
-                                //param
-    public void setModel(String model){
-        String validModel = model.toLowerCase();
-        if(validModel.equals("porsche") || validModel.equals(""holden)){
-            this.model = model;
-        } else {
-            this.model = "Unknown";
+public void setMake(String make){
+    if(make == null) make = "Unknown";
+    String lowercaseMake = make.toLowerCase();
+    switch(lowercaseMake){
+        case "holden", "porsche", "tesla" -> this.make = make;
+        default -> {
+            this.make = "Unsupported";
         }
-        
-
     }
+}
 ```
+BY using a setter method we force thme to go through a controlled way of setting up the data on the object and make sure that the data in our objects is valid data.
+
+When we use the `new` keyword, we've saud that created the object and is called **instantiation**, but another term you'll hear fro this process is, constructing the object
+
+
+
 ### Contructors
+A constructor is used in the creation of an object, that's an instance of a class. It's a special type of code block that has a specific name and parameters, much like a method.
+
+It has the same name as the class itself and it doesn't return any values.
+
+You never include a return type from a constructor, not even void.
+
+You can, and should specify an appropiate access modifier, to ocntrol who should be able to create new instances of a class.
+
+```java
+public class Account{ // This is the class declaration
+
+  public Account(){  //This is the constructor declaration
+
+  }
+
+}
+```
+If a class contains no contructor declarations, then a default contructor is implicitly declared. This constructor has no parameters, and is often called the *no-args* (no arguments) contructor. If a class constains any other constructor declarations, then a default constructor is NOT implicitly declared
+
+
+
 Imagine that we have the following 2 classes, to set bank accounts
 ```java
 public class Account {
@@ -837,13 +1067,11 @@ public class Account {
         System.out.println("Empty constructor called");
     }
 
-    public Account(String number, double balance, String customerName, String customerEmail,
-                   String customerPhone){
+    public Account(String number, double balance, String customerName, String customerEmail, String customerPhone){
         this.number = number;
         this.balance = balance;
         this.customerName = customerName;
         this. customerPhone = customerPhone;
-
     }
 
 
@@ -865,7 +1093,21 @@ public class Main {
 //        bobsAccount.setNumber("(087)123-4567");
 
 ```
-- Constructors can be overlaoded, so we can call a constructor from another constructor, like some constructor with some default values
+So the purpose of a constructor is to, essentially initialize the object that we're creating, and do whatever ekse we need to happen, while the object is being instantiated. So it's only ever called once at the start when we're creatng the object. A class have one or many constructors, one of which can be the No-ARGS contructor
+
+Now we'' add another constructor, and this time we'll declare some parameters. doint this will let us pass values to the constructor. We can use these valyes to assign data to our fields, instead of calling a bunch of setters
+
+**Constructot overloading** is declaring multiple constructor, with different formal parameters. The number of parameters can be different between contructors. Or if the number of parameters is the same between two contructors, theyr types or oder of the types must differ.
+
+### Constructors Part 2
+**Constructor chaining with this()**
+Constructor chaining is when one constructor explicitly calls another overloaded constructor.
+You can call a contructor only from another constructor
+You must use the special statement `this()` to execute another constructor, passing it arguments if required.
+And `this()` must be the first executable statement, if it's used from another constructor
+
+As in the example below, you need to make sure when chaining constructors  that the `this()` statement is the first line in the contructor
+
 ```java
 public class Account {
     private String number;
@@ -963,6 +1205,316 @@ public class VipCustomer {
     }
 }
 ```
+### Reference vs Object vs Instance vs Class
+ Let's use the analogy of buidling a house to understand Classes
+ * A **class** is basically a blueprint for a house, using the blueprint we can build as many houses as we like based on those plans.
+ * Each house you build (in other words **instantiate** using the **new** operator) is an `object` also know as an **instance**
+ * Each house you build has an address (a physical location). in other words if you want to tell somone where you live, you give them your address (perhaps written on a piece or paper). This is known as a **reference** 
+ * You can copy that reference as many times a syou like but there is still just one house. In other words we are copying the paper that has address on it not the house itself.
+ * We can pass references as parametes to constructors and methods
+
+
+Here we have a class HOuse with an instance variable(field) color.
+
+ ```java
+ class House{
+    private String color;
+
+    public House(String color){
+        this.color = color;
+    }
+
+    public String getColor(){
+        return color;
+    }
+
+    public void setColor(String color){
+        this.color = color;
+    }
+ }
+ ```
+
+ ```java
+ public class Main{
+
+    public static void main(String[] args){
+        House blueHouse = new House("blue");
+        House anotherHouse = blueHouse;
+    }
+ }
+ ```
+ The line `House blueHouse = new House("blue");` creates a new instance of the House class, that we're assigning it to the `blueHouse` **variable**. In other words it is a **reference** to the object in memory. `House anotherHouse = blueHouse;` creates another reference to the same object in memory. Here we have 2 references to that one object.
+
+ ### Static vs Instance Variables
+ **Static Variables**
+ * Declared by using the word static
+ * Static variables are also know as static member variables
+ * Every instance of the class shares the same static variable
+ * So if changes are made to that variable, all other instances of that class will see the effect of that change
+* It is considered best practice to use the Class name, and not the reference variable to access a static variable
+```java
+class Dog{
+  static String genus = "Canis";
+  void printData(){
+    Dog d = new Dog();
+    System.out.println(d.genus); // Confusing
+    System.out.println(Dog.genus); //Clearer
+  }
+}
+```
+An instance isnt't required to exist, to access the value of a static variable.
+```java
+class Dog{
+  static String genus = "Canis";
+}
+
+class Main{
+    public static void main(String[] args){
+        System.out.println(Dog.genus); // No instance of Dog needs to exist, in order to access a static variable
+    }
+}
+
+```
+Static variables aren't used very often, but can sometimes be very useful. They can be used for:
+* Storing counters
+* Generatiing unique ids
+* Storing a constant value that doesn't change like PI
+* Creating and controlling access to a shared resource
+```java
+class Dog{
+    private static String name;
+    public Dog(String name){
+        Dog.name = name;
+    }
+    public void printName(){
+         System.out.println("name = " + name); //Using Dog.name would have made this code less confusing
+    }
+}
+
+class Main{
+    public static void main(String[] args){
+        Dog rex = new Dog("rex"); //Creates instance (rex)
+        Dog fluffy = new Dog("fluffy"); // Creates instance (fluffy)
+        rex.printName();      // prints fluffy
+        fluffy.printName(:)   //prints fluffy
+    }
+}
+```
+**Instance Variables**
+* They don't use the static keyword
+* They're also known as fields, or member variables
+* Instance variables belogn to a specific instance of a class
+* Each instance hast its own copy of an instance variable
+* every instance can have a different value
+* Instance variables represent the state of a specific instance of a class
+```java
+class Dog{
+    private String name;
+    public Dog(String name){
+        Dog.name = name;
+    }
+    public void printName(){
+         System.out.println("name = " + name); //Using Dog.name would have made this code less confusing
+    }
+}
+
+class Main{
+    public static void main(String[] args){
+        Dog rex = new Dog("rex"); //Creates instance (rex)
+        Dog fluffy = new Dog("fluffy"); // Creates instance (fluffy)
+        rex.printName();      // prints rex
+        fluffy.printName(:)   //prints fluffy
+    }
+}
+```
+
+### Static vs Instance Methods
+**Static Methods**
+- Static methods are declares using the static modifier
+- Static methods can't acccess instance methods and instance variables directly
+- Theyre usually used for operations that don't require any data from an instance of the class(from `this`)
+- If you rememeber, the this keyword is the current instance of a class
+- So inside a static method,  we can't use the this keyword
+- Whenever you see a method that doesn't use instance variables, that method should probably be declared as a static method
+- For example, main is a static method, and it's called by the java virtual machine when starts the java application
+
+```java
+class Calculator{
+    public static void printSum(int a, int b){
+        System.out.println("sum = " + (a + b));
+    }
+}
+public class Main{
+    public static void main(String[] args){
+       Calculator.printSum(5,10);
+       printHello();  //Shorter from main.printHello();
+    }
+    public static void printHello(){
+        System.out.println("Hello");
+    } 
+}
+```
+So as you can see, to call the `printSum` method, we just need to type the class name or like in `printHello` we can just type the method name with parentheses, which will automatically call the static method, becase it's invoked from a static method itself, so static methods dont require an instance to be created, we can just type the class name, and ise the do notation, with the method name to acess them
+
+**Instance Methods**
+- Instance methods belong to an instance of a class
+- To use an instance method, we have to instantiate the class first
+- Instance methods can access instance methods and instance variables directly
+- Instance methods can lasso access static methods and static variables directly
+```java
+class Dog{
+    public void bark(){
+        System.out.println("woof");
+    }
+}
+public class Main{
+    Dog rex = new Dog(); //Create instance
+    rex.bark(); //call instance method
+}
+```
+**Static or Instance Method**
+Shoul a method be static -> Does it use any fields( instance variables) or instance methods:
+- Yes, then it should probably be an instance method
+- No, tne it should probably be static method
+
+### The POJO
+- A plain old java object (whose acronym is POJO)is a class that generally only has instance fields. 
+- It's used to house data, and pass data between functional classes. 
+- It usually has few, if any methofs other than getters and setters
+- Many database frameworks use POJO's to read data from, or to write data to databases, files or streams
+- A POJO also might be called a bean or a JavaBean
+- A JavaBean is just a POJO, with some extra rulea applied to it
+- A POJO is sometimes called an Entity, becuase it mirrors database entities
+- Another acronym is DTO, for Data Transfer Object
+- It's a description of an object, that can be modeled as just data
+- There are many generation tools that will turn a data model into generated POJO's or JavaBeans
+- You've seen an example of similar code generation in intelliJ, which allowed us to generate getters, setters, and constructors in a uniform way
+
+A POJO in int's simples form, required a way to populate data, and we can do this with a constructor
+
+```java
+public class Student{
+    private String id;
+    private String name;
+    private String dateOfBirth;
+    private String classList;
+
+    //using intelliJ, we create the following contructor
+    public Student(String id, String name, String dateOfBirth, String classList ){
+        this.id = id;
+        this.name = name;
+        this.dateOfBrth = dateOfBirth;
+        this.classList = classList;
+    }
+    @Override
+    public String toString(){
+        return "Student{" +
+        ....}
+    }
+}
+
+public class Main{
+    public static void main(String[] args){
+      for(int i = 1; i <= 5; i++){
+        Student s = new Student("S92300" + i,
+        switch(i){
+            case 1 -> "Mary";
+            case 2 -> "Carol";
+            case 3 -> "Tim";
+            case 4 -> "Harry";
+            case 5 -> "Lisa";
+            default -> "Anonymous";
+        },
+        "05/11/1985",
+        "Java Masterclass");
+      }
+
+
+    } 
+}
+
+```
+`toString` is a special method in Java, we can implement this method in any class we create, and odint this lets us print out the current state of our object.
+
+**Annotation**
+- Annotation are a type of metadata
+- Metadata is a way of formally describing addtional information about our code
+- Annotations are more structured, and have more meaning than comments. This is because they can be used by the compiler or other types or pre-processing functions, to get information about the code.
+- Medata doesn't affect how the code runs, s this code will still run with or without the annotation
+
+**Overriden Method**
+An overriden method, is not the same thing as an overloaded method
+An overriden method is a psecial method in Java, the other classes can implement, if they use a specified method signature
+
+If we add setter and getter methods, our code has all we need to manipulate data, setting, updating and retrieving it.
+
+### Java's Implicit POJO Type, the Record
+We talk about the POJO and how it comes with a lot of what we call boilerplate code. It's code that's repetitive and follows certain rules.
+Once created, this code is rarely looked at, or modified. In fact, there are tools that'll just regenerate all of this code, if your underlying fata, or domain model changes. Even better though, Java introduced a new type, the **record** which becase part of the official language, in JDK16
+
+**The Record Type**
+The record was introduced in JDK14, and became oficially part of Java in JDK16
+It's purpose is to replace the boilerplate code of the POJO, but to be more restrictive. Java calls them "plain data carriers". The word carrier is an important term, because it means the record has more rules built-in than a POJO would
+
+The recor is a special class that contains data, that's not mean to be altered. In other words, it seeks to achieve inmmutability, for the data in its members. It contains only the most fundamental methods, such as constructors and accessors (getters). Best of all, you the developer, don't have to write or generate any of this code.
+```java
+public record LPAStudent(String id, String name, String dateOfBirth, String classList ){
+
+}
+```
+```java
+public class Main{
+    public static void main(String[] args){
+      for(int i = 1; i <= 5; i++){
+        LPAStudent s = new LPAStudent("S92300" + i,
+        switch(i){
+            case 1 -> "Mary";
+            case 2 -> "Carol";
+            case 3 -> "Tim";
+            case 4 -> "Harry";
+            case 5 -> "Lisa";
+            default -> "Anonymous";
+        },
+        "05/11/1985",
+        "Java Masterclass");
+      }
+    } 
+}
+```
+We've replaced 56 lines of code that we had in `Student.java` with these 2 lines of code. Now `LPAStudent` doens't have our support setter method, but the other functionality calling the constructor with 4 params, and printing the data out,, is implicitly part of the record
+
+What does Java tells us aboit what is implicitly created, when we declare a record as we did in this code `public record LPAStudent(String id, String name, String dateOfBirth, String classList ){}`
+First, it's importa to undertand that the part that's in parentheses is called the *record header*. The record header consist of record components, a comma delimited list of components
+
+For each component in the header Java generates:
+- A field with the same name and declared type as the record component
+- The field is declared private and final. (It means the field can't be modified)
+- The field sometimes refrered to as component field.
+- Java generates a toString method that prints out each atribute in a formatted String
+- In addition to creating a private final field for each component. Java generates a public accessor method for each component. This method has the same name and type of the component, but it doesn't have any kind of special prefix, not get or is for example.
+
+```java
+public class Main{
+    public static void main(String[] args){
+      ...
+      Student pojoStudent = new Student("S9223006", "Ann", "05/11/1985", "Java Masterclass");
+      LPAStudent recordStudent = new LPAStudent("S9223007", "Bill", "05/11/1985", "Java Masterclass");
+    } 
+
+    System.out.println(pojoStudent.getName() + " is taking " + pojoStudent.getClassList());
+    System.out.println(recordStudent.name() + " is taking " + recordStudent.classList());
+}
+```
+That's how we use accessor methods, which we've called getters up until now because traditionally , the prefix get was used for the accessor method
+
+Now if we want to set data in these 2 types of students, it would only work in the POJO student
+```java
+pojoStudent.setClassList(pojoStudent.getClassList() + ", Java OCP Exam 829");
+```
+Why is the record built to be immutable. There are more use casses for immutable data transfer objects, and keeping them well encapsulated. You want to protect the data from unintended mutations.
+
+If you want to modify data on your class, you won't be using the record. You can use the code generation options for the POJO. But if you're reading a whole of of records, from a database or file source, and simply passing this data around, then the record is a big improvement.
+
 
 ### Inheritance
 Object Orinetyed programming allows us to create classes to inherit commonly used standard behavior from other classes
@@ -1081,45 +1633,7 @@ We cal also override a method from the Animal class (or super class), additional
 // Animal.move() called. Animal is moving at 10
 
 ```
-### Reference vs Object vs Instance vs Class in the context of Java
- Let's use the analogy of buidling a house to understand Classes
- * A **class** is basically a blueprint for a house, using the blueprint (pnas) we can build as many houses as we like based on those plans.
- * Each house you build (in other words **instantiate** using the **new** operator) is an `object` also know as an **instance**
- * Each house you build has an address (a physical location). in other words if you want to tell somone where you live, you give them your address (perhaps written on a piece or paper). This is known as a **reference** 
- * You can copy that reference as many times a syou like but there is still just one house. In other words we are copying the paper that has address on it not the house itself.
- * We can pass references as parametes to constructors and methods
 
-
-Here we have a class HOuse with an instance variable(field) color.
-
- ```java
- class House{
-    private String color;
-
-    public House(String color){
-        this.color = color;
-    }
-
-    public String getColor(){
-        return color;
-    }
-
-    public void setColor(String color){
-        this.color = color;
-    }
- }
- ```
-
- ```java
- public class Main{
-
-    public static void main(String[] args){
-        House blueHouse = new House("blue");
-        House anotherHouse = blueHouse;
-    }
- }
- ```
- The line `House blueHouse = new House("blue");` creates a new instance of the House class, that we're assigning it to the `blueHouse` **variable**. In other words it is a **reference** to the object in memory. `House anotherHouse = blueHouse;` creates another reference to the same object in memory. Here we have 2 references to that one object.
 
  ### this vs super
  * The keyword **super** is used to access/ call the parent class members(variables and methods)
