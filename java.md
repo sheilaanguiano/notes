@@ -1190,7 +1190,7 @@ Radom is another utility that comes with another great method named `next int` t
 **Inheritance** is a class using another class as its foundation 
 
 - Typically we put each class i its own file.
-- While you can have moe than one class in a file, all public classes need their own files, which is why we're not making our class `public`
+- While you can have more than one class in a file, all public classes need their own files, which is why we're not making our class `public`
 
 ### Everything inherits from Object
 When thinking about Inheritance think of **IS** a Dog is an Animal. And everything in Java IS an OBJECT
@@ -1275,7 +1275,7 @@ public class Main {
     }
 }
 ```
-But if we try to merge those to lines an make something like below, won't work becyase the call to `.makeSound()` happens before the cast
+But if we try to merge those to lines an make something like below, won't work because the call to `.makeSound()` happens before the cast
  ```java
 public class Main {  
     public static voi d main(String[] args) {

@@ -11,6 +11,10 @@ Instructor: Tim Buchalka
 
 1. [Programming Tools and Setup](#2)
 2. [First Steps](#3)
+3. [IntelliJ Basics](#4)
+4. [Expressions, Statements, Codeblocks, Methods](#5)
+5. [Control Flow](#6)
+6. [Objtec Oriented Programming Part1 - Inheritance](#7)
 
 
 ## Section 2: Programming Tools and Setup <a name="2"></a>
@@ -23,7 +27,7 @@ Instructor: Tim Buchalka
     * `/exit` to exit jshell
 
 
-## Section 3: First Steps
+## Section 3: First Steps <a name="3"></a>
 ### Hello World
 `jshell> System.out.print("Hello World");`
 
@@ -214,9 +218,9 @@ double theRemainder = myThirdValue % 40.00d;
 boolean isNoRemainder = (theRemainder == 0) ? true : false;
 
 ```
-## Section 4: IntelliJ Basics
+## Section 4: IntelliJ Basics <a name="4"></a>
 
-## Section 5: Expressions, Statements, Code blocks, Methods
+## Section 5: Expressions, Statements, Code blocks, Methods <a name="5"></a>
 Java has 50 reserved keywords.
 Exressions are essntially building blocks of all Java Programs. Expressions are built with values, variables, operators and method calls.
 ```java
@@ -412,7 +416,7 @@ private static final String INVALID_VALUE_MESSAGE = "Invalid Value";
 ``` 
 They cannot be changed
 
-## Section 6: Control Flow
+## Section 6: Control Flow <a name="6"></a>
 ### The Switch Statement
 Switch is good to use if you're testing the same variable and you want to test different values for that variable
 ```java
@@ -607,7 +611,7 @@ public class Main {
 ```
 - `double number = Double.parseDouble(numberAsString);` converts to a Double
 
-## Reading User Input
+### Reading User Input
 The goal of this section is to  is to make an interactive application where a user will enter his or her name and year of birth and then the application will calculate the current age of the user.
 
 * `Scanner`Which is a simple text scanner that can parse both Primitive types and Strings.
@@ -794,8 +798,7 @@ Or you can use constants
   int max = Integer.MIN_VALUE;
 ```
 
-## Section 7: Object Oriented Programming Part 1 - Inheritance
-
+## Section 7: Object Oriented Programming Part 1 - Inheritance <a name="7"></a>
 ### Introduction to Classes and Objects
 Object oriented programming is a way to model real world objects, as software objects, which contain both data and code. It's sometimes called class based programming. Class based programming starts with classes, which become the blue prints for objects
 
@@ -1515,131 +1518,344 @@ Why is the record built to be immutable. There are more use casses for immutable
 
 If you want to modify data on your class, you won't be using the record. You can use the code generation options for the POJO. But if you're reading a whole of of records, from a database or file source, and simply passing this data around, then the record is a big improvement.
 
+### Inheritance Part 1
+We could look at inheritance as a form of code re-use
+It's a way to organize classes into a parent-child hierarchy, which lets the child inherit(re-use) fields and methods from it's parent
 
-### Inheritance
-Object Orinetyed programming allows us to create classes to inherit commonly used standard behavior from other classes
+If we look at the Animal kingdom, we can look at this hierarchy. The most generic, or base class starts at the top of the hierarchy. Every class below is a subclass. A parent class can have multiple children, but a child can only have one direct parent in Java, but it'll inherit for its parent class's parent, and so on.
+
+A **class diagram**, allows us to design our classes before we built them.
+![class diagram example](https://miro.medium.com/max/1400/1*szU8ngrWSXmBNPYReMyK5w.webp)
+
 ```java
 /********
   BASE CLASS
  ***********/
-
 public class Animal {
     //fields
-    private String name;
-    private int brain;
-    private int body;
-    private int size;
-    private int weight;
-
+   private String type;
+   private String size;
+   private double weight;
+    
     //constructor
-
-
-    public Animal(String name, int brain, int body, int size, int weight) {
-        this.name = name;
-        this.brain = brain;
-        this.body = body;
+    public Animal(String type, String size, Double weight){
+        this.type = type;
         this.size = size;
         this.weight = weight;
     }
-
-    //create a Getter for each field
-
-
-    public String getName() {
-        return name;
+    //We'll also autogenerate all getter and setters along with toString method
+    @Overrride
+    public String toString(){
+        return  "Animal{" +
+                "type = ' " + type + '\'' +
+                ", size = '" + size + '\'' +
+                ", weight = '" + weight + '\'' +
+                '}';
     }
 
-    public int getBrain() {
-        return brain;
+    public void move(String speed){
+        System.out.println(type + " moves " + speed);
     }
 
-    public int getBody() {
-        return body;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public int getWeight() {
-        return weight;
+    public void makeNoise(){
+        Systen.out.println(type + " makes some kind of noise " + speed);
     }
 }
 ```
-In Java terminology, if you want to **inherit** from another class, you use the word `extends`. Now to make it word we need to be able to call the cosntructor from the Animal class to initialize it.
-```java
-public class Dog extends Animal {
-    //Using IntelliJ command+N you can create the constructor
-    //What super means is to call the constructor that is for the class that we're
-    //extending from.
+Now we create another class using **extends**. Using exteds specifies the superclass (or parent class) of the class we're declaring. A class can specify one, and only one class in its extends clause
 
-    public Dog(String name, int brain, int body, int size, int weight) {
-        super(name, brain, body, size, weight);
+At first, when we extend the class we'll get an error, because there is no default constructor in Animal (meaning we never created a constructor, with no arguments) and this matter to our Dog class because Java has already created an implicit constructor in our Dog class, so we'll create one
+
+```java
+public class Dog extends Animal{
+
+    public Dog(){
+        super();
+    }
+}
+
+```
+You'll rememeber that we use the `this` keyword, followed by parentheses and param as a way to call anothe constructor in the same class, well `super()` is similar to that. It's a way to class the constructo on the parent class, or super class
+- `super()` is a lot like `this()`
+- It's a way to call a constructor on the superclass, directly from the subclass constructor
+- Like `this()`, it has the be the first statement in the constructor. Because of that rule, `this()` and `super()` can never be called from the same constructor 
+- If you don't make a call to super(), then Java makes it for you, using super's default constructor
+- If your super class doesn't have a default constructor, then you must explicitly call `super()` in all of your constructors, passing the right arguments to that constructor.
+
+So we add the empty constructor in Animal, and everything s
+
+```java
+/********
+  BASE CLASS
+ ***********/
+public class Animal {
+    //fields
+   private String type;
+   private String size;
+   private double weight;
+    
+    public Animal(){}
+    //constructor
+    public Animal(String type, String size, Double weight){
+        this.type = type;
+        this.size = size;
+        this.weight = weight;
+    }
+  ...
+}
+```
+Before, we create any instances, I want to create a method on the Main class, that'll take any Animal object, and execute its three methods
+
+```java
+public class Main{
+    public static void main(String[] args){
+        Animal animal = new Animal("Generic Animal", "Huge", 400);
+        doAnimalStuff(animal, "slow");
+
+        Dog dog = new Dog();
+        doAnimalStuff(dog, "fast");
+     
+    }
+    public static void doAnimalStuff(Anima animal, String speed){
+        animal.makeNoise();
+        animal.move(speed);
+        System.out.println(animal);
+        System.out.println("_ _ _ _ _ _ _");
+        
+    }
+}
+
+/*
+Generic Animal makes some kind of noise
+Generic Animal moves slow
+Animal{type='Generic Animal', size='Huge', weight= 400.00}
+-------
+null makes some kind of noise
+null moves fast
+Animal{type='null', size='null', weight= 0.0}
+
+*/
+```
+We crated dog with a default constructor (no arguments passsed) so nothing got on this class, but at least it has inherit all of Animal's attributes
+
+```java
+public class Dog extends Animal{
+    public Dog(){
+        super("Mutt", "Big", 50);
     }
 }
 ```
-And now we can add specific characteristics to a dog:
+And if we run the code in main again this will change to the params we passed to Dog.  
+
+### Inheritance Part 2
+Now, we're going to make Dog different from Animal, by declaring the methods that are specific to it.
 ```java
-public class Dog extends Animal {
-    //Using IntelliJ command+N you can create the constructor
-    //What super means is to call the constructor that is for the class that we're
-    //extending from.
+public class Dog extends Animal{
+    private String earShape;
+    private String tailShape;
 
-    private int eyes;
-    private int legs;
-    private int tail;
-    private int teeth;
-    private String coat;
-
-    public Dog(String name, int brain, int body, int size, int weight, int eyes, int legs, int tail, int teeth, String coat) {
-        super(name, 1, 1,  size, weight);
-        this.eyes = eyes;
-        this.legs = legs;
-        this.tail = tail;
-        this.teeth = teeth;
-        this.coat = coat;
+    public Dog(){
+        super("Mutt", "Big", 50);
+    }
+    //We're going to remove the size parameter, and derive it with weight, passing it to the super call
+    //This constructor has a combinatin of the Dog and Animal fields in its arguments list
+    //We're calling the super contructor to set some of our fields, the Animal specific fields
+    //Since we cannot do anything before super, we ca do it as an expression in the argument list. This is one way to perfom calculations, in your constructor and pass the result to the super call
+    public Dog(String type, double weight, String earShape, String tailShape){
+        super(type, weight < 15 ? "small" : (weight < 35 ? "medium" : "large"),
+        weight);
+        this.earShape = earShape;
+        this.tailShape = tailShape;
     }
 
-    private void chew(){
-        System.out.println("Dog.chew() called");
+    public Dog(String type, double weight){
+        this(type, weight, "Perky", "Curled");
     }
 
     @Override
-    public void eat() {
-        System.out.println("Dog.eat called");
-        chew();
-        super.eat();
+    public String toString(){
+        return Dog...
+        ..
+        "} " + super.toString();
     }
 }
 ```
-We cal also override a method from the Animal class (or super class), additionally by using the word super or not inside a method, you can control what is being called, by using the word super, the method will directly go to the super class ignoring any override methods that could be applicable
+**Overriding a method** is when you crate a method on a subclass, which has the same signature as a method on the superclass. Remember that a **method signature** consists of the method name, and the number and types of parameters.
+
+You override a parent class method, when you want the child class to show different behavior for that method
+> IntelliJ has a feature to override methods
+
+The overriden method can do one of three things:
+1. It can implement completely different behavior, overriding the behavior of a parent
+2. It can simply call the parent's class method, which is somewhat reduntant
+3. Or the metod can call the parent class's method, and include other code to run, so it can extend the functionality for the Dog, for that behavior
+
 ```java
-    public void walk(){
-        System.out.println("Dog.walk() called");
-        super.move(5);
+public class Dog extends Animal{
+    ...
+
+    @Override
+    public move(String speed){
+        super.move(speed);
+        System.out.println("Dogs walk, run and wag their tail");
     }
-// Dog.walk() called
-// Animal.move() called. Animal is moving at 5
+}
+```
+### Inheritance Part 3
+Now, we're going to create some methods for the Dog subclass
+```java
+public class Dog extends Animal {
 
-    public void run(){
-        System.out.println("Dog.run() called");
-        //We're calling the Animal.move
-        move(10);
+    public void move (String speed){
+        super.move(speed);
+        if( speed == "slow"){
+            walk();
+            wagTail();
+        } else {
+            run();
+            bark();
+        }
+        System.out.println();
+    }
+
+    private void bark(){
+        System.out.println("Woof!");
+    }
+    private void run(){
+        System.out.println("Dog running");
+    }
+    private void walk(){
+        System.out.println("Dog walking");
+    }
+    private void wagTail(){
+        System.out.println("tail wagging");
+    }
+}
+```
+Now, we're going to change or `makeNoise` method in our Dog class again.
+```java
+public class Dog extends Animal {
+    ...
+    public void makeNoise(){
+        if (type == "Wolf"){
+            System.out.println("Ow woooo!");
+        }
+        ...
+    }
+```
+This will give us a compiler error, because `type` has `private` access in Animal, but there is a modifier that allows access for subclasses, and that's the `protected` modifier. What this modifier says is, let any class that is a subclass, access this field. This is **conditional encapsulation** we're allowing some limited access to our internal fields. Protected access also means that any classes in the same package, will also have access
+
+### What is the jav.lang.Object
+evry class in Java, intrisically extends a special Java class. This class is named **Object**, and it's in the java.lang.package.
+Class Object is the root of the class hierarchy, every class has Object as a superclass. All objects, including arrays, implement the methods of this class
+
+> Remember only one class in Java source file can be public
+```java
+public class Main extends Object{
+    public static void main(String[] args){
+      Student max = new Student("Max", 21);
+      System.out.println(max.toString());
+     
+    }
+
+    class Student {
+        //instance variables
+        private String name;
+        private int age;
+        //constructor
+        Student(String name, int age){
+            this.name = name;
+            this.age = age;
+        }
+    }
+   
+}
+```
+If we run this code, we'll get something like `Student@65ab7765`. The code in the `toString()` method in the Object class prints out the class name(which in our case is Student), followed by an @ sign, then the hash code of the Object. A **hash Code** is an integer, that is unique to an instance(in the currently executing code). When an instance is created, it's assigned a hashcode, and that hashCode is what can tell us if our multiple references are pointing to a single instance. It's a mechanism for comparison.
+```java
+public class Main extends Object{
+    public static void main(String[] args){
+      Student max = new Student("Max", 21);
+      System.out.println(max.toString());
+
+     
+    }
+
+    class Student {
+        //instance variables
+        private String name;
+        private int age;
+        //constructor
+        Student(String name, int age){
+            this.name = name;
+            this.age = age;
+        }
+        // This call the code that Java would implictly do for us
+        // @Override
+        // public String toString(){
+        //     return super.toString();
+        // }
+        @Override
+        public String toString(){
+            return "Student{" +
+                    "name= '" + name + '\'' +
+                    ", age= " + age +
+                    '}';
+        }
 
     }
-// Dog.run() called
-// Dog.move() called
-// Dod.moveLegs() called
-// Animal.move() called. Animal is moving at 10
+   
+}
+```
+Java also implictly calls the to String method on an objects, if you simply pass your object to System.out.println
+```java
+public class Main extends Object{
+    public static void main(String[] args){
+      Student max = new Student("Max", 21);
+      System.out.println(max);
 
+    PrimarySchoolStudent jimmy = new PrimarySchoolStudent("Jimmy", 8, "Carole");
+    System.out.println(jimmy);
+     
+    }
+
+    class Student {
+        //instance variables
+        private String name;
+        private int age;
+        //constructor
+        Student(String name, int age){
+            this.name = name;
+            this.age = age;
+        }
+        @Override
+        public String toString(){
+            return name + " is " + age;
+        }
+    }
+
+    class PrimarySchoolStudent extends Student{
+        private String parentName;
+
+        PrimarySchoolStudent(String name, int age, String parentName){
+            super(name, age);
+            this.parentName = parentName;
+        }
+        public String toString(){
+            return parentName + "'s kid, " + super.toString();
+        }
+    }
+}
+// Max is 21
+// Carole's kid, Jimmy is 8
 ```
 
 
  ### this vs super
- * The keyword **super** is used to access/ call the parent class members(variables and methods)
- * The keyword **this** is used to class the current class members (variables and methofs) is required when we have a parameter with the same nae as an instance variable (field).
+ * The keyword **super** is used to access or call the parent class members(variables and methods)
+ * The keyword **this** is used to class the current class members (variables and methods). `this` is required when we have a parameter with the same name as an instance variable (field).
 
-We can use both of them anywhere in a class except static areas (the static block or a static method). Any attempt to do so will lead to complie-time errors.
+We can use either of them anywhere in a class, except for static elements, like an static method. Any attempt to do so will lead to complie-time errors.
 
 The keyword **this** is commonly used with constructors and setters, an optionally in getters(easier for begginers). In the example below we are using the `this` keyword in the contructor and setter since there is a parameter with the same name. In the getter we don't have any parameters so the keyword is optional.
  ```java
@@ -1662,7 +1878,10 @@ The keyword **this** is commonly used with constructors and setters, an optional
     }
  }
  ```
- The keyword super is commonly used with method overriding, when we call a method with the sam ename from the parent class. In the example below we have a method `printMethod` that call `super.printMethod`
+ The keyword `super` is commonly used with method overriding, when we call a method with the same name from the parent class. In the example below we have a method `printMethod` that call `super.printMethod`.
+
+ Without adding the keyword `super()` it would end up being a recursive call. What that means is that the method will call itself forever or until memory is fully used in your computer
+
 
  ```java
  class SuperClass { //parent class aka super class
@@ -1689,35 +1908,67 @@ The keyword **this** is commonly used with constructors and setters, an optional
  }
  ```
 
- * In Java we have the `this()` call and the `super()` call. Notice the braces it is known as a call since it looks like a regular method call 
+ * In Java we have the `this()` call and the `super()` call. Notice the braces it is known as a call since it looks like a regular method call, although we're calling certain constructors. 
 * Use `this()` to call a constructor from another overloaded constructor in the same class.
-* The call to `this()` can be used only in a constructor, and it must be the first statement in a constructor. It's used with constuctor chaining, in other words when one constructor calls another constructor, and helps to reduce duplicated code.
-* The only way to call a aprent constructor is by calling `super()`. This calls the parent constructor.
-* The Java Compiler puts a default call to `super()` if we don't add it, and it s always the no-args super wich is inserted by compiler (constructor without aarguments.)
+* The call to `this()` can only be used in a constructor, and it must be the first statement in a constructor. It's used with constuctor chaining, in other words when one constructor calls another constructor, and helps to reduce duplicated code.
+* The only way to call a aprent constructor is by calling `super()`, which calls the parent constructor.
+* The Java Compiler puts a default call to `super()` if we don't add it, and it s always the no-args super which is inserted by compiler (constructor without arguments.)
 * The call to super() must be the first stamenet in each constructor
 * Even abstract classes have constructors, although you can never instatiate and abstract class using the `new` keyword.
 * An abstract class is stull a super class, so its constructors run when someone makes an instance of a concrete subclass.
 * A constructor can have a call to `super()` or `this()` but never both.
 ```java
+// BAD EXAMPLE OF CONSTRUCTORS
+class Rectangle{
+    private int x;
+    private int y;
+    private int width;
+    private int height;
+
+    public Rectangle(){
+        this.x = 0;
+        this.y = 0;
+        this.width = 0;
+        this.height = 0;
+    }
+
+    public Rectangle(int width, int height){
+        this.x = 0;
+        this.y = 0;
+        this.width = width;
+        this.height = height;
+    }
+    public Rectangle(int x, int y, int width, int height){
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+}
+```
+
+Below, is what's known as **constructor chaining**, where the last constructor has the responsbility to initialize variables
+
+```java
 //GOOD EXAMPLE OF CONSTRUCTORS
-class quadrilateral{
+class Rectangle{
     private int x;
     private int y;
     private int width;
     private int height;
 
     //1st Constructor
-    public quadrilateral(){
+    public Rectangle(){
         this(0,0);  //calls 2nd constructor
     }
 
     //2nd Constructor
-    public quadrilateral(int width, int height){
+    public Rectangle(int width, int height){
         this(0, 0, width, height); // calls 3rd constructor
     }
 
     //3rd constructor
-    public quadrilateral(int x, int y, int width, int height){
+    public Rectangle(int x, int y, int width, int height){
         this.x = x;
         this.y = y;
         this.widht = width;
@@ -1728,7 +1979,7 @@ class quadrilateral{
 In the following example we use both `super()` and `this()`
 ```java
 
-class shape {
+class Shape {
     private int x;
     private int y;
 
@@ -1757,7 +2008,7 @@ class Rectangle extends Shape {
 ```
 
 ### Method Overriding vs Overloading
-* Method **overloading** means providng two or more separate methods in a class with the same name but different parameters.
+* **Method overloading** means providng two or more separate methods in a class with the same name but different parameters.
 * Method return type may or may not be different and that allows us to reuse the same method name.
 * Overloading is very handy, it reduces duplicate code and we don't have to remember multiple method names
 * Overloading does not have anything to do with polymorphism but Java developers often refer to overloading as Compile Time Polymorphism

@@ -703,13 +703,15 @@ As a contributor you need to **fork* the repository. A fork is a GitHUB feature 
 Since a fork is owned by us (user/org) we can make changes directly and then submit a pull request between both repos
 [Contributing to Projects](https://docs.github.com/en/get-started/quickstart/contributing-to-projects)
 
-#### Contributing to a Project with a Pull Request
+#### Contributing to a Project wit h a Pull Request
 It is important to remember that not all Pull Requests will be merged. Try to keep your pull requests valuable to the main project by providing documentation, a bug fix, or a new feature. Avoid “gotcha” pull requests that only fix a single bit of wording. Regardless, not all pull requests get merged (and I have had dozens that get closed without merging). Don’t feel bad: keep at it and with more context and experience you will be an open source machine in no time.
 
 - Add Unit Tests
 - Include Screenshots
 - Follow the style of the project
-### Introduction to Docker <a name="docker"></a>
+
+
+## Introduction to Docker <a name="docker"></a>
 #### Why Docker?
 Docker bundles your app together with all the libraries and services it depends on into a package called a container, which can then be delivered as a single unit wherever it needs to go. It's kind of like a shipping container. Because shipping containers are all the same shape, they can all be handled the same way, regardless of what they contain. Likewise, no matter what your app's architecture looks like, bundling it into a Docker container allows your coworkers or customers to deploy it anywhere, without worrying about what its components look like.
 
@@ -761,7 +763,7 @@ Docker Containers - Pros:
 Docker Containers - Cons
 - May be no faster than a VM
 
-Docker runs containers on top of light weight virtualized environmets without fully virtualized in the home machine, because docuker doesn't virtulize entire OS, it can run much quicker and be far more affordable tan a traditional VM. To run virtual machones, the host OST runs software called a **hypervisor**. A hypervirsor manages the life cycle of VM's starting and stopping them as needed, managing theur resources and keeping the whole setup secure by isolating the VMs from the host OS and from each other. And entire guest operating system runs within each virtual machine and your apps dependencies as well as the app itself are run within the guest OS, contrast this with Docker, where containers are run by the Docker daemon software, docker containers omits most of the guest OS except for a few packages, meaning most of the container resources are devoted to your apps dependencies, it doesn't need a guest OS, it somply share the host resoruses like processors, memory and networking devices between each container
+Docker runs containers on top of light weight virtualized environmets without fully virtualized in the home machine, because docker doesn't virtulize entire OS, it can run much quicker and be far more affordable tan a traditional VM. To run virtual machines, the host OS runs software called a **hypervisor**. A hypervirsor manages the life cycle of VM's starting and stopping them as needed, managing their resources and keeping the whole setup secure by isolating the VMs from the host OS and from each other. And entire guest operating system runs within each virtual machine and your apps dependencies as well as the app itself are run within the guest OS, contrast this with Docker, where containers are run by the Docker daemon software, docker containers omits most of the guest OS except for a few packages, meaning most of the container resources are devoted to your apps dependencies, it doesn't need a guest OS, it simply share the host resourcces like processors, memory and networking devices between each container
 
 * OS - Operating System, think Windows, MacOS/OS X, Linux (Ubuntu, RedHat, etc.)
 * Emulation - When a system will replicate all the functionality of another system so that it’s transparent to the user what the underlying hardware is.
@@ -769,8 +771,8 @@ Docker runs containers on top of light weight virtualized environmets without fu
 * Container - a lightweight isolated environment for an app or service to run.
 
 #### Building Blocks of Docker
-Docker packages apps into a single unit called an image. When these images are run via Docker they're called containers. Where a single container is an instance of an image, it's possible to run many containers based on a single image. An image is a mutable file that is essentially a snapshot of a container. Images can be store in the **Docker Registry** which is like GitHub for
-docker images, because images can become pretty large, they're designed to be composed of layers of other images, that means, we only have to send small amoutns of data over the network when transferring images. To make all this magic happen, Docker uses three major components:
+Docker packages apps into a single unit called an **image**. When these images are run via Docker they're called **containers**. Where a single container is an instance of an image, it's possible to run many containers based on a single image. An image is a mutable file that is essentially a snapshot of a container. Images can be store in the **Docker Registry** which is like GitHub for
+docker images, because images can become pretty large, they're designed to be composed of layers of other images, that means, we only have to send small amounts of data over the network when transferring images. To make all this magic happen, Docker uses three major components:
 * Docker Daemon:  which is a process running on your host OS
 * Docker Registries: Whihc are server daemons connect to in order to retrieve images they need
 * Docker Client: which issues command to the Docker daemon.
@@ -781,8 +783,12 @@ The Docker daemon coordinates running containers, packaging images, and transfer
 
 
 #### Docker Networking
-
-
+There are many real world use cases for connecting two containers together, such as running a JavaScript forntend that fetches data from a Node.js backend, or spending up to ten servers running big-data processing software, like **Spark**, using Docker's networking each container can share the workload. Networking is one of Docker's most fundamental strengths, form exposing prots to sharing a network between containers.
+Example:
+- `docker pull nginx` : Retieve an NGINX image from the docker registry
+- `docker inspect nginx`: will give us all the image's config in JSON format, like the ExposedPorts
+- `docker run -p 8080:80 --detach niginx` create a container form the image. Normally, it would attach or terminal to the NGINX process, and not let us do anything else until we hold the NGINX, but adding this option will leave the container running in the background, so we can do other things. Finally we need to add the name of the image we want to use. docker will spun a contaner from the nginx image, show is an ID for the new container, the return us to our shell props
+- `docker ps`
 
 ### Building Images Using Docker
 ### Managing Images and Containers
