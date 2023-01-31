@@ -802,7 +802,7 @@ Or you can use constants
 ### Introduction to Classes and Objects
 Object oriented programming is a way to model real world objects, as software objects, which contain both data and code. It's sometimes called class based programming. Class based programming starts with classes, which become the blue prints for objects
 
-Obhects have 2 major components:
+Objects have 2 major components:
 - State : Characteristics about the item that can describe it.
 - Behavior: Actions that can be perfomed by the objects, or upon the object
 
@@ -2008,15 +2008,23 @@ class Rectangle extends Shape {
 ```
 
 ### Method Overriding vs Overloading
-* **Method overloading** means providng two or more separate methods in a class with the same name but different parameters.
-* Method return type may or may not be different and that allows us to reuse the same method name.
-* Overloading is very handy, it reduces duplicate code and we don't have to remember multiple method names
-* Overloading does not have anything to do with polymorphism but Java developers often refer to overloading as Compile Time Polymorphism
-* In other words the compiler decided which method is going to be called based on the method name, return type and argument list.
-* Usually overoading happens inside a single class, but a method can also be treated as overloaded in the subclass of that class
-* That is becase a subclass inherits one version of the method from the parent class and then the subclass can have another overloaded version of the method
+**Method overloading** means providing two or more separate methods in a class with the same name but different parameters.
+Method return type may or may not be different and that allows us to reuse the same method name.
+Overloading is very handy, it reduces duplicate code and we don't have to remember multiple method names
+
+We can overload static, or instance methods
+
+To the code calling an overloaded methods, it looks like a single method can be called with different sets of arguments.
+
+In actuality, each call that's made with a different set of arguments, is calling a separate method. 
+
+Java developers often refer to method overloading, as compile-time polymorphism. This means the compier is determining the right method to call, based on the method name and argument list
+
+Usually overloading happens within a single class, but methods can also be overloaded by subclasses. That's because, a subclass inherits over version of the method from the parent class then the subclass can have another overloaded version of that method.
 
 **Method Overloading Rules**
+Methods will be considered overloaded if both methods follow these rules:
+
 - Methods must have the same method name
 - Methods must have different parameters
 - If methods follow the rules above thet may or may not
@@ -2024,23 +2032,23 @@ class Rectangle extends Shape {
     * Have different access modifier
     * Throw different checked or unchecked exceptions
 
-* Method **overriding** means defining a method in a child class that already exists in the parent class with the same signature(Same name, same arguments)
-* By extending the parent class the child class gets all the methods definied in the parent class(those methods are also known as *derived methods*)
-* Method overriding is also known as **Runtime Polymorphism** and **Dynamic Method Dispatch**, because the method that is going to be called is decided at runtime by the JVM
-* When we override a method it's recommended to put @Override immediately above the method definition. This is an annotation that the compiler reads and will then show us an error i we don't follow overriding rules correctly.
-* We can't override static methods only instance methods 
 
+**Method overriding** means defining a method in a child class that already exists in the parent class with the same signature(Same name, same arguments)
+By extending the parent class the child class gets all the methods definied in the parent class(those methods are also known as *derived methods*)
+Method overriding is also known as **Runtime Polymorphism** and **Dynamic Method Dispatch**, because the method that is going to be called is decided at runtime by the JVM
+When we override a method it's recommended to put @Override immediately above the method definition. The @Override statement is not required, but its'a way to get the compiler to flag an error if you don't actually properly override this method. We will get an error, if we don't follow the overriding rules correctly
+ 
 **Method Overriding Rules**
-- Method will be considered overriden if we follow these rules:
+ Method will be considered overriden if we follow these rules:
     - It muust have same name and same arguments
     - Return type can be a subclass of the return type in the parent class
     - It can't have a lower access modifier: For example, if the parent method is protected then using private in the child is not allowed but using public in the child would be allowed.
 
 There are also important point about method overriding to keep in mind:
-- Only inherited methods can be overriden, in other word methods van be overriden only in child classes
+- Only inherited methods can be overriden, in other word methods can be overriden only in child classes
 - Contructors and private methods cannot be overriden.
 - Methods that are final cannot be overriden.
-- A subclass van use `super.methodname()` to call the superclass version of an overriden method.
+- A subclass can use `super.methodname()` to call the superclass version of an overriden method.
 
 ```java
 // OVERRIDING
@@ -2076,78 +2084,41 @@ class Dog{
 ```
 
 **Covariant return type**
-```java
-class Burger{
-    // fields, methods...
-}
+The return type of an overriden method can be the same type as the parent method's declaration. But it can also be a sublcass. The term, covariant return type is more appropiate.
 
-class HealthyBurger extends Burger{
-    //fields, methods...
+We briefly mentioned, that there's a clone method on the class Object, that all classes inherit from.
+
+A simplified look at this declaration, is shown below
+```java
+protected Object clone() throws CloneNotSupportedException
+```
+And if you override this method, by using IntelliJs code generation tools, it would generate this code in your class:
+```java
+@Override
+protected Object clone() throws CloneNotSupportedExceptions{
+    return super.clone();
 }
 ```
-```java
-class BurgerFactory{
-    public Burger createBurger(){
-        return new Burger();
-    }
-}
+But in general, when you're cloning an instance, you're going to want to return an Object, that's the same type as the Object you're cloning.
+We sid all classes ultimately have Object, as a base class, so every class
+can be said to be a covariant of Object.
 
-class HealthyBurgerFactory extends BurgerFactory{
-    
+```java
+//The clone method overriden in a Person class
+// This is calid override of Object's clone method
+class Person {
+    private String name;
+    private String birthDat;
+
+    public Person(String name, String birthDate){
+        this.name = name;
+        this.birthDate = birthDate;
+    }
     @Override
-    public HealthyBurger extends BurgerFactory{
-        return new HealthyBurger();
+    public Person clone(){
+        return new Person(name, birthDate);
     }
-
 }
 
 ```
-We can notice in the above example how the return types are different and that's know as a **covariant return** type, so in other words the `Burger` class is the parent class and the `HealthyBurger` is child class, so the method create burger in the class `HealthyFactoryBurger` can return any child type of burger, in this case we've just got one child class
 
-### Static vs Instance Methods
-**Static Methods**
-- Static methods are declared using the **static** modifier
-- Static methods can access instance methods and instance variables directly
-- They are usually used for operations that don't require any data from an instance of the class (from `this`). The `this` kwyord is the current instance of a class
-- In static methods we can't use the this keyword
-- Whenever you see a methods that doesn't use **instance variables** that method should be declared a **static method**. For example mian is a static method and it is called by the JVM when it starts an application
-```java
-class Calculator{
-    public static void printSum(int a, int b){
-        System.out.println("sum= " + (a+b));
-    }
-}
-
-public class Main{
-    public static void main(String[] args){
-        Calculator.printSum(5,10);
-        printHelo();
-    }
-
-    public static void printHello(){
-        System.out.println("Hello");
-    }
-}
-
-//static methods are called as ClassName.methodName(); or
-//methodName(); only if in the same class.
-```
-**Instance Methods**
-- Instance methods belong to an instance of a class
-- Tou use an instance method we have to instatiate the class first usually by using the `new` keyword
-- Instance methods can access instance methods and instance variables directly
-- Instance methods can also access static methods and static variables directly.
-```java
-class Dog{
-    public void bark(){ //Since it doesn't have static, this is a standard instance method
-        System.out.println("woof"); 
-    }
-}
-public class Main{
-    public static void main(String[] args){
-        Dog rex = new Dog();
-        rex.bark();
-    }
-}
-```
-Should a Method be static: If it uses any fields(isntace variables) or instance methods, it should probably be an *instance method* otherwise it should proably be a *static method*
