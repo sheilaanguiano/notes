@@ -2121,4 +2121,172 @@ class Person {
 }
 
 ```
+### The Text Block and other formatting options
+A Text Block is just a special format for multi-line String literals. It's simplu a String, with a new represenation in the source code. It became part of the official language as of JDK 15.
+```java
+//Pre JDK15
+public static void main(String[] args){
+    String bulletIt = "Print a Bulleted List:" +
+    "\t\u2022 First Point" +
+    "\t\t\u2022 Subpoint Point"; 
+    System.out.println(bulletIt);
 
+    String textBlock = """
+        Print a Bulleted List:
+            \u2022 First Point
+                \u2022 SubPoint""";
+    System.out.println(textBlock);
+
+}
+```
+`\u2022` is a escape sequence
+The text block lets us format text in the Source code, the same way we want to see it in the output
+
+There are other 2 methods to print output, such as `System.out.printf` and `System.out.format`. These methods behave the same
+```java
+int age = 41;
+System.out.printf("Your age is %d%n", age);
+
+int yearOfBirth = 2023 - age;
+System.out.printf("Your age is %d, Birth year= %d", age, yearOfBirth);
+//Output Age = 41, Birth year = 1982
+```
+The `%`is a special indicator called [*format specifier*](https://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html), this is a placeholder for other data, which should replace this specifier in the text
+
+You can use `\n` or `%n` the difference is that the format specifier one output's the platform's specific line separator, so it's preferred
+
+At their most complex, format specifiers take the form shown here:`%[argument_index$][flags][width][.precision]conversion`. They start with a percent sign, and end with a conversion symbol, and have lots of options in between
+
+```java
+int age = 41;
+System.out.printf("Your age is %f%n", age);
+```
+If we did something like this, we'd get an Illegal Format conversion exception, because it was expecting a float o double, and we passed an integer, but this can be solved by casting. You can specify precision
+```java
+int age = 41;
+System.out.printf("Your age is %f%n", (float) age);
+//Your age is 35.000000
+System.out.printf("Your age is %.2f%n", (float) age);
+//Your age is 35.00
+//With the precision specifier it will return only 2 decimal points
+```
+You can also specify witdh
+```java
+for(int i = 1; i <=100000 ; i*= 10){
+    System.out.printf("Printing %6d %n", i)
+} 
+//Printing   1
+//Printing  10
+//Printing 100...
+```
+`System.out.format` can be used anywhere System.out.printf is used. But there'll be times you want to format Strings and output to a file, or error log for example, or maybe a database.The String class itself has two methods to support this type of formatting as well, one is the static method, called `format`. And you can also do that with the String instance method `formatted`, this methods was included in JDK 15 and it works the same as String.format, except you don't need to pass the formatString as an argument. The String itself is the format String
+```java
+int age = 41;
+String formattedString = String.format("Your age is %d", age);
+System.our.println(formattedString); //Your age is 41
+
+formattedString = "Your age is %d".formatted(age);
+System.our.println(formattedString);
+```
+### Another Look at the String
+The string has over 60 methods available
+The string is a sequence of characters, meaning its characters are ordered and indexed, which starts at 0
+We can split string methods up into 3 categories:
+- String Inspection methods: These prove some information about the string, like `length()`, `isEmpty()` and `isBlank()`
+- Methods for comparing string values: These return a boolean value 
+- String manipulation methods: these transform strings into anothers
+[List of String Methods](https://www.w3schools.com/java/ref_string_indexof.asp)
+
+### String Manipulation Methods
+The first set of methods don't actually change the underlying meaning of the text value, but perform some kind of clean up: indent, strip, strpLeading, trim, toLowerCase, etc.
+The second set of string manipulation methods, transform the String value, and return a String with a different meaning, than the original string: concat, join, repeat, replace, substring.
+```java
+String newDate = "25";
+newDate = newDate.concat("/");
+newDate = newDate.concat("11"); 
+newDate = newDate.concat("/");
+newDate = newDate.concat("1982");
+System.out.println("newDate = " + newDate);
+
+newDate = "25" + "/" + "11" + "/" + "1982";
+System.out.println("newDate = " + newDate);
+
+//This style of code is called method chaining 
+newDate = "25".concat("/").concat("11").concat("/").concat("1982");
+```
+
+### The StringBuilder class
+Because String is immutable, each method call returns a new instance of a String. As an alternative, Java provides a mutable class that let us change its text value or character sequence. This is the String Builder class.
+
+**Creating Instances**
+```java
+//Instantiating String Objects
+String hello = "Hello";
+String helloWorld = "Hello" + " World";
+String badHello = new String("Hello"); // valid code but redundant
+
+//Instantiating StringBuilder Objects
+StringBuilder helloBuilder = new StringBuilder("Hello");
+StringBuilder emptyBuilder = new StringBuilder();
+StringBuilder emptyBuilder5 = new StringBuilder(5);
+StringBuilder stringBuilder = new StringBuilder(helloBuilder);
+```
+
+There are 4 ways to create a new StringBuilder object, using the `new` keyword:
+- Pass a String
+- Pass no arguments at all
+- Pass an integer value
+- Pass some other type of character
+
+We'll create a couple of overloades methods, one that will take a String and the other will take a StringBuilder, bth will print the argument that's passed, and both will call the length method
+
+```java
+public class Main{
+    public statis void main (String[] args){
+        String helloWorld = "Hello" + " World";
+        helloWorld.concat("and Goodbye");
+
+        StringBuilder helloWorldBuilder = "Hello" + " World"; //THis won't compile
+        StringBuilder helloWorldBuilder = new stringBulder("Hello" + " World");
+        helloWorldBuilder.append(" and Goodbye");
+
+        printInformation(helloWorld);
+        printInformation(helloWorldBuilder)
+
+    }
+    public static void printInformation(String string){
+        System.out.println("String = " + string);
+        System.out.println("Length = " + string.length());
+    }
+
+    public static void printInformation(StringBuilder builder){
+        System.out.println("StringBuilder = " + builder);
+        System.out.println("Length = " + stringBuilder .length());
+    }
+}
+```
+When we add the `and Goodbye` and check the lengths, the String will retunr `11` while StringBuilder returns `23`
+When we passed the String literal `and Goodbye`, to the concat method, this created an Object in memory for that literal.
+It also created the result of the concat method, the object, the String that has the `Hello World and Goodbye`. But our code has a mistake in it, because we didn't assign the result of the method, the concat method, to a variable, this is actually a commmon mistake to make. It's important to remeber to assing the result, of any String manipulation method you call on a String, to a variable. These methods don't change the internals of the existing String object.
+The String referenced by the `helloWorld` variable never changed, instead a new String was created by the method call
+
+Now, after the call to the append method, we still only have one StringBuioder object. The variable `helloWorldBuilder`, is stull referencing the same object, but the value of that object changed. This is important, because it means the character sequence in the StringBuilder changed. And in this time, we didn't have to assign the result, to another variable to access the result.
+
+**String methods create a new object in memoru, and return a reference to this new object.**
+**StringBuilder methods return a String Builder reference, nit it's reallu a self-reference.** StringBuilder methods return this self-refence, to support chaining methods together.
+
+>Heap Memory: “Heap” memory, also known as “dynamic” memory, is an alternative to local stack memory. Loca  l memory is quite automatic. Local variables are allocated automatically when a function is called, and they are deallocated automatically when the function exits. Heap memory is different in every way.
+
+```java
+StringBuilder emptyStart = new StringBuilder();
+StringBuilder emptyStart32 = new StrinBuilder (32);
+
+```
+A StringBuilder is mutable, which means it can shrink, or grow in size, by default, an empty StringBuilder starts out with a capacity of 16, meaning it can contain up to 16 characters, before it needs to request more memory. In the second example, we created a StringBuilder with a starting capacity of 32, which means our sequence can grow up to 32 characters withut needing to request additional allocation. Every time a StringBUilder needs to increase capacity, the data stored in the original storage, need to get copied over to the larger storage area
+ 
+A StringBuilder class has many similar methods to String, but it also has method to remove and insert characers or String, and truncate it's size
+
+* `delete` | `deleteCharAt` You can delete a substring using indices to specify range, or delete a single character at an index.
+* `insert` You can insert text at a specific position
+* `reverse` You can revers the order of the characters in the sequence
+* `setLength` can be used to truncate the sequence, or include null sequences to fill out the sequence to that length
