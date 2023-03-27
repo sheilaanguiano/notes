@@ -915,7 +915,7 @@ public void setMake(String make){
     make = make;
 }
 ```
-The code above will give us several warnings , but we can solve it using the word `this`. which is a special keyqord in Java. What it really refers to is the instace that was created when the object was instantiated. So `this` is a special reference name for the object or instance, which it can use to describe itself. And we can use `this` to access fields on the class.
+The code above will give us several warnings , but we can solve it using the word `this`. which is a special keyword in Java. What it really refers to is the instace that was created when the object was instantiated. So `this` is a special reference name for the object or instance, which it can use to describe itself. And we can use `this` to access fields on the class.
 ```java
 public void setMake(String make){
     this.make = make;
@@ -2290,3 +2290,120 @@ A StringBuilder class has many similar methods to String, but it also has method
 * `insert` You can insert text at a specific position
 * `reverse` You can revers the order of the characters in the sequence
 * `setLength` can be used to truncate the sequence, or include null sequences to fill out the sequence to that length
+
+
+## Section 8: Object Oriented Programming Part 2 - Polymorphism
+### Composition Part 1
+```java
+public class Product{
+
+    private String model;
+    private String manufacturer;
+    private int width;
+    private int height;
+    private int depth;
+
+    //Constructor
+    public Product(String model, String manufacturer){
+        this.model = model;
+        this.manufacturer = manufacturer;
+    }
+}
+
+class Monitor extends Product {
+    super(model, manufacturer);
+}
+
+class Motherboard extends Product {
+    private int ramSlots;
+    private int cardSlots;
+    private String bios;
+
+    public Motherboard(String mode, String )
+    super(model, manufacturer);
+}
+
+class ComputerCase extends Product {
+    super(model, manufacturer);
+}
+```
+IN the example above, we can see that all 3 classes extend Product, we can see that monitor, motherboard and computer case are all types of products and that essentially is what inheritance is
+
+Inheritance defgines an IS A relationship
+Composition defines a HAS A relationship
+
+Composition is actually modeling parts, and those parts make up a greater whole. In this case we're going to model the personal computer
+```java
+
+class Motherboard extends Product {
+    private int ramSlots;
+    private int cardSlots;
+    private String bios;
+
+    public Motherboard(String mode, String )
+    super(model, manufacturer);
+
+    public Motherboard(String model, String manufacturer, int ramSlots, int cardSlots, String bios){
+        super(model, manufacturer);
+        this.ramSlots = ramsSlots;
+        this.cardSlots = cardSlots;
+        this.bios = bios;
+    }
+    public voif loadProgram(String programName + programName + " is now loading..."){
+        System.out.println("Program" + ); 
+    }
+}
+
+class Monitor extends Product {
+    private int size;
+    private String resolution;
+
+    super(model, manufacturer);
+    public Monitor(String model, String manufacturer, int size, String resolution){
+        super(model, manufacturer);
+        this.size = size;
+        this.resolution = resolution;
+    }
+    public void drawPixelArt(int x, int y, String color){
+        System.out.println(String.format("Drawing pixel art %d, %d in color %s ", x y, color))
+    }
+}
+
+class ComputerCase extends Product {
+    private String powerSupply;
+
+    public ComputerCase(String model, String manufacturer){
+        super(model, manufacturer);
+
+    }
+    public ComputerCase(String model, String manufacturer, String powerSupply){
+        super(model, manufacturer);
+        this.poweerSupply = powerSupply
+    }
+    public void pressPowerButton(){
+        System.out.println("Power button pressed");
+    }
+}
+```
+We want to create another public class. You can use a combination of inheritance and composition, to create a model. In the example belo we'll be using composition
+
+```java
+public class PersonalComputer extends Product{
+    private ComputerCase computerCase;
+    private Monitor monitor;
+    private Motherboard motherboard;
+
+    public PersonalComputer(String model, Strinf manufacturer, ComputerCase computerCase, Monitor monitor, Motherboards motherboard ){
+        super(model, manufacturer);
+        this.computerCase = computerCase;
+        this.monitor = monitor;
+        this.motherboard = motherboard;
+    }
+
+}
+
+public ComputerCase get computerCse(){
+    return computerCsee;
+}
+
+```
