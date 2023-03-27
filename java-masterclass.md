@@ -15,6 +15,7 @@ Instructor: Tim Buchalka
 4. [Expressions, Statements, Codeblocks, Methods](#5)
 5. [Control Flow](#6)
 6. [Objtec Oriented Programming Part1 - Inheritance](#7)
+7. [Object Oriented Programming Part 2 - Polymorphism](#8)
 
 
 ## Section 2: Programming Tools and Setup <a name="2"></a>
@@ -2292,7 +2293,7 @@ A StringBuilder class has many similar methods to String, but it also has method
 * `setLength` can be used to truncate the sequence, or include null sequences to fill out the sequence to that length
 
 
-## Section 8: Object Oriented Programming Part 2 - Polymorphism
+## Section 8: Object Oriented Programming Part 2 - Polymorphism <a name="8"></a>
 ### Composition Part 1
 ```java
 public class Product{
