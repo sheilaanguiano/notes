@@ -10,7 +10,8 @@ Instructor: Bro Code Channel
 # Table of Contents
 
 1.  [Java Tutorial for beginners](#java-beginner)
-
+2.  [Variables in Java](#variables)
+3.  [How to swap 2 variables](#swap-two-variables)
 15. [Java Arrays](#arrays)
 16. [Java 2D arrays](#2d-arrays)
 17. [Java String Methods](#string-methods)
@@ -32,6 +33,38 @@ To read the bytecode, the machine uses a **JVM** (Java Virtual Machine) to trans
 CONTINUE FROM 8:21MIN
 
 ## How to Swap 2 Variables<a name ="swap-variables"></a>
+Imagine that you have 2 glasses of water filled, one with water and the other with KoolAid.
+```java
+public class Main {
+  public static void main( String[] args) {
+    String x = "water";
+    String y = "Kool-Aid";
+
+    x=y;
+
+    System.out.println("x: " +x); //x: Kool-Aid
+    System.out.println("y: " +y); //y: Kool-Aid
+  
+  }
+}
+```
+If we try to do this with the glasses, the Y one, would overflow, so we need an extra glass that we'll call `temp`
+```java
+public class Main {
+  public static void main( String[] args) {
+    String x = "water";
+    String y = "Kool-Aid";
+    String temp;
+
+    temp=x;
+    x=y;
+    y=temp;
+
+    System.out.println("x: " +x); //x: Kool-Aid
+    System.out.println("y: " +y); //y: water
+  }
+}
+```
 
 
 ## Arrays <a name="arrays"></a>
@@ -200,6 +233,7 @@ public class Main {
   })
 }
 ```
+
 ## Java Methods<a name ="java-methods"></a>
 
 A methods is a block of code that is executed whenever it is called upon
@@ -271,6 +305,7 @@ static int add(int x, int y){
   return x+y;
 }
 ```
+
 ## Java Overloaded Methods <a name ="overloaded-methods"></a>
 Overloaded Methods, are methods that share the same name but have different parameters, this is allowed becase each method needs its own unique **method signature** that is the method's name plus it's parameters. They can share the same name but they will need different parameters to give them each a unique method signature
 
@@ -308,5 +343,50 @@ Some factors that are taken into account with parameters are the number of param
 
 
 ## Java printf <a name ="printf"></a>
+The `printf` is an optional method to control, format, and display text to the console window
+- It needs two arguments = format string + (object/variable/value)
+
+```java
+public class Main {
+  public static void main( String[] args) {
+    System.out.printf("This is a format string %d", 123); //This is a format string 123
+  }
+}
+```
+So we can format some value and place it at some position in the string to wherever wer add a format specifier wich is represented by a *%* sign
+%d = Add a decimal value 
+Depending on the `%[flags][precision][width][conversion character]` that's how it going to be displayed
+```java
+public class Main {
+  public static void main( String[] args) {
+   boolean myBoolean = true;
+   char myChar ='@';
+   String myString = "shei";
+   int myInt = 50;
+   double myDouble = 1000;
+
+  //[conversion-character]
+   System.out.printf(%b, myBoolean);
+   System.out.printf(%c, myChar);
+   System.out.printf(%s, myString);
+   System.out.printf(%d, myInt);
+   System.out.printf(%f, myDouble);
+ //[width]
+ //minimum number of characters to be written as output
+ System.out.printf("Hello %10s", myString); //Hello         Bro
+ System.out.printf("Hello %-10s", myString); //This will justofy the text and leave the space to the right empty
+
+ //[Precision]
+ //sets number fo digits precision when outputting floating-point values
+ System.out.printf("You have this much money %.2f", myDouble); //You have this money 1000.00
+
+ //[Flags]
+
+  }
+}
+```
+So in order to display a certain object you need a matching conversion specifier
+
+
 ## Final Keyword <a name ="final"></a>
 ## Java Objects <a name ="objects"></a>
