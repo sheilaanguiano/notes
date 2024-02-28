@@ -12,6 +12,7 @@ Instructor: Bro Code Channel
 1.  [Java Tutorial for beginners](#java-beginner)
 2.  [Variables in Java](#variables)
 3.  [How to swap 2 variables](#swap-two-variables)
+4.  [How to accept user input in Java](#user-input)
 15. [Java Arrays](#arrays)
 16. [Java 2D arrays](#2d-arrays)
 17. [Java String Methods](#string-methods)
@@ -19,8 +20,27 @@ Instructor: Bro Code Channel
 21. [Java for-each Loop](#for-each-loop)
 22. [Java Methods](#java-methods)
 23. [Java Overloaded Methods](#overloaded-methods)
-
-
+24. [Java printf](#java-printf)
+25. [Java final keyword](#final-keyword)
+26. [Java Objects](#objects)
+27. [Java Constructors](#java-constructors)
+28. [Java Variable Scope](#variable-scope)
+29. [Java Overloaded Constructors](#overloaded-constructors)
+30. [Java toString Method](#tostring)
+31. [Java Array of Objects](#array-of-objects)
+32. [Java Object Passing](#object-passing)
+33. [Java Static Keyword](#static)
+34. [Java Inheritance](#inheritance)
+35. [Java Method Overriding](#overriding)
+36. [Java Super keyword](#super)
+37. [Java Abstraction](#abstraction)
+38. [Java Access Modifiers: public, protected, private](access-modifiers)
+39. [Java Encapsulation](#encapsulation)
+40. [Java Copy Objects](#copy-objects)
+41. [Java Interface](#jave-interface)
+42. [Java Polymorphism](#polymorphism)
+43. [Java Dynamic Polymorphism](#java-dynamic-polymorphism)
+44. [Java Exception Handling](#exception-handling)
 
 ## Java Tutorial for Beginners <a name="java-begginer"></a>
 Computer languages are on a spectrum between being low level or High-level. Computers only understand  binary which is a low-level language referred **machine code**.
@@ -101,6 +121,7 @@ public class Main {
 
 }
 ```
+
 ## 2D Arrays <a name="2d-arrays"></a>
 A dynamic list of separate lists. You can change the size of these lists during runtime, which is an advantage of array list over just standard arrays.
 
@@ -381,12 +402,1000 @@ public class Main {
  System.out.printf("You have this much money %.2f", myDouble); //You have this money 1000.00
 
  //[Flags]
+ // adds an effect to output based on the flag added to format specifier
+ // - : left-justify
+ // + : output a plus (+) or minus sign for a numeric value
+ // 0 : numeric values are zero-padded
+ // , : comma grouping separator if numbers > 100)
+ System.out.printf("You have this much money %+f", myDouble) //You have this money +1000.00
 
+  System.out.printf("You have this much money %020f", myDouble) //You have this money +1000.00 
+  System.out.printf("You have this much money %,f", myDouble) //You have this money 1,000.00000 
   }
 }
 ```
 So in order to display a certain object you need a matching conversion specifier
 
+## Final Keyword <a name ="final-keyword"></a>
+Anything that is declared final cannot be changed or updated in the program
+```java
+public class Main {
+  public static void main(String[] args){
+    double pi = 3.14159
+    pi = 4;
+    System.out.println(pi); // 4.0
+  }
+  }
+}
+```
+When we print `pi` the value change to 4, because we updated the value, but if we use the `final` keyword:
+```java
+public class Main {
+  public static void main(String[] args){
+    final double PI = 3.14159
+    pi = 4;
+    System.out.println(pi); // 4.0
+    }
+  }
+}
+```
+We'd get a compilation error, because once anything is assigned `final`cannot be re-assigned.
 
-## Final Keyword <a name ="final"></a>
-## Java Objects <a name ="objects"></a>
+## Java Objects and Object Oriented Programing (OOP) <a name ="objects"></a>
+An object is an instance of a class that may contain attributes and methods.
+
+```java
+public class Car {
+
+  String make = "Chevrolet";
+  String model = "Corvette";
+  int year = 2020;
+  String color = "pink";
+  double price = 50000.00;
+
+  void drive(){
+    System.out.println("You drive a car");
+  }
+  void brake(){
+    System.out.println("You step on the brakes");
+  }
+
+}
+```
+```java
+
+public class Main {
+  public static void main(String[] args){
+    Car myCar = new Car();
+    System.out.println(myCar.model); // Corvette
+    myCar.drive(); // You dirve a car
+    
+    }
+  }
+}
+```
+We can reuse a class to instantiate multiple instances of this class. Now with this we run into the problem that all the car will have the same attributes, and we can solve this with Constructors
+
+## Java Constructors<a name ="java-constructors"></a>
+A constructor is a special method that is called when an object is instantiated (created). We can pass it arguments when we instantiated so they can be assigned to the object we're creating
+```java
+public class Human {
+  
+  String name;
+  int age;
+  double weight;
+
+
+  //constructor
+  Human(String name, int age, double weight){
+    name = name;
+    age = age;
+    weight = weight
+  }
+
+}
+```
+```java
+public class Main {
+  public static void main(String[] args){
+    Human human = new Human("Rick", 65, 70);
+    System.out.println(human.name); //null
+    }
+  }
+```
+Now if we try to run the code, like this, we'll get `null` so we need to use `this`.
+```java
+public class Human {
+  
+  String name;
+  int age;
+  double weight;
+
+  //constructor
+  Human(String name, int age, double weight){
+    name = this.name;
+    age = this.age;
+    weight = this.weight
+  }
+
+  void eat(){
+    System.out.println(this.name+" is eating")
+  }
+}
+```
+```java
+public class Main {
+  public static void main(String[] args){
+    Human human = new Human("Rick", 65, 70);
+    System.out.println(human.name); // Rick
+    }
+  }
+```
+
+## Java Variable Scope <a name ="variable-scope"></a>
+Local = declared inside a method, visible only to that method
+Global = declared outside a methid, but within a class visible to all parts of the class.
+
+```java
+import java,util.Random;
+public class DiceRoller {
+  DiceRoller(){
+    Random random = new Random();
+    int number = 0;  // this is local variable
+    roll(random, number);
+  }
+
+  void roll(random random, int number ){
+    number = random.nextInt(6)+1;
+    System.out.println(number);
+  }
+
+}
+```
+```java
+import java,util.Random;
+public class DiceRoller {
+  Random random;
+  int number = 0;
+  
+  DiceRoller(){
+    Random random = new Random();
+    roll();
+  }
+
+  void roll(random random, int number ){
+    number = random.nextInt(6)+1;
+    System.out.println(number);
+  }
+}
+```
+```java
+public clas Main {
+  public static void main(String[] args){
+    DiceRoller diceroller = new DiceRoller();
+  }
+}
+```
+
+## Java Overloaded Constructors <a name ="overloaded-constructors"></a>
+Overloaded constructors are multiple constructors within a class with the same name but have different parameters.When you combine a costructor name plus it's parameters you have a **signature**
+
+```java
+public class Pizza {
+  String bread;
+  String sauce;
+  String cheese;
+  String topping;
+
+ Pizza(String bread, String sauce, String cheese, String topping){ 
+    this.bread = bread;
+  this.sauce = sauce;
+  this.cheese = cheese;
+  this.topping = topping;
+  
+  System.out.println("This are the ingredientes of your pizza:");
+  System.out.println(pizza.bread);
+  System.out.println(pizza.sauce);
+  System.out.println(pizza.cheese);
+  System.out.println(pizza.topping;  
+ 
+ }
+Pizza(String bread, String sauce){ 
+  this.bread = bread;
+  this.sauce = sauce;  
+  System.out.println("This are the ingredientes of your pizza:");
+  System.out.println(pizza.bread);
+  System.out.println(pizza.sauce);
+ }
+Pizza(String bread, String sauce){ 
+  this.bread = bread;
+  this.sauce = sauce; 
+  this.cheese = cheese; 
+  
+  System.out.println("This are the ingredientes of your pizza:");
+  System.out.println(pizza.bread);
+  System.out.println(pizza.sauce);
+  System.out.println(pizza.cheese);
+ }
+}
+```
+```java
+public class Main{
+  public static void main(String[] args){
+    Pizza pizza = new Pizza("thick crust", "tomato", "mozarella", "pepperoni");
+  }  
+}
+```
+
+## Java toString method <a name ="tostring"></a>
+A special method that all objects inherit that returns a string that "textually represents" an object, can be used both implicitly and explicitly.
+```java
+public class Car {
+  String make = "Chevrolet";
+  String model = "Corvette";
+  int year = 2020;
+  String color = "pink";
+  double price = 50000.00;
+}
+```
+```java
+
+public class Main {
+  public static void main(String[] args){
+    Car myCar = new Car();
+    System.out.println(myCar.model); // Corvette
+    System.out.println(myCar.make);
+    System.out.println(myCar.year);
+    }
+  }
+}
+```
+Now if you tried to run `System.out.println(car);` you'll get something lile `Car6%$^&%` which is the address of that car object in memory and you will get the same information if you write `car.toString()` but we can *override* to instead print a textual representation
+
+```java
+public class Car {
+  String make = "Chevrolet";
+  String model = "Corvette";
+  int year = 2020;
+  String color = "pink";
+  double price = 50000.00;
+
+  public String toString(){
+    String myString = make + "\n" + model+"\n"+year;
+    return myString;
+
+    //Or you can write it in one line
+    //return make + "\n" + model+"\n"+year;
+  }
+}
+```
+So now if we call the method implictly  `car.toString()` or explicitly `System.out.println((car.toString())``
+
+
+## Java Array of Objects <a name ="array-of-objects"></a>
+The standard formula to create an array
+```java
+           int[] numbers = new int[]
+// data type[]    name          data Type [size]
+```
+So let's create now an array of objects
+```java
+public class Main {
+  public static void main (String[] args) {    
+    Food[] refrigerator = new Food[3];
+
+    Food food1 = new Food("Pizza");
+    Food food2 = new Food("Hamburger");
+    Food food3 = new Food("Hot dog");
+
+    refrigerator[0]= food1;
+    refrigerator[1]= food2;
+    refrigerator[2]= food3;
+  
+    System.out.println(refrigerator[0]); //This will return the address Fppd@36baudh
+    System.out.println(refrigerator[0].name); //Pizza
+  }
+}
+```
+```java
+public class Food{
+  String name;
+  //constructor
+  Food (String name){
+    this.name = name;
+  }
+}
+```
+Now there is another way to set up our array of objects
+```java
+public class Main {
+  public static void main (String[] args) {    
+
+    Food food1 = new Food("Pizza");
+    Food food2 = new Food("Hamburger");
+    Food food3 = new Food("Hot dog");
+
+    Food[] refrigerator = {food1, food2, food3};
+  
+    System.out.println(refrigerator[0]); //This will return the address Fppd@36baudh
+    System.out.println(refrigerator[0].name); //Pizza
+  }
+}
+```
+
+## Java Object Passing as arguments <a name ="object-passing"></a>
+```java
+public class Main {
+  public static void main (String[] args) {    
+    Garage garage = new Garage();
+    Car car = new Car("BMW");
+    Car car2 = new Car("Tesla);
+
+    garage.park(car); // The BMW is parked in the garage
+    garage.park(car2); // The Tesla is parked...
+
+  }
+} 
+```
+```java
+public class Garage {
+   
+   void park(Car){
+    System.out.println("The "+car.name+" is parked in the garage");
+   }
+}
+```
+```java
+public class Car {
+  String name;
+  Car( String name){
+    this.name = name;
+
+  }
+}
+```
+In conclusion you can pass objects as arguments to a method but when you declare that method you have to have the parameters accept objects of that data type
+
+## Java Static Keyword <a name ="static"></a>
+This is a keyword modifier that can be applied to a variable, method or even classes. Anything that is *static* is also known  as a static member. A good way to think about this is that the class that contains the static member, OWNS it.
+So anything that the class owns is shared by all instances of that class, meaning if we create objects from this class they all have to share this variable or method
+
+```java
+public class Friend {
+  String name;
+  static int numberOfFriend;
+
+  Friend(String name){
+    this.name = name;
+  }
+}
+```
+```java
+public clas Main{
+  public static void main(String[] args){
+    System.out.println(Friend.numberOfFriends); //0
+  }
+} 
+```
+Now, we'll create some Friends
+
+```java
+public class Friend {
+  String name;
+  static int numberOfFriend;
+
+  Friend(String name){
+    this.name = name;
+    numberOfFriends++;
+  }
+}
+```
+
+```java
+public clas Main{
+  public static void main(String[] args){
+    Friend friend1 = new Friend("Spongebob");
+    Friend friend2 = new Friend("Patrick");
+    Friend friend3 = new Friend("Squidward);
+
+    System.out.println(Friend.numberOfFriends); //3
+  }
+}
+```
+Now is entirely possible to accessa static variable using an object instance name itself ` System.out.println(friend2.numberOfFriends);` but is not recommended and you, the only this could work is by deleting the `static` word from the class `int numberOfFriend;` so that each of the Friend objects has their very own copy of the number of friends variable.
+
+Let's create a static method
+```java
+public class Friend {
+  String name;
+  static int numberOfFriend;
+
+  Friend(String name){
+    this.name = name;
+    numberOfFriends++;
+  }
+  static void displayFriends(){
+    System.out.println("You have "+numberOfFriends+" friends");
+  }
+
+}
+```
+The preferring name of calling a static method is by the class name and not by the name of one of its instances
+```java
+public clas Main{
+  public static void main(String[] args){
+    Friend friend1 = new Friend("Spongebob");
+    Friend friend2 = new Friend("Patrick");
+    Friend friend3 = new Friend("Squidward);
+
+    Friend.displayFriends();
+  }
+}
+```
+Another example is the `.round` method of the class `Math`
+
+## Inheritance <a name ="inheritance"></a>
+The process where one class acquires the attributes and methods of another.
+So,here we have everything related to vehicles whitin the vehicle class and we would like that `Car` and  `Bicycle` class to receive these attributes and methods from the vehicle class, se we'll use `extense`
+
+Now, the bicycle and Car classes are subclasses of Vehicle, also known as `child classes` and the `vehicle` class is the **super class** or **parent class**
+
+```java
+public class Vehicle {
+  double speed;
+   void go(){
+    System.out.println("This vehicle is moving");
+   }
+
+   void stop(){
+     System.out.println("This vehicle is stopped");
+   }
+  
+
+}
+```
+```java
+public class Car extends vehicle {
+}
+```
+```java
+public class Bicycle extends vehicle {
+  
+}
+```
+```java
+public clas Main{
+  public static void main(String[] args){
+    Car car = new Car();
+    car.go() // This vehicle is moving
+    Bicycle bike = new Bicycle();
+
+    System.out.println(bike.speed); // 0.0
+  }
+}
+```
+Now the child classes can have their own unique additional attributes and methods
+```java
+public class Car extends vehicle {
+  int wheels = 2;
+  int doors = 4;
+}
+```
+
+```java
+public clas Main{
+  public static void main(String[] args){
+    Car car = new Car();
+    car.go() // This vehicle is moving
+    Bicycle bike = new Bicycle();
+
+    System.out.println(bike.speed); // 0.0
+    System.out.println(car.doors); // 4
+  }
+}
+```
+
+## Method Overriding <a name ="overriding"></a>
+Declaring a method in a sub-class, which is already present in the parent class. This is so that a child class can give its own implementation
+```java
+public class Animal{
+  void speak(){
+    System.out.println("The animal speaks");
+  }
+ 
+}
+```
+```java
+@Override
+public class Dog extends Animal {
+  void speak(){
+    System.out.println("The dog barks");
+  }
+
+ 
+}
+```
+```java
+public clas Main{
+  public static void main(String[] args){
+    Dog dog = new Dog();
+    dog.speak() // The dog barks
+ 
+  }
+}
+```
+Now our `speak` method under the `Dog` class is considered the *overriding method* and the one it inherents from its parent is considered the *overriden method*.
+And if we're overriding a method, it should have the `@Override` which is not necessary, but is a GOOD PRACTICE to let others know that this is an overriding method
+
+## Java Super <a name ="super"></a>
+The `super` keyword refers to the superclass (parent) of an (that's assuming you're assuming inheritance) object very similar to the "this" keyword
+```java
+public class Person {
+  String name;
+  int age;
+  Person(String name, int age){
+    this.name = name;
+    this.age = age;
+  }
+}
+```
+```java
+public class Hero extends Person {
+  String power
+  Hero(String name, int age, String power){
+    super();
+    this.power = power;
+  }
+}
+```
+```java
+public clas Main{
+  public static void main(String[] args){
+   Hero hero1 = new Hero("Batman", 42, "$$$");
+  
+  System.out.println(hero1.name); //Batman
+  }
+}
+```
+Another use of the `super` keyword is to call a method within the super class.
+```java
+public class Person {
+  String name;
+  int age;
+  Person(String name, int age){
+    this.name = name;
+    this.age = age;
+  }
+  public String toString(){
+    return this.name +"\n" + this.age+"\n"
+  }
+}
+```
+```java
+public class Hero extends Person {
+  String power
+  Hero(String name, int age, String power){
+    super();
+    this.power = power;
+  }
+   public String toString(){
+    return super.toString()+this.power;
+  }
+}
+```
+```java
+public clas Main{
+  public static void main(String[] args){
+   Hero hero1 = new Hero("Batman", 42, "$$$");
+  
+  System.out.println(hero1.toString); //Batman 42 $$$
+  }
+}
+```
+
+## Java Abstraction <a name ="abstraction"></a>
+This is a keyword that can be applied to both classes and methods when you define them.
+An `abstract class` cannot be instantiated but they can have a subclass that can be
+```java
+public class vehicle{}
+```
+```java
+public class Car exteds Vehicle {}
+```
+And at this point we can create instances of both classes, but we might not want that. By adding the `abstract` keyword, we add a layer of security. Ex. Let's pretend that we work at a car delarship, and someone say that they want a vehicle, but that doesn't tells us if that means a Car, a bike, etc. 
+So we prevent someone for instanciating something that may be too generic by adding the abstract word.
+
+```java
+public abstract class vehicle{}
+```
+And that way we can no longer can create a instance of the class.
+
+An `abstract method` is declared without implementation
+```java
+public abstract class vehicle{
+  abstract void go(){}
+}
+```
+So now we need to implement it in the child class
+```java
+public class Car exteds Vehicle {
+  @Override 
+  void go(){
+    System.out.println("The car goes BRRR");
+  }
+}
+```
+
+
+## Java Access Modifiers <a name ="access-modifiers"></a>
+Access modifiers add a layer of security to our programs, and we'll cover:
+- public
+- protected
+- private
+ And to demostrate these we'll need a couple of packages. A **Packages** is a collection of classes whereas a *class* is a collection of code.
+ We're going to create 2 packages and 2 classes within each package:
+
+ Package1
+ ```java
+ package package1;
+ import package2.*;
+
+ public class A {
+   public static void main(String[] args){
+
+   }
+ }
+```
+```java
+package package1;
+import package2.*;
+
+ public class B { }
+ ```
+
+ Package2
+ ```java
+ package package2;
+
+ public class C { }
+ ```
+ ```java
+ package package2;
+ import package1.*; // The asteriks means import everything
+
+ public class Asub exteds A{ }
+ ```
+ So from the `Asub` class we can inherit everything from the A class.
+ So first `default`:
+
+ ```java
+ package package2;
+
+ public class C {
+    String defaultMessage = "This is the defauly";
+  }
+ ```
+ 
+ In the above class, we're not using any access modifier
+ 
+ ```java
+ public class A {
+   public static void main(String[] args){
+    C c = new C();
+    System.out.println(d.defaultMessage);
+   }
+ }
+```
+
+The above code in Class A will give us an error, because anything using the *deafult* access modifier is only visible to anything within the same package
+
+But if we copy-pasted it in the **Asub** class:
+
+ ```java
+ package package2;
+ import package1.*; // The asteriks means import everything
+
+ public class Asub exteds A{
+   public static void main(String[] args){
+    C c = new c();
+    System.out.println(c.defaultMessage);
+   }
+  }
+ ```
+ This will work because it's within the package (Class C and Asub)
+
+ **Public Modifier**
+  ```java
+ package package2;
+
+ public class C {
+    public String publicMessage = "This is public";
+
+    String defaultMessage = "This is the default";
+  }
+```
+Anything that is *public* is available or visible to other packages
+
+```java
+ public class A {
+   public static void main(String[] args){
+    C c = new C();
+    System.out.println(d.publicMessage);
+   }
+ }
+```
+ **Protected Modifier**
+ Something that is *protected* is accesible to a different class in a diferent package  as long as that class is a subclass of whatever class contains that contains that protected member
+
+```java
+ package package2;
+
+ public class C {
+    protected String  protectedMessage = "This is protected";
+    public String publicMessage = "This is public";
+    String defaultMessage = "This is the default";
+  }
+```
+
+
+ ```java
+ package package2;
+ import package1.*; // The asteriks means import everything
+
+ public class Asub exteds A{
+   public static void main(String[] args){
+   Asub asub = new Asub();
+   }
+  }
+ ```
+**Private Access Modifiers**
+Something that is private is only visible to the class that contains itself
+
+```java
+ package package2;
+
+ public class C {
+    protected String  protectedMessage = "This is protected";
+    public String publicMessage = "This is public";
+    String defaultMessage = "This is the default";
+    private String privateMesssage = "This is private"
+  }
+```
+```java
+package package1;
+import package2.*;
+
+ public class B { 
+  private String privateMesssage = "This is private";
+ }
+ ```
+
+ ```java
+ public class A {
+   public static void main(String[] args){
+      B b  = new B();
+      System.out.println(b.publicMessage); // This won't be visible
+   }
+ }
+```
+
+## Java Encapsulation
+This is the concept of attributes of a class will be hiden or private and can only be acccessed through methods (getters & setters).
+You should make attributes private if you don't have a reason to make them public.
+
+```java
+public class Car {
+  private String make;
+  private String model;
+  private int year;
+
+  Car(String make, String model, int year){
+    this.make = make; 
+    this.model = model;
+    this.year = year;
+  }
+}
+```
+ ```java
+
+public class Main {
+  public static void main(String[] args){
+   Car car = new Car("Checvrolet", "Camaro", 2021);
+   System.out.println(car.make); // This will throw an exception because that field is not visible, because is private.
+   }
+  }
+ ```
+For that we use a `getter` method.
+
+```java
+public class Car {
+  private String make;
+  private String model;
+  private int year;
+
+  Car(String make, String model, int year){
+    this.make = make; 
+    this.model = model;
+    this.year = year;
+  }
+
+  public String getMake(){
+    return make;
+  }
+public String getModel){
+    return model;
+  }
+  public int getYear(){
+    return year;
+  }
+}
+```
+So now we can use ` System.out.println(car.getMake());`. And to change the fields, we would need to use a Setter method and update our class:
+
+```java
+public class Car {
+  private String make;
+  private String model;
+  private int year;
+
+  Car(String make, String model, int year){
+    this.setMake(make); 
+    this.setModel(model);
+    this.setYear(year);
+  }
+
+  public String getMake(){
+    return make;
+  }
+public String getModel){
+    return model;
+  }
+  public int getYear(){
+    return year;
+  }
+  public void setMake(String make){
+    this.make = make;
+  }
+  public void setModel(String model){
+    this.model = model;
+  }
+  public void setYEar(int year){
+    this.year = year;
+  }
+}
+```
+
+## Java Copy Objects <a name="copy-objects"></a>
+We're going to copy some cars
+```java
+public class Car {
+  private String make;
+  private String model;
+  private int year;
+
+  Car(String make, String model, int year){
+    this.setMake(make); 
+    this.setModel(model);
+    this.setYear(year);
+  }
+
+  public String getMake(){
+    return make;
+  }
+public String getModel){
+    return model;
+  }
+  public int getYear(){
+    return year;
+  }
+  public void setMake(String make){
+    this.make = make;
+  }
+  public void setModel(String model){
+    this.model = model;
+  }
+  public void setYEar(int year){
+    this.year = year;
+  }
+}
+```
+
+```java
+public class Main {
+  public static void main(String[] args){
+   Car car1 = new Car("Checvrolet", "Camaro", 2021);
+   Car car2 = new Car ("Ford", "Mustang", 2022);
+
+   System.out.println(car1); // Car@36baf  this are the address in memory
+   System.out.println(car2); // Car@7a811
+   System.out.println(car1.getMake());
+   }
+  }
+ ```
+ Now, let's say that we want that car2 has the same attributes as car1, we might want to do `car2 = car1`, but what this do, is give car1 two different names, because it has teh same place in memory
+
+So the correct way to do this is creating a copy method in our Car class, so in the main method we write: `car2.copy(car1)`
+```java
+public class Car {
+  private String make;
+  private String model;
+  private int year;
+
+  Car(String make, String model, int year){
+    this.setMake(make); 
+    this.setModel(model);
+    this.setYear(year);
+  }
+
+  public void setYEar(int year){
+    this.year = year;
+  }
+  public void copy(Car x){
+    this.setMake(x.getMake());
+    this.setModel(x.getModel());
+    this.setYear(x.getYear());
+  }
+}
+```
+Now another way to do this is by creating a `copy` constructor, we start by instantiating it in Main: `Car car2 = new Car(car1)`
+
+```java
+public class Car {
+  private String make;
+  private String model;
+  private int year;
+
+  Car(String make, String model, int year){
+    this.setMake(make); 
+    this.setModel(model);
+    this.setYear(year);
+  }
+
+  Car(car x){
+    this.copy(x);
+  }
+
+  //...
+public void copy(Car x){
+    this.setMake(x.getMake());
+    this.setModel(x.getModel());
+    this.setYear(x.getYear());
+  }
+```
+
+## Java Interface <a name="interface"></a>
+Think of interfaces as a template that can be applied to a class. Similar to inheritance, but specifies what a class has/must do. 
+Classes can apply more than one interface, inheritance is limited to 1 super
+
+With interfaces you can declare variables normally like you can do with inheritance. You can also declare some methods and you don't need to create a body for these methods.
+
+```java
+public interface Prey { void flee(); }
+```
+```
+public interface Predator { void hunt(); }
+```
+So when a class is implementing one of these interfaces they need to implement and define what the method is gonna do in a class, which is basically Overriding
+```java
+public class Rabbit implements Prey {
+ @Override
+ public void flee(){ System.out.printLn("The Rabbit is fleeing") }
+}
+```
+```java
+public class Hawn implements Predator {
+  @Override
+  public void hunt(){ System.out.printLn("The Hawk is hunting"); }
+}
+```
+```java
+public class Fish implements Prey, Predator{
+  @Override
+  public void flee(){System.out.printLn("The Fihs is fleeing")}
+
+  @Override
+  public void hunt(){ System.out.printLn("This Fish is hunting smaller fish")}
+}
+```
+
+## Java Dynamic Polymorphism
