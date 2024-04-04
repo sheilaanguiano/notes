@@ -16,7 +16,7 @@ Instructor: Tim Buchalka
 5. [Control Flow](#6)
 6. [Objtec Oriented Programming Part1 - Inheritance](#7)
 7. [Object Oriented Programming Part 2 - Polymorphism](#8)
-
+8. [Arrays](#9)
 
 ## Section 2: Programming Tools and Setup <a name="2"></a>
 ### Confirming Installation and intro to JShell
@@ -2408,3 +2408,159 @@ public ComputerCase get computerCse(){
 }
 
 ```
+
+
+### Polymorphism 2
+
+Up until now, we've always had the `main` method or calling code, create instances of the object, but this time, we'll create a method on the Movie class, that the calling code can execute that will return a movie instance for us.
+
+We'll make this method public and static which means anybodu can call this method to get a movie instance, based on the parameter type being passed in, and a title.
+```java
+public class Movie {
+    private String title;
+
+    public Movie(String title) {
+        this.title = title;
+    }
+
+    public void watchMovie(){
+        String instanceType = this.getClass().getSimpleName();
+        System.out.println(title + " is a " + instanceType + " film");
+    }
+
+    public static Movie getMovie(String type, String title){
+        //returns an instance of a movie  or subclass of a Movie and this gets
+        //retunred by the switch expression
+        return switch(type.toLowerCase().charAt(0)){
+            default -> new Movie(title); //returns  generic movie instance
+        };
+    }
+}
+```
+
+```java
+ public class Main {
+    public static void main(String[] args) { 
+
+        Movie theMovie = Movie.getMovie("Adventure", "Star wars");
+        theMovie.watchMovie();
+    }
+}
+//Star Wars is a Movie film
+```
+By completing our code, the switch expression will evaluate the type of movie. By providing this, method, the code in the main method (the calling code) doesn't really need to know anything about any of the Movie's subclasses.
+```java
+public static Movie getMovie(String type, String title){
+        //returns an instance of a movie  or subclass of a Movie and this gets
+        //retunred by the switch expression
+        return switch(type.toLowerCase().charAt(0)){
+            case 'A' -> new Adventure(title);
+            case 'C'-> new Comedy(title);
+            case 'S' -. new Comedy.ScienceFiction(title);
+            default -> new Movie(title); //returns  generic movie instance
+        };
+    }
+```
+This kind of method that returns an instance of an object, is known as a **factory method** in software programming design patters. Factory methods give us a way to get an object without having to know the details of how to create a new one, or specify the exact class we want.
+This sounds like a good encapsulation technique.
+
+Going back to our Main class and min method, we'll use polymorphism, to watch a variety of movies. This time, we'll make the code interactive, using the `Scanner` class. We'll let the user enter the type of movie, and then the title of the movie they want to watch:
+```java
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        while(true){
+            System.out.print("Enter Type (A for Adventure, C for Comedy, " +
+                    "S for Science Fiction, or Q to Quit): ");
+            String type = s.nextLine(); //reads the type of movie entered by the user
+            if("Qq". contains(type)){
+                break;
+            }
+            System.out.print("Enter Movie Title: ");
+            String title = s.nextLine();
+            Movie movie = Movie.getMovie(type, title);
+            movie.watchMovie();
+        }
+    }
+}
+
+// If we input Science and Aliens we get 
+/***
+ * Alients is a ScienceFiction film
+...Bad Aliens do bad stuff
+...Space Guys chase aliens
+...Planet Blows up
+ ***/
+```
+So now, the code will call the `watchMovie` method using a `Movie` reference variable, but a runtime, the Movie, wasn't a movie, it was an instance of the subclass. Our compliled code, in the main method of the main clss, never new anything about any of the subclasses, but at runtime, we would get an object of type Science Fiction from the factory method if that was the input.
+
+Let's not forget, the watch Movie method, in any of the subclasses, first called the method on Movie. This happens becase we called `super.watchMovie()` when we override the method on the Science Fiction class.
+
+The statement `movie.watchMovie()` is doing quite a bit of work. Java uses the runtime object, to see if that object has got its own version of the watchMovie method nad it calls the watchMovie method on the parent class first, because of the `super.watchMovie`
+
+Polymorphism enables you to write generic code, based on the nase class or parent class 
+
+## Section 9:Arrays <a name="9"></a>
+### Arrays
+An array is a data structure, that allows you to store a sequence of values, all of the same type. You can have arrays for any primitive type, like ints, doubles, booleans, or any of the 8 primitives.
+You can also have arrays for any class.
+Elements in an arrays are indexed, starting at 0.
+
+**Declaring and Array**
+When you declare an array, you first specify the type of the elements you want in the array, you first specify the type of the elements you want in the array.
+
+Then you include squate btrackets in the declaration, which is the key for java, to identify the variable as an array.
+The square brackets can follow the type as shown in the first two examples.
+This is much more common.
+The brackets can also be after the variable name, as shown in the last example
+You don't specify size, in the array declaration itself.
+```java
+int[] integerArray;
+Strting[] nameList;
+String courseList[];
+```
+
+**Instantiation an Array**
+```java
+//Array Creation
+int[] integerArray = new int[10];
+//Object Creation
+StringBuildder sb = new StringBuilder();
+
+```
+One way to instantiate the array, is with the `new` keyword, much as we've seen, with most of the classes we've used to date, with the exception of String.
+On this slide, we have an array declaration on the left of the equals sign, and then an array creation expression of the right side.
+For comparison, I'm showing you a typical aeeay variable declaration, and a class instance or object creation expression, using the StringBuilder class.
+
+They look pretty similar, but there are two major differences.
+
+Square brackets are required when using the `new` keyword, and a size is speficified between them. So in this example, there will be 10 elements in the array.
+An array instantiation doesn't have a set of parentheses, meaning we can't pass data to a constructor for any array, if you use them you'll get a compiler error.
+
+The size of an array, once created is fixed.
+We can't add or delete elements, we can only assign values to one of the ten elements in this array
+
+```java
+package dev.lpa
+  
+public class Main {
+    public static void main (String[] args){
+        int[] myIntArray = new int[10];
+    }
+}
+```
+We'llset element 6 of `myIntArray` to the int value of fifty: `myIntArray[5]=50;`
+
+**The array initializer** 
+An array initializer, makes the job of instantiating and initializing a small array, much easier
+```java
+int[] firstFivePositives = new int[]{1, 2, 3, 4, 5};
+```
+Here we specify the values, we want the array to be initialized to, in a comma delimited list, in curly braces.
+Because these values are specified, the length of the array can be determined, so we don't specify the size in the square brackets and actually, Java proves an even simpler way to do this.
+Java allows us to drop the new int[], from the expression:
+
+
+ 

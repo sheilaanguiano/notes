@@ -21,25 +21,23 @@ Author: Sheila Anguiano
 #### Introducing React
 React is a JavaScript library for building user interfaces.It introduces  a more efficent and flexible way of building organizing and mantaining your user interface code (UI) code.
 
-One of the main venefits of working with React, is that it lets you build your application's UI by breaking it up into small reusable pieces of code called **components**
+One of the main benefits of working with React, is that it lets you build your application's UI by breaking it up into small reusable pieces of code called **components**
 
-The other big benefit is that React leeps your application's data or state and UI in-sync and can efficiently update your UI when data changes.
+The other big benefit is that React lets your application's data or state and UI in-sync and can efficiently update your UI when data changes.
 
 #### Add React to a Project
 There is two common ways to install and get set up with React:
 * Create React App
 * CDN
 
-Create React App was built by developers at Facebook to help save you from the time consuming setup amd configuration that building a react application normally requires.There acan be a lot of moving parts, from third party libraries, to loats of configurations and built tools
+Create React App was built by developers at Facebook to help save you from the time consuming setup amd configuration that building a react application normally requires.There acan be a lot of moving parts, from third party libraries, to lots of configurations and built tools
 
 When building web applicatios in React, you use two libraries:
 * React
 * React-dom
 
 #### Create a React Element
-At it's core, React is on;ly a library for creating and updating HTML elements in your UI, 
-
-At its simplest, React is a library for creating and updating HTML elements. So to better understand how React creates UI, we're going to begin using the React API to create React elements, which are the smallest building blocks
+To better understand how React creates UI, we're going to begin using the React API to create React elements, which are the smallest building blocks
 
 `.createElement()` accepts three arguments that define the element you want to create:
 1. The type of element you want to create (string)
@@ -47,16 +45,18 @@ At its simplest, React is a library for creating and updating HTML elements. So 
 3. Contents or children of the element you're creating
 ```javascript
 const title = React.createElement(
-	'h1',
-	//If you're not passing anything, you can write an empty object {} or write 'null'
+	 // 1. Type of Element
+  'h1', 
+	//2. If you're not passing anything, you can write an empty object {} or write 'null'
 	{ id: 'main-title', title: 'This is a title'},
-	'My first react element'
+  //3. Contents or children of the element
+	'My first react element' 
 )
 ```
 Now, one of the first important details of React is that React DOES NOT create actual DOM nodes, is actually and OBJECT that describes a DOM node. It's an object representation of a DOM node
 
 #### Render an Element
-The React DOM library provides DOM specific methods, such as `ReactDOM.render()` to render React elements to the DOM. This is the function that actially does the creating and updating of the DOM, is what connect React to the DOM. It accepts two arguments:
+The React DOM library provides DOM specific methods, such as `ReactDOM.render()` to render React elements to the DOM. This is the function that actually does the creating and updating of the DOM, is what connect React to the DOM. It accepts two arguments:
 1. The react element or JavaScript object that describes the element you'd like to render and the actual HTML element you want to update or render to
 2. The container element where our code will be rendered by React
 
@@ -73,7 +73,7 @@ ReactDOM.render(
 );
 
 ```
-This `root` element (which can be named anuthing) is where we'll be mounting our react application.
+This `root` element (which can be named anything) is where we'll be mounting our react application.
 Any existing DOM elements inside the root will be replaced when render is called. Now we can **compose**
 
 ```javascript
@@ -133,7 +133,7 @@ Just remember that in production your code would probably be already be precompi
 ```
 
 #### Embed JavaScript expressions in JSX
-JSX tags can contain children, or nested elements. *While isn't required is a good code style practice to surround with parentheses JSX that is more two lines of code.
+JSX tags can contain children, or nested elements. While isn't required is a good code style practice to surround with parentheses JSX that is more two lines of code.
 ```javascript
 const header = (
 	<header>
@@ -201,7 +201,7 @@ function Header(){
 
 
 #### Use a component with JSX
-JSX let's you definr your own tags. A JSX tag cannot only represent an HTML element like an `h1` or `div`, it can also represent a user defined component. For example we can use the `Header` component as a `header` tag whenever we need it, that why upper case letter are important, to differentiate from normal html tags from react components.
+JSX let's you define your own tags. A JSX tag cannot only represent an HTML element like an `h1` or `div`, it can also represent a user defined component. For example we can use the `Header` component as a `header` tag whenever we need it, that why upper case letter are important, to differentiate from normal html tags from react components.
 
 You can use self closing tags if you don't have any more children tags to nest inside the component, like the example below.
 
@@ -950,6 +950,125 @@ const  Player  =  ( props )  => {
 
 
 [Constructor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/constructor)
+
+
+## React Basics v2 
+### Setting up React
+**Vite** is a simple lightning-fast build tool for modern web development
+You also need Node and Npm
+
+Project react-grocery-list
+main.jsx is where we're going to use React
+index.html is the template
+vite.config.js use by Vite to configure the development server and build process
+
+React is the core library
+React DOM is what let's React Connect to and manipulate the DOM, making it perfect for building WEB applications.
+`npm i` installs this dependencies
+To serve our React app to the browser, we need to start a development server, this is because React is a JavaScript libraryt that needs to be compiled befoere it can run in the browser, so we'll use `npm run dev` in the terminal
+
+### Understanding JSX
+To render our JSX element onto the screen wen eed to utilize React's `createRoot` API, which allows us to create a root for displaying React elements inside a browser DOM node.
+
+To be able to access the createRoot API, we'll first need to import it from the react-dom library
+Now, we can create a React root for displaying content within a browser's DOM element
+
+```javascript
+import { createRoot } from 'react-dom/client'; 
+
+
+const element = <h1>My First React Element</h1>
+
+//This lines of code, creates a React root for the div element, and React will take over managing the DOM inside it
+const root = createRoot(document.getElementById('root'));
+//Now to render our Root, we need to call the render method.
+root.render(element)
+```
+
+### Embbeded JavaScript
+Rules of JSX
+1. Must return a single root element
+If we try to do something like this, we'll get an error, because jsx needs to have a parent element, which in this case could a <div>
+```javascript
+const element = ( 
+  <h1>My First React Element</h1>
+  <p>I just learned how to create a react Node and rendered into the DOM</p> 
+  )
+```
+If we don't want to add a <div> tag just to retun an <h1> and a <p> tags, we could use react fragment tag.
+
+```javascript
+
+const element = ( 
+  <>
+    <h1>My First React Element</h1>
+    <p>I just learned how to create a react Node and rendered into the DOM</p> 
+  </>
+  )
+```
+Why do multiple JSX tags need to be wrapped? When you write multiple JSX tags, React needs to transfor each of these into a JavaScript object, but since you can't return multiple object directly you have to wrap those into a parent or a fragment
+
+2. Close all tags
+3. camelCase most of the things
+
+When you use curly braces {} in JSX is called a **JSX expression**
+- Can be placed between JSX tags
+- Value of an attribute in a jsx tag
+
+```javascript
+const title = "My first react Element"
+const myTitleId = "main-title"
+const name = "Shei"
+
+const element = ( 
+  <>
+    <h1 id={myTitleId}>{name}'s First react Element</h1>
+    <p>I just learned how to create a react Node and rendered into the DOM</p> 
+  </>
+  )
+```
+### What's a component
+A component is a piece of UI that you can reuse. Just like you're able to reuse code in JavaScript with functions, a component lets you reuse code that renders a part of your UI. Being able to split your UI code into independent, reusable pieces, and think about each piece in isolation is one of the most embraced features of React.
+
+[Break the UI into a component hierarchy](https://react.dev/learn/thinking-in-react#step-1-break-the-ui-into-a-component-hierarchy)
+
+### Create a component
+1. Define the component as a function
+2. Return the React elements to display
+```javascript
+import { createRoot } from 'react-dom/client'; 
+
+function Header(){
+  return (
+    <header>
+      <h1>Grocery List</h1>
+      <span className='total-items'>Items: 1</span>
+    </header>
+  )
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(element)
+```
+Now that we wrote our first component, we're going to refactor it, because is common to encounter components written as arrow functions
+
+```javascript
+import { createRoot } from 'react-dom/client'; 
+
+const Header = () => {
+  return (
+    <header>
+      <h1>Grocery List</h1>
+      <span className='total-items'>Items: 1</span>
+    </header>
+  )
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(element)
+```
+
+
 ## React Components  <a name="components"></a>
 
 ### Build Modular Interfaces with Components
