@@ -1032,7 +1032,7 @@ A component is a piece of UI that you can reuse. Just like you're able to reuse 
 
 [Break the UI into a component hierarchy](https://react.dev/learn/thinking-in-react#step-1-break-the-ui-into-a-component-hierarchy)
 
-### Create a component
+### Create a Component
 1. Define the component as a function
 2. Return the React elements to display
 ```javascript
@@ -1067,10 +1067,261 @@ const Header = () => {
 const root = createRoot(document.getElementById('root'));
 root.render(element)
 ```
+### Use a Component with JSX
+JSX lets you define your own tags. A JSX tag can not only represent an HTML element (like <h1>, <span>, and <header>), but it can also represent a user-defined component.
+
+There are a few important details about JSX tags:
+1- Capitalized React tags, at it is essential to distinguish components from native DOM elements
+
+### Creating the Item Component
+
+``` javascript
+const Item = () => {
+  return (
+    <div className='item'>
+      <button className='remove-item' />
+      <span className='item-name'>Apples</span>
+      <div className='quantity'>
+        <span className='quantity-label'>QTY</span>
+        <button className='increment'>+</button>
+        <button className='decrement'>-</button>
+        <span className='quantity-amount'>15</span>
+
+      </div>
+    </div>
+  )
+}
+```
+
+### Nesting Components
+When a component contains another component is called **Nesting**. This allows the parent component to control how its childs component are rendered 
+
+Typically, React applications have a single top-level component that 
+wraps the entire application and combines all the main components together
+```javascript
+import { createRoot } from 'react-dom/client'; 
+
+const Header = () => {
+  return (
+    <header>
+      <h1>Grocery List</h1>
+      <span className='total-items'>Items: 1</span>
+    </header>
+  )
+}
+
+const Item = () => {
+  return (
+    <div className='item'>
+      <button className='remove-item' />
+      <span className='item-name'>Apples</span>
+      <Counter />
+    </div>
+  )
+}
+
+const Counter = () => {
+  return (
+    <div className='quantity'>
+      <span className='quantity-label'>QTY</span>
+      <button className='increment'>+</button>
+      <button className='decrement'>-</button>
+      <span className='quantity-amount'>15</span>
+    </div>
+
+  )
+}
+
+const App = () => {
+  return (
+    <div className='grocery-list'>
+      <Header />
+      {/* Grocery List */}
+      <Item />
+    </div>
+  )
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App />)
+```
+
+### React Developer Tools
+* Profiler: This tab allows you to record performance information for each rendered component, which gives you insights into where your component is slow
+* Component Tab: Here you'll find the complete component tree that forms our app. Similar to how you can inspect HTML in the elements tab, you can inspect your component hierarchy in the Components tab. In here you might notice a warning that our component is not running in <StricMode>>
+
+<StrictMode> is a special component provided by React to help you identify common bugs in your components, during development, Strict Mode renders components twice to detect any potencial issues within your code and provide warnings, which can be incredible useful.
+
+```javascript
+const root = createRoot(document.getElementById('root'));
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+)
+```
+
+### What Is Props
+In React, we use properties, commonly referred to as **props** to customize our components and pass dynamic information into them.
+
+HTML elements accept attributes that give further meaning and additional behavior.Similar to how HTML elements accept attributes every React component and element can receive a list of attributes called PROPS.
+
+**Using Props**
+1. Define th props in a component's JSX tag
+2. Enable the use of props in a component
+
+### Setting and Using Props
+We can pass props to a component by adding them as attributes to the component's JSX tag wherever it's used
+```javascript
+const App = () => {
+  return (
+    <div className='grocery-list'>
+      <Header 
+        title='Grocery List' 
+        itemTotal={1} />
+      {/* Grocery List */}
+      <Item />
+    </div>
+  )
+}
+```
+These two props are now available to be used in the Header component. Next, let's update our Header component function to use this props. When you define a component using a function, the function gets one default parameter from React, a props object containing the list of props given to the component.
+
+So let's enable the use of props in our Header component by giving our function a parameter called *props*.
+```javascript
+onst Header = (props) => {
+  return (
+    <header>
+      <h1>Grocery List</h1>
+      <span className='total-items'>Items: 1</span>
+    </header>
+  )
+}
+```
+To verify that the props are received correctly, let's log the props object to the console
+```javascript
+const Header = (props) => {
+  console.log(props)
+  return (
+    <header>
+      <h1>Grocery List</h1>
+      <span className='total-items'>Items: 1</span>
+    </header>
+  )
+}
+```
+You may notice that our log appears twice, this behavior is a result or enablong strict mode in our app, since this is how this mode dete3cts potential bugs in our code.
+
+To access properties of the props object, we can use dot notation
+```javascript
+const Header = (props) => {
+  console.log(props)
+  return (
+    <header>
+      <h1>{props.title}</h1>
+      <span className='total-items'>Items: {props.itemTotal}</span>
+    </header>
+  )
+}
+
+const App = () => {
+  return (
+    <div className='grocery-list'>
+      <Header 
+        title='Grocery List' 
+        itemTotal={1} />
+      {/* Grocery List */}
+      <Item />
+    </div>
+  )
+}
+```
+ Since our props parameter is an object, we can desetructure it. Essentially this means than rather than consistently writing `props.title` or `props.itemTotal` we can simplyfy it.
+ ```javascript
+ const Header = ({title, itemTotal}) => {
+  return (
+    <header>
+      <h1>{title}</h1>
+      <span className='total-items'>Items: {itemTotal}</span>
+    </header>
+  )
+}
+ ```
+It's important to know that props in React are read-only values. If we attempt to modify title prop within the Header component, the app will fail.
+
+### Use props to create Reusable Components
+You can think of props as what React components use to talk to each other and share information.
+
+Props pass data from parent component down to child component.
+
+Since the `Item Component` is the parent of the Counter component is responsable for defining the props for both the item's name and quantity
+```javascript
+import { createRoot } from 'react-dom/client'; 
+import { StrictMode } from 'react';
+
+const Header = ({title, itemTotal}) => {
+  return (
+    <header>
+      <h1>{title}</h1>
+      <span className='total-items'>Items: {itemTotal}</span>
+    </header>
+  )
+}
+
+const Item = (props) => {
+  return (
+    <div className='item'>
+      <button className='remove-item' />
+      <span className='item-name'>{props.itemName}</span>
+      <Counter
+        quantity={props.quantity} 
+      />
+    </div>
+  )
+}
+
+const Counter = (props) => {
+  return (
+    <div className='quantity'>
+      <span className='quantity-label'>QTY</span>
+      <button className='increment'>+</button>
+      <button className='decrement'>-</button>
+      <span className='quantity-amount'>{props.quantity}</span>
+    </div>
+
+  )
+}
+
+const App = () => {
+  return (
+    <div className='grocery-list'>
+      <Header 
+        title='Grocery List' 
+        itemTotal={1} 
+       
+        />
+      {/* Grocery List */}
+      <Item itemName='Apple' quantity={41} />
+      <Item itemName='Avocados' quantity={2} />
+      <Item itemName='Oranges' quantity={7} />
+    </div>
+  ) 
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+)
+```
+This is where the concept of indepent self-contained, and rusable components beging to manifest itself. Components faciliate what's knowns as separation of concerns, that's the idea that each component in your UI should be responsable for one thing only
+
+### Iterating and Rendering with map()
+
 
 
 ## React Components  <a name="components"></a>
-
 ### Build Modular Interfaces with Components
 Developers normally use Create React App for developing react applications because it lets you quickly create and run React Apps with no configuration. It sets your development environment with tools like Babel to compile JSX to JavaScript and Webpack to process and bundle your JavaScript files and project assets. 
 

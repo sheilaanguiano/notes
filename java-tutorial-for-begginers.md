@@ -1312,6 +1312,7 @@ public class Main {
    }
   }
  ```
+ 
  Now, let's say that we want that car2 has the same attributes as car1, we might want to do `car2 = car1`, but what this do, is give car1 two different names, because it has teh same place in memory
 
 So the correct way to do this is creating a copy method in our Car class, so in the main method we write: `car2.copy(car1)`
