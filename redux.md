@@ -23,4 +23,108 @@ We cal also sabe the entire application state in a file and reload the applicati
 
 The tool *Log Rocket* gives you an always on Redux Dev Tools in production for everyone of your users, so if a user encounters a proble you can reload the application in the same state as the user and see what's going on. It's very powerful.
 
-Another benefit of Redys
+Another benefit of Redux is that it allows you to cash or preserve paid state, like download all the app, so whenever you change screen it doesn't pull anything from the server averything is there.
+
+**Pros**
+* Predictable state changes
+* Centralize state
+* Easy debbuging
+* Preserve page state
+* Implement Undo / Redo features easily
+* Great ecosystem of add-ons
+
+**Cons**
+* Introduces Complexity
+* Verbosity
+
+### Is Redux for you?
+In every project or app you need to understand whay problem you're trying to solve, what your constrains are and what solution optimally solves the problem according to those constrains
+
+**When NOT to use Redux**
+* Yight budget
+* Small to medium-size apps
+* Simple UI / data flow
+* Static data
+
+### Functional Programming
+Functional programming is one of the many programming paradigms or styles of programming
+
+**Programming Paradigms**
+* Functional
+* Object-oriented
+* Procedural
+* Event-driven
+
+Each of these paradigms has certain rules about how you should structure your code to solve problems. Functional Programming was invented in the 1950s but it has become quite trendy over the few years.
+
+In a nutshell functional programming is about decomposing a problem into a bunch of small and reusable functions that take some input and return a result. They don't don't mutate or change data. With this structure we can compose these functions to build more complex functions. 
+
+The benefit of this is that these small functions are more concise, easier to debug, easier to test and more scalable because we can run many function call in parallel and take advantage of multiple cores  of a CPU
+
+There are languages that are specifically designed for functional programming such as 
+* Clojure 
+* Haskell
+
+JavaScript is a multi-paradigm programming language, it's not a pure functional language, so it has some *caveats* that you need to be aware but we can still apply frunctional programming principles
+
+#### Functions are first class citizens
+* Functions can be assigned to a variable
+* Functions can be passed as an argument
+* Functions could be returned from other functions
+
+#### Higher order functions
+Is a function that takes a function as an argument or returns one or both
+```javascript
+setTimeout(() => console.log("Hello"), 1000);
+```
+#### Function Composition
+The idea of Functional programmins it to write a bunch of small reusable functions and then compose them to build more complex functions for solving real world problems.
+
+For example let's say we have an input and what we want to accomplish in an output:
+```javascript
+let input = "   Javascript  "
+let output = "<div>" + input + "</div>";
+
+```
+The above example of output is a NON functional way of solving the problem, now let's return the same result by using Functional programming:
+```javascript
+const trim = str => str.trim();
+const wrapInDiv = str => `<div> ${str}</div>`
+// Let's add that we want the string to be lowercase
+const toLowerCase = str => str.toLowerCase();
+
+const result = wrapInDiv(toLowerCase(trim(input)));
+```
+This is called Composition
+
+#### Composing and Piping
+**Lodash** is a javaScript utility library for JavaScript, which has a package with functions for functional programming
+
+```javascript
+import { compose, pipe } from "lodash/fp";
+
+const trim = str => str.trim();
+const wrapInDiv = str => `<div> ${str}</div>`
+const toLowerCase = str => str.toLowerCase();
+
+//const result = wrapInDiv(toLowerCase(trim(input)));
+const transform = compose(wrapInDiv, toLowerCase, trim) //Higher order function 
+transfor(input);
+```
+With this new function from Lodash we have cleaner functions, but we still need to reed from righ to left to follow for the string transform. This can be changed with *pipe*
+```javascript
+const transform = pipe(trim, toLowerCase,wrapInDiv) 
+transfor(input);
+```
+
+#### Currying
+Named after Haskell Curry. Let's same that name we want a String in a Span, so we create the small function for it
+```javascript
+const trim = str => str.trim();
+const wrapInDiv = str => `<div> ${str}</div>`;
+const wrapInSpan =  str => `<span> ${str}</span>`;
+const toLowerCase = str => str.toLowerCase();
+
+const result = wrapInDiv(toLowerCase(trim(input)));
+```
+Now we have a bit of duplication, so it would be nice it we could parametize this function
