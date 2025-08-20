@@ -22,9 +22,9 @@ Author: Sheila Anguiano
 ### ReactJS vs Vanila JS
 
 React = Declarative UI Programming.
-With React, you drfine the target UI state(s)- not the steps to get there. Instaed, React will figure out & perform the necessary steps.
+With React, you define the target UI state(s)- not the steps to get there. Instead, React will figure out & perform the necessary steps.
 
-When you write vanilla JavaScript, ypu write Imperative code, which means, you're not defining the goal, but the steps neeeded to get there.
+When you write vanilla JavaScript, you write Imperative code, which means, you're not defining the goal, but the steps neeeded to get there.
 
 https://codesandbox.io/p/sandbox/first-react-app-start-7ec9fd?file=%2Fsrc%2Findex.js
 
@@ -51,13 +51,13 @@ In moder JavaScript you might also find the same script tag with a `type="module
 
 And if you're treating your JavScript as modules, this unlocks a very important syntax, which is using the word `import`.
 
-In the context of building React apps, you will almost necer add these scripts tags to your HTML file on your own, because React projects almos always use a **build process** which as part of that build process, injects these script tahs into the HTML code for you.
+In the context of building React apps, you will almost never add these scripts tags to your HTML file on your own, because React projects almos always use a **build process** which as part of that build process, injects these script tahs into the HTML code for you.
 
 ## 3. React Essentials - Components, JSX, Props, State and More <a name="essentials"></a>
 
 ### It's all about Components
 
-React and its ecosystem provide dozens of useful and important features and concets, but arguably the most important concept is the concept of a Component.
+React and its ecosystem provide dozens of useful and important features and concepts, but arguably the most important concept is the concept of a Component.
 
 Components are UI Building Blocks.So React apps are in the end built by combining Components
 
@@ -73,7 +73,7 @@ Components are UI Building Blocks.So React apps are in the end built by combinin
 This concept is so popular and useful that you'll find it in other popular front-end frameworks like Angular, Vue or Svelte.
 Or even in mobile development frameworks like Flutter.
 
-### JSX & React Comonents (Core Concept)
+### JSX & React Components (Core Concept)
 
 - JSX : JavaScript Syntax Extension
 - With React, you write declarative code. You define the target HTML structure & UI, not the steps to get there
@@ -991,4 +991,532 @@ return (
 ```
 
 By setting the buttons as a special prop, might look weird, but is a common patter to make the `Tabs.jsx` component reusable and not having to add more props that will reduce its usability.
-While this patter might look redundant, it is a crucial pattern and being able to set multiple slots in components its a cruciak concept
+While this patter might look redundant, it is a crucial pattern and being able to set multiple slots in components its a crucial concept
+
+### Setting Component Types Dynamically
+
+Going back to our `Tabs`component, that is currently wrap by `<menu>` tags, we might want to make it more flexible. An elegant solution would be to add another prop, to leave it to the developer to set anyway they prefer.
+
+```javaScript
+export default function Tabs({ children, buttons, buttonsContainer }) {
+    const ButtonsContainer = buttonsContainer;
+
+    return <>
+        <ButtonsContainer >
+            {buttons}
+        </ButtonsContainer>
+        {children}
+    </>
+}
+```
+
+So now, the developer, can set the prop as built-in elements such as: `"menu"`, `"ul"` or even a custom component like `{Section}`
+
+```javascript
+<Section title="Examples" id="examples">
+          <Tabs
+          buttonsContainer="menu"
+          buttons={
+            <>
+            <TabButton
+              isSelected={selectedTopic === 'components'}
+              onClick={() => handleSelect('components')}
+            >
+```
+
+You can also use a shortcut, by remapping the prop as a CONSTANT
+
+```javaScript
+export default function Tabs({ children, buttons, ButtonsContainer }) {
+//const ButtonsContainer = buttonsContainer;
+
+    return <>
+        <ButtonsContainer >
+            {buttons}
+        </ButtonsContainer>
+        {children}
+    </>
+}
+```
+
+### Setting Default Prop Values
+
+Setting menu as the default value when that prop is not passed
+
+```javascript
+export default function Tabs({ children, buttons, ButtonsContainer = "menu" }) {
+  return (
+    <>
+      <ButtonsContainer>{buttons}</ButtonsContainer>
+      {children}
+    </>
+  );
+}
+```
+
+### Closer Look: public/ vs assets/ for Image Storage
+
+The public/ Folder
+As shown in the previous lecture you can store images in the public/ folder and then directly reference them from inside your index.html or index.css files.
+
+The reason for that is that images (or, in general: files) stored in public/ are made publicly available by the underlying project development server & build process. Just like index.html, those files can directly be visited from inside the browser and can therefore also be requested by other files.
+
+If you try loading localhost:5173/some-image.jpg, you'll be able to see that image (if it exists in the public/ folder, of course).
+
+The src/assets/ Folder
+You can also store images in the src/assets/ folder (or, actually, anywhere in the src folder).
+
+So what's the difference compared to public/?
+
+Any files (of any format) stored in src (or subfolders like src/assets/) are not made available to the public. They can't be accessed by website visitors. If you try loading localhost:5173/src/assets/some-image.jpg, you'll get an error.
+
+Instead, files stored in src/ (and subfolders) can be used in your code files. Images imported into code files are then picked up by the underlying build process, potentially optimized, and kind of "injected" into the public/ folder right before serving the website. Links to those images are automatically generated and used in the places where you referenced the imported images.
+
+Which Folder Should You Use?
+You should use the public/ folder for any images that should not be handled by the build process and that should be generally available. Good candidates are images used directly in the index.html file or favicons.
+
+On the other hand, images that are used inside of components should typically be stored in the src/ folder (e.g., in src/assets/).
+
+### Components instance work in isolation
+
+Even when you're reusing the same component, React creates a new isolated instance
+
+### Conditional Content and suboptimal way of updating content
+
+Setting a condition like this ` setIsEditing(isEditing ? false : true);` is the same as saying `setEditing(!isEditing)` but is still not perfect.
+
+### User input & Two-Way-Binding
+
+This way of listening to a change on the `input` and then feeding that update value back into this input is also called two-way-Binding because were getting a value out of this input and we're feeding a value back into this input.
+
+### Best Practice: Updating Object State Inmutability
+
+```javascript
+    function handleSelectSquare (rowIndex, colIndex) {
+        setGameBoard((prevGameBoard) => {
+            prevGameBoard[rowIndex][colIndex] = 'X';
+            return prevGameBoard
+        });
+```
+
+Just as you shoul use `prevState` updating function when updating your state based on a previous state, it's also recommended that if your tate is an object or array, you udate that state in an nmutable way, which simply means you create a copy of the old state and you just change that copy instead of that existing object or array.
+The reason for that if your tate is an object or array, you're dealing with a reference value in JavaScript, and therefore if you would be updating it like this, you would be updating the old value in-memory immediately, even before this scheduled state update was executed by React. This can lead to strage bugs and side effects if you have multiple places in your application that are scheduling state updates for the same state.
+
+```javascript
+function handleSelectSquare(rowIndex, colIndex) {
+  setGameBoard((prevGameBoard) => {
+    const updatedBoard = [
+      ...prevGameBoard.map((innerArray) => [...innerArray]),
+    ];
+    updatedBoard[rowIndex][colIndex] = "X";
+    return updatedBoard;
+  });
+}
+```
+
+Now, with this we're updating the state in an inmmutable way.
+
+### Lifting State Up
+
+Lift the state uo to the closest ancestor component that has access to all components tat need to work with that state. In the case of the Tic-Tac-Toe App, this would be the `App` component as it is the closest ancestor to both the Player and GameBoard components.
+
+### Avoid Intersecting states
+
+Sometimes you might need to feel to create an extra set of contants to track an specific state, but if you already have another State that tracks the same information but the newly created state only tracks a bit extra data is something that you might want to avoid.
+
+So instead of doing something like this in the `App` component:
+
+```javascript
+import { useState } from "react";
+import Player from "./components/Player";
+import GameBoard from "./components/GameBoard";
+import Log from "./components/Log";
+
+function App() {
+  const [gameTurns, setGameTurns] = useState([]);
+  const [activePlayer, setActivePlayer] = useState("X");
+
+  function handleSelectSquare() {
+    setActivePlayer((currentActivePlayer) => currentActivePlayer === "X" ? "O" : "X");
+    setGameTurns();
+  }
+```
+
+We're going to lift the state from the `GameBoard` component to the `App` Component, but then we'll probably need to do some refactoring of the gameBoard state.
+
+### Prefer computed values & avoid unnecesary state management
+
+So the way to go about lifting state would be like this which:
+a. update state in an immutable way
+b. don't merge separate states, like for example using the `activePlayer` state
+
+```javascript
+import { useState } from "react";
+import Player from "./components/Player";
+import GameBoard from "./components/GameBoard";
+import Log from "./components/Log";
+
+function App() {
+  const [gameTurns, setGameTurns] = useState([]);
+  const [activePlayer, setActivePlayer] = useState("X");
+
+  function handleSelectSquare(rowIndex, colIndex) {
+    setActivePlayer((currentActivePlayer) => currentActivePlayer === "X" ? "O" : "X");
+    setGameTurns(prevTurns => {
+      let currentPlayer = X;
+      if(prevTurns.length > 0 && prevTurns[0].player === "X") {
+        currentPlayer = "O";
+
+      }
+      const updatedTurns = [
+        {square: {row: rowIndex, col: colIndex}, player: currentPlayer},
+        ...prevTurns
+      ];
+      return updatedTurns;
+    });
+  }
+```
+
+### Deriving State from Props
+
+Now that we have this `gameTurns` state, let's used it to derive the gameboard from that array of turns.
+1.We start by destructing the information to pull from `turn` 2. Now we can also destructire `square` to extract `row` and `col`
+
+And that's all we don't need to manage extra state, we're **deriving state**.
+
+```javascript
+const initialGameBoard = [
+    [null, null, null],
+    [null, null, null],
+    [null, null, null]
+];
+
+export default function GameBoard({onSelectSquare, turns}){
+    let gameBoard = initialGameBoard;
+
+    for(const turn of turns) {
+        const { square, player } = turn;
+        const { row, col } = square;
+
+        gameBoard[row][col] = player;
+    }
+```
+
+So GameBoard is a computed value that is derived from some state, in this case the `gameTurns state` that is manage in the App state.
+Yo should manage as little state as needed and try to derive as much information from the availabw state.
+
+### Disabling Buttons Conditionally
+
+```javascript
+<button
+  onClick={() => onSelectSquare(rowIndex, colIndex)}
+  disabled={playerSymbol !== null}
+>
+  {playerSymbol}
+</button>
+```
+
+### Outsourcing Data Into A Separate File
+
+In order to determine who wins, we need to test all winning combinations at every turn
+
+### Lifting Up Computed Values
+
+An initial idea would be to create another state, and check at everyturn within `handleSelectSquare`
+
+```javascript
+function App() {
+  const [gameTurns, setGameTurns] = useState([]);
+  const [hasWinner, setHasWinner] = useState(false);
+
+  const activePlayer = deriveActivePlayer(gameTurns);
+
+  function handleSelectSquare(rowIndex, colIndex) {
+
+    setGameTurns((prevTurns) => {
+      const currentPlayer = deriveActivePlayer(prevTurns);
+
+```
+
+But that would be a **reduntat state**, because we can derive whether we have a winner or not from `gameTurns`, because the `App` component function will execute after every turn.
+
+### Why Inmutability Matters
+
+In the end our game is controlled by the `gameTurns` state, that's our single source of truth for the entire game. We use it to derive
+
+- Game GameBoard
+- activePlayer
+- check for winner
+
+Therefore restarting the game means that will should return `gameTurns` to an empty array and all will automatically adjust, but that's not necesarilly true based on how we're updating each turn.
+We have to remember that arrays like objest in JavaScript are reference values and that means that they're stored in memory. And if we're using tgem, even if they're stored in different variables, we're always editing that same object or array in memory. Therefore, when we set a certain row-column combination to the plater symbol here, I'm doind that in that original array in memory. Therefore after restarting the game, this array here is not reset, it's still the edited old array. So we now kind of decoupled the gameBoardf from our gameTurns because of how we udpaded this here. Thankfully the solution is simple. We just need to do a deep copy:
+
+```javascript
+const initialGameBoard = [
+  [null, null, null],
+  [null, null, null],
+  [null, null, null],
+];
+
+let gameBoard = [...initialGameBoard.map((array) => [...array])];
+```
+
+### When NOT to lift state
+
+At the moment, the player name information is stored inside of the player component. That's where we're editing and storing the name. And we're not sharing this name wth any other part of the application. So hence we need to make sure that we get those player names out of the player component, into the app component.
+Now you could think that you want to lift it up out of this player component into the app one, but that would be wrong.
+
+- It would be wrong because this player name state is used to updaye this input field on ever keystroke, and if we move it out that would mean the entire app component is reevaluated on every keystroke, which also means that the entire gameboard is reevaluated on every keystroke amd that is really redundant and not what we want to do.
+- It could also be tricky, because we're using the player component twice and every component should manage it own name
+  So therefore, the player component should stay the way it is.
+
+Instead we'lll add a new state where we store the currentlu set player names.
+
+```javascript
+function App() {
+  const [players, setPlayers] = useState({
+    'X': 'Player 1',
+    'O': 'Player 2'
+  });
+```
+
+### An alternative to Lifting State Up
+
+Now, we just need to make sure that handlePlayerNamceChange gets trigerred whenever in the player component this change is confirmed by clicking this button when it says `Save`
+
+```javascript
+//Player Component
+
+return (
+  <li className={isActive ? "active" : undefined}>
+    <span className="player">
+      {editablePlayerName}
+      <span className="player-symbol">{symbol}</span>
+    </span>
+    <button onClick={handleEditClick}>{isEditing ? "Save" : "Edit"}</button>
+  </li>
+);
+```
+
+1. We pass a pointer at this `handlePlayerNameChange` function to those player components
+
+```javascript
+//App Component
+  <main>
+      <div id="game-container">
+        <ol id="players" className="highlight-player">
+          <Player
+            initialName="Player 1"
+            symbol="X"
+            isActive={ activePlayer === "X"}
+            onChangeName={handlePlayerNameChange}
+            />
+          <Player
+            initialName="Player 2"
+            symbol="O"
+            isActive={ activePlayer === "O"}
+            onChangeName={handlePlayerNameChange}
+            />
+```
+
+## 5. React Essentials - Practice Project
+
+## 6. Styling React Components
+
+In this section we'll go over:
+
+- Styling with Vanilla CSS
+- Scoping Styles with CSS Modules
+- CSS-in-JS with "Styled Components"
+- Styling with Tailwind CSS
+
+### Spliting CSS Code across multiple Files
+
+In a typical React projecr, you can import CSS files into JavaScript, and the build tool, in this case Vite, will identify such imports and in the end simply make sure that in gets injected into the webpage, therefore you can include as many vanilla CSS files as you want, so you can split this file into multiple ones where you attached the individual files to the components to which they belong.
+
+### Styling React Apps with Vanilla CSS - Pros and Cons
+
+**Advantages**
+
+- CSS code is decoupled from JSX code
+- You write CSS code as you (maybe) know and (maybe) love it
+- CSS code can be written by another developer who needs only a minimal amount of access to your code
+
+**Disadvantages**
+
+- You need to know CSS
+- CSS code is not scoped to components and CSS rules may clash across components (eg. some CSS class name used in different components for different purposes)
+
+### Vanilla CSS styles are not scoped to components!
+
+if the CSS rules are not scoped correctly even if the stylesheets is divided they will affect a component, for example if you have a rule that says ` header h3` but you delete the word `header` then this rule will apply to all h3 as expected
+
+### Styling react Apps with Inlines Styles
+
+So, how can we achieve scoping? A solution would be to use in-line styles. You can do that in react by setting a `style` prop.
+
+The style prop takes a dinamic value:
+
+```javascript
+export default function Header() {
+  return (
+    <header>
+      <img src={logo} alt="A canvas" />
+      <h1>ReactArt</h1>
+      <p
+        style={{
+          color: "red",
+        }}
+      >
+        A community of artists and art-lovers.
+      </p>
+    </header>
+  );
+}
+```
+
+**Advantages**
+
+- Quick and easy to add to JSX
+- Styles only affect the element to which you add them
+- Dynamic (conditional) styling is simple
+
+**Disadvantages**
+
+- You need to know CSS
+- You need to style every element individually
+- No separation between CSS and JSX code
+
+### Dynamic and Conditional Inline Styles
+
+```javascript
+
+  const emailNotValid = submitted && !enteredEmail.includes('@');
+  const passwordNotValid = submitted && enteredPassword.trim().length < 6;
+
+  return (
+    <div id="auth-inputs">
+      <div className="controls">
+        <p>
+          <label>Email</label>
+          <input
+            type="email"
+            style={{
+              backgroundColor: emailNotValid ? '#FED2D2' : '#d1d5db'
+            }}
+            //className={emailNotValid ? 'invalid' : undefined}
+            onChange={(event) => handleInputChange('email', event.target.value)}
+          />
+        </p>
+```
+
+### Dynamic & Conditional Styling with CSS Files & CSS Classes
+
+You can, of course also style elements conditionally when you're using extra css files, typically achieved by adding CSS clases conditionally. `className={emailNotValid ? 'invalid' : undefined}`
+
+Now, its also possible that you want you want to add a class dynamically to an element that also already gas a class that should always be .
+So let's say that we hag a `<label>` tag with a class that always should be there `label` but in addition we also have the `invalid` class that should only be applied when a certain condition is met.
+
+```javascript
+<label className="label, invalid">Email</label>
+```
+
+The previous code will always apply both classes, so to make the second one conditional this should be coded like this:
+
+```javascript
+<label className={`label ${emailNotValid ? "invalid" : ""}`}>Email</label>
+```
+
+### Scoping CSS Rules with CSS Modules
+
+Allows you to write vanilla CSS code and rules that are scoped. Now, CSS Modules is an approach, a solution you could say, that in the end neesd to be implemented and enforced by the build process that is used in your react project. It's not a default browser or JavaScript feature. Instead, CSS is an approach where the build tool will transform your CSS class names and only those two class names that are guaranteed to be unique per file.
+
+So let's say we have a `className='paragraph'` and we applied it to one of or `<p>` tags inside our `Header.jsx` file, this will apply the rules from the `Header.css`, but then me apply that class in our `AuthInputs.jsx` file, the rules would apply to that tag.
+
+BUT if we rename our file `Header.module.css` this naming, will signal the built process to process the file differently and we also need to import it differently.
+
+This will be a JavaScript object that will ne generated by the underlying build process, which you could name classes or styles. But classes is a fitting name because this object will contain your classnames transformed to unique class names.
+
+```javascript
+import logo from "../assets/logo.png";
+import classes from "./Header.module.css";
+
+export default function Header() {
+  return (
+    <header>
+      <img src={logo} alt="A canvas" />
+      <h1>ReactArt</h1>
+      <p className={classes.paragraph}>
+        A community of artists and art-lovers.
+      </p>
+    </header>
+  );
+}
+```
+
+Now if you go to the browser and inspect your project locally you will see that the `<p>` element in questions looks something like this `<p class="_paragraph_wsvrj_28">`. So now this class is unique for this component file and could be dynamicaly and conditionally applied like others.
+
+**CSS Modules: Advantages and Disadvantages**
+Advantages:
+
+- CSS code is decoupled form JSX
+- You wirte CSS code you know and love
+- CSS code can be written by another developer
+
+Disadvantages:
+
+- You need to know CSS
+- You might end up with many relatively small CSS files in your projects
+
+### Introducing "Styled Components" (Third-party Package)
+
+The idea behind this package is that you do not define your CSS rules and styles in separate CSS files, but also not as inline styles, but instead in special component that are built with help of a package.
+
+We'll install the package `npm install styled-components`.
+
+`styled` is a javascript object that uses [tagged templates](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates)
+
+```javascript
+import { styled } from 'styled-components'
+
+const ControlContainer  = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+`
+ return (
+    <div id="auth-inputs">
+      <ControlContainer>
+        <p>
+          <label className={`label ${emailNotValid ? "invalid" : ""}`}>Email</label>
+          <input
+            type="email"
+
+```
+
+Under the hood, this style-components packafe creates unique CSS class names and defines rules for theses classes.
+
+### Creating flexible components with styled-components
+
+You can mix and match styled-components with other styling approaches, though typically you will likely go with one approach that you use for the entirety of the app.
+
+We'll know also use styled components for `Label`. These components do not just use the children prop so that you can wrap them around content, but in addtion , they also forward al props you're setting on this styled component (like the dynamic emailNotValid class) to the underlaying built-in JSX element. It then just adds the styles.
+
+```javascript
+const Label = styled.label`
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6b7280;
+`
+<Label className={`label ${emailNotValid ? "invalid" : ""}`}>Email</Label>
+          <input
+            type="email"
+
+```
+
+### Dynamic and Conditional Styled Components
