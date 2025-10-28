@@ -80,6 +80,45 @@ Or even in mobile development frameworks like Flutter.
 - In React a component is really just a JavaScript function, though in order to be recognized and used as a Component by React, it needs to follow 2 rules:
   - The function name must start with an uppercase character
   - Must return a renderable value, typically the to-be-rendered HTML markup
+- VSC Shortcut: Shift + option + F = Format Document (Text needs to be highlighted)
+
+```javascript
+function Header() {
+  return (
+    <header>
+      <img src="src/assets/react-core-concepts.png" alt="Stylized atom" />
+      <h1>React Essentials</h1>
+      <p>
+        Fundamental React concepts you will need for almost any app you are
+        going to build!
+      </p>
+    </header>
+  )
+}
+
+function App() {
+  return (
+    <div>
+
+      <main>
+        <h2>Time to get started!</h2>
+      </main>
+    </div>
+  );
+}
+
+export default App;
+```
+After creating a component like `Header`, you would think to execute it like Header(), but that's not the case, the React library is the one in charge of calling it
+
+### JSX &  Ract Components
+Run the project with `npm run dev`
+JSX (JavaScript Syntax eXtension)
+React projects come with a build process that transforms JSX code to code that works in borwsers
+
+In react, a component is reallly just a JavaScript function that needs to follow 2 rules:
+1. Name starts with and Uppercase character
+2. Returns  "renderable" value or content
 
 ### Components & File Extensions
 
@@ -144,12 +183,10 @@ ReactDOM.createRoot(entryPoint).render(<App />);
 
 In the above file we don't have components. This JSX code is not getting returned by some function. Instead, it's getting used as a value, as an argument for the `render` method. This file acts as the main entry point of our React app since it is the first file to be loaded by the HTML file.
 
-And it's in this place where the React app boots up, you could say. This render method, however, is being called on an object
-that's created with another method, the `createRoot` method.
-This method takes an existing HTML element as an input,
-so an element that's not being created by React but that instead is part of the index.html file already.
+And it's in this place where the React app boots up, you could say. This render method, however, is being called on an object that's created with another method, the `createRoot` method.
+This method takes an existing HTML element as an input, so an element that's not being created by React but that instead is part of the index.html file already.
 
-React goes ahead and injects a React component, the App component in this case, including any nesting components
+React goes ahead and injects a React component, the App component in this case, including any nested components
 
 So you end up with a component hierarchy or a Tree of Components, but what's important to understand about this tree is that your custom components are not shwoing up in the actual rendered DOM though. There you only find default HTML elements.
 
@@ -202,7 +239,9 @@ function Header() {
 
 ### Setting HTML Attributes Dynamically & Loading Image Files
 
-Importing an Image the way you do in an HTML, might cause some problems during the bundling process, like it getting deleted.
+Importing an Image the way you do in an HTML, might cause some problems during the bundling process. 
+
+Image files, when loaded like this, might be ignored by the bundling process and therefore they might get lost during deployment as well as not take advantage of extra optimization steps.
 
 ```javascript
 function Header() {
@@ -229,15 +268,17 @@ function Header() {
 This is a more optimal way of loading an image
 
 ### Making Components Reusable with Props
+One of the main advantages of components is that they are reusable and will often build components which might be reusable in theory, but indeed are only meant to be used once but other whole purpose is to be reusable with different data.
 
 React allows you to pass data to components via a concept called "Props".
-This props parameter will be set by React because it's React that will execute this function. remember you'tr not calling these components function yourself in your code, instead you're using them as html elements and under the hood React will call the actual functions.
+This props parameter will be set by React because it's React that will execute this function. remember you're not calling these components function yourself in your code, instead you're using them as html elements and under the hood React will call the actual functions.
+
 
 ```javascript
 function CoreConcept(props) {
   return (
     <li>
-      <img src={props.image} alt={props.tittle} />
+      <img src={props.image} alt={props.title} />
       <h3>{props.title}</h3>
       <p>{props.description}</p>
     </li>
@@ -253,7 +294,7 @@ function App() {
           <ul>
             <CoreConcept
               title="Components"
-              description="The core UI"
+              description="The core UI building block"
               image={componentsImg}
             />
             <CoreConcept />
@@ -318,6 +359,75 @@ function CoreConcept({ image, title, description }) {
 }
 ```
 
+### More Prop Syntaxes
+Beyond the various ways of setting and extracting props about which you learned in the previous lecture, there are even more ways of dealing with props.
+
+But no worries, you'll see all these different features & syntaxes in action throughout the course!
+
+Passing a Single Prop Object
+
+If you got data that's already organized as a JavaScript object, you can pass that object as a single prop value instead of splitting it across multiple props.
+
+I.e., instead of
+
+<CoreConcept
+  title={CORE_CONCEPTS[0].title}
+  description={CORE_CONCEPTS[0].description}  
+  image={CORE_CONCEPTS[0].image} />
+or
+
+<CoreConcept
+  {...CORE_CONCEPTS[0]} />
+you could also pass a single concept (or any name of your choice) prop to the CoreConcept component:
+
+<CoreConcept
+  concept={CORE_CONCEPTS[0]} />
+In the CoreConcept component, you would then get that one single prop:
+
+export default function CoreConcept({ concept }) {
+  // Use concept.title, concept.description etc.
+  // Or destructure the concept object: const { title, description, image } = concept;
+}
+It is entirely up to you which syntax & approach you prefer.
+
+Grouping Received Props Into a Single Object
+
+You can also pass multiple props to a component and then, in the component function, group them into a single object via JavaScript's "Rest Property" syntax.
+
+I.e., if a component is used like this:
+
+<CoreConcept
+  title={CORE_CONCEPTS[0].title}
+  description={CORE_CONCEPTS[0].description}  
+  image={CORE_CONCEPTS[0].image} />
+You could group the received props into a single object like this:
+
+export default function CoreConcept({ ...concept }) { 
+  // ...concept groups multiple values into a single object
+  // Use concept.title, concept.description etc.
+  // Or destructure the concept object: const { title, description, image } = concept;
+}
+If that syntax is a bit confusing - worry not! You'll also see concrete examples for this syntax (and for why you might want to use it in certain situations) throughout the course!
+
+Default Prop Values
+
+Sometimes, you'll build components that may receive an optional prop. For example, a custom Button component may receive a type prop.
+
+So the Button component should be usable either with a type being set:
+
+<Button type="submit" caption="My Button" />
+Or without it:
+
+<Button caption="My Button" />
+To make this component work, you might want to set a default value for the type prop - in case it's not passed.
+
+This can easily be achieved since JavaScript supports default values when using object destructuring:
+
+export default function Button({ caption, type = "submit" }) { 
+  // caption has no default value, type has a default value of "submit"
+}
+
+
 ### Best Practice: Storing Components in Files and Using a Good Project Structure
 
 Separate your project into meaninful parts and you could use
@@ -328,7 +438,7 @@ https://www.geeksforgeeks.org/difference-between-default-named-exports-in-javasc
 
 You might want to split the CSS file also into multiple small component specific CSS files. We can cratea `Header.css` and put it in the same place where Header.jsx lives
 
-So we can go to the original `index.css` file and cut all the related css rules, this will initially break the page, you just need to import it in the Header.jsx to fix it:
+Splitting can help identify where to some changes need to be made.
 
 ```javascript
 import reactImg from "../assets/react-core-concepts.png";
@@ -336,9 +446,9 @@ const reactDescriptions = ["Fundamental", "Crucial", "Core"];
 import "./Header.css";
 ```
 
-Also, this doesn't make the rules scoped, if there is another Header, this rules will be applied to0.
+Also, this doesn't make the rules scoped, if there is another Header, this rules will be applied too.
 
-### Component Composition: The special "chilndre" Prop
+### Component Composition: The special "chilndren" Prop
 
 The special `children` prop, is a prop that's set by React, and it's a prop that's not set with help of attributes.
 This prop serves as the content between your component tag
@@ -355,9 +465,11 @@ export default function TabButton(props) {
 }
 ```
 
-Now we can use it in Apps.jsx
+Now we can use it in Apps.jsx notice how if you're using `export default` and whe import it in App, you don't need to add curly braces or it won't render.
 
 ```javascript
+import TabButton from './components/TabButton.jsx';
+
 <section id="examples">
   <h2>Examples</h2>
   <menu>
@@ -408,6 +520,8 @@ Both approach works and there is no better or worse among them, is just a manner
 In vanilla JS this is how you'd listen to an event `document.querySelector('button').addEventListener('click', () => {});`
 but in React we don't use imperative code. In react you add event listeners to elements by adding a special attribute, a special prop, because in the end those built-in elements are also just components that are already provided and understood by React. There is a long list of `on` events.
 
+Now the value for this onClick prop or actually for any event prop is a function, because you should point to the function that should be executed when that event ocurrs
+
 ```javascript
 export default function TabButton({ children }) {
   function handleClick() {
@@ -423,7 +537,7 @@ export default function TabButton({ children }) {
 
 You can define the handler inside the component to be only available to that component. The advantage of defining these event handler functions inside the component functions is that they then have access to the component's props and state.
 
-You must NOT execute the function `nClick={handleClick()}`
+You must NOT execute the function `nClick={handleClick()}` because you want to use the function as a value, because this shouldn't be executed by you, but by React when that event happens
 
 ### Passing Functions as Values to Props
 
